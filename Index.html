@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda & Cotizador - Mi Taller de Piñatas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #f472b6; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #db2777; }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #e11d48 0%, #db2777 40%, #9333ea 100%);
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased min-h-screen flex flex-col justify-between selection:bg-pink-200 selection:text-brand-900">
+
+    <!-- HEADER / NAVEGACIÓN -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-pink-100 shadow-sm transition-all">
+        <div class="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="relative group">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 via-pink-500 to-amber-400 p-0.5 shadow-md shadow-pink-200/80 transition-transform duration-300 group-hover:scale-105">
+                        <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center overflow-hidden">
+                            <div id="brand-logo-icon" class="text-brand-600 text-xl font-bold flex items-center justify-center">
+                                <i class="fa-solid fa-star-sharp-half-stroke text-brand-600 drop-shadow-sm"></i>
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-xs -ml-1 -mt-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h1 id="brand-title" class="font-serif font-extrabold text-base md:text-lg text-stone-900 leading-tight tracking-tight">Mi Taller de Piñatas</h1>
+                    <p id="brand-subtitle" class="text-[11px] text-pink-600 font-medium tracking-wide flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                        Piñatas Artesanales y Personalizadas
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="#catalog-section" class="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-pink-50 text-brand-700 hover:bg-pink-100 text-xs font-semibold transition-all">
+                    <i class="fa-solid fa-camera"></i> 4 Destacados
+                </a>
+                <button onclick="openCalendarModal()" class="px-3.5 py-1.5 rounded-full border border-pink-200 text-stone-700 hover:text-brand-600 hover:bg-pink-50 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-calendar-days text-brand-500"></i>
+                    <span class="hidden md:inline">Ver</span> Disponibilidad
+                </button>
+                <button onclick="openAdminModal()" class="p-2 rounded-full text-stone-500 hover:text-brand-600 hover:bg-pink-50 text-xs transition-all" title="Acceso Administrador">
+                    <i class="fa-solid fa-lock text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 bg-stone-900 text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-medium flex items-center gap-2 transition-all transform translate-y-20 opacity-0 pointer-events-none">
+        <i class="fa-solid fa-circle-info text-pink-400" id="toastIcon"></i>
+        <span id="toastMsg">Mensaje del sistema</span>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-10 flex-1 w-full">
+
+        <!-- BANNER DE BIENVENIDA -->
+        <section class="hero-gradient rounded-3xl p-6 md:p-10 text-white shadow-2xl shadow-pink-300/40 relative overflow-hidden border border-white/20">
+            <div class="absolute -right-12 -top-12 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute right-1/3 -bottom-16 w-56 h-56 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-8 space-y-4 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold text-pink-100 border border-white/20 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-amber-300 animate-ping"></span>
+                        <i class="fa-solid fa-crown text-amber-300"></i> Diseños 100% Hechos a Mano & Personalizados
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-serif font-extrabold leading-tight tracking-tight">
+                        ¡Hacemos Realidad la Piñata Soñada para tu Fiesta! 🎉
+                    </h2>
+
+                    <p class="text-xs sm:text-sm text-pink-100/90 font-light leading-relaxed max-w-xl">
+                        Elige uno de nuestros diseños destacados o envíanos tu idea. Elaboramos piñatas únicas con relieves 3D, excelentes acabados y la máxima calidad.
+                    </p>
+
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
+                        <a href="#form-section" class="px-6 py-3.5 bg-white text-brand-800 hover:bg-pink-50 font-bold text-xs sm:text-sm rounded-2xl shadow-lg shadow-black/10 hover:shadow-xl transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+                            <i class="fa-solid fa-calculator text-brand-600 text-base"></i> Cotizar Mi Piñata Ahora
+                        </a>
+                        <button onclick="openCalendarModal()" class="px-5 py-3.5 bg-black/20 hover:bg-black/30 backdrop-blur-md text-white border border-white/20 font-semibold text-xs sm:text-sm rounded-2xl transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days text-pink-200"></i> Consultar Disponibilidad
+                        </button>
+                    </div>
+                </div>
+
+                <div class="md:col-span-4 flex justify-center">
+                    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-inner text-center max-w-xs w-full space-y-3 relative">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-300 to-rose-400 mx-auto flex items-center justify-center text-white text-2xl shadow-lg shadow-black/10">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div>
+                            <span class="block font-serif font-bold text-base text-white">Garantía de Calidad</span>
+                            <span class="text-[11px] text-pink-100">Resistentes, detalladas y listas para lucir</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-white/10 text-[10px] font-semibold text-amber-200">
+                            <div class="bg-black/20 py-1.5 px-2 rounded-xl">✨ Acabado 3D</div>
+                            <div class="bg-black/20 py-1.5 px-2 rounded-xl">📦 Envío o Taller</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALERÍA DESTACADA CON IMÁGENES AMPLIABLES -->
+        <section id="catalog-section" class="space-y-5 no-print scroll-mt-20">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-pink-100 pb-3">
+                <div>
+                    <span class="text-[11px] font-extrabold text-brand-600 uppercase tracking-widest flex items-center gap-1">
+                        <i class="fa-solid fa-sparkles text-amber-500"></i> Galería Exclusiva
+                    </span>
+                    <h3 class="text-xl md:text-2xl font-serif font-bold text-stone-800">Nuestros 4 Modelos Más Populares</h3>
+                </div>
+                <p class="text-xs text-stone-500 font-medium">Haz clic en la foto para verla completa, o en seleccionar para cotizarla.</p>
+            </div>
+
+            <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+                <!-- Cards renderizadas dinámicamente -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN FORMULARIO DE COTIZACIÓN -->
+        <section id="form-section" class="bg-white rounded-3xl border border-pink-100 shadow-xl p-5 md:p-8 space-y-6 scroll-mt-20 relative">
+            
+            <!-- AVISO DE RECEPCIÓN CERRADA (SI APLICA) -->
+            <div id="orderStatusBanner" class="hidden p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 text-xs space-y-1">
+                <div class="flex items-center gap-2 font-bold text-sm text-amber-800">
+                    <i class="fa-solid fa-clock font-bold text-base text-amber-600"></i>
+                    <span>Recepción de Pedidos Cerrada Temporalmente</span>
+                </div>
+                <p id="orderStatusBannerText">Actualmente no estamos tomando pedidos nuevos. Consulta nuestro horario de recepción.</p>
+            </div>
+
+            <div class="border-b border-stone-100 pb-4 flex flex-col md:flex-row justify-between md:items-center gap-2">
+                <div>
+                    <span class="text-[11px] font-bold text-brand-500 uppercase tracking-widest">Paso 1 de 2</span>
+                    <h3 class="text-xl md:text-2xl font-serif font-bold text-stone-800">Formulario de Cotización</h3>
+                </div>
+                <p class="text-xs text-stone-500">Completa las especificaciones para armar tu solicitud exacta.</p>
+            </div>
+
+            <!-- RECORDATORIO DE REVISAR DISPONIBILIDAD DE FECHA -->
+            <div class="p-3.5 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-200 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-center gap-2.5 text-purple-900 font-medium">
+                    <div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <i class="fa-solid fa-calendar-check text-sm"></i>
+                    </div>
+                    <div>
+                        <strong class="block text-purple-950 font-bold">¡Recuerda revisar la disponibilidad antes de elegir tu fecha!</strong>
+                        <span class="text-[11px] text-purple-700">Verifica que tengamos lugar abierto para tu entrega antes de llenar el pedido.</span>
+                    </div>
+                </div>
+                <button type="button" onclick="openCalendarModal()" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl transition-all shrink-0 flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-calendar-days"></i> Ver Calendario
+                </button>
+            </div>
+
+            <!-- CONDICIONES GENERALES -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-pink-50/80 rounded-2xl border border-pink-100 text-xs">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white text-brand-600 flex items-center justify-center shadow-sm font-bold">
+                        <i class="fa-solid fa-comments text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-stone-500 font-semibold uppercase">Cotización a la Medida</span>
+                        <span class="font-bold text-brand-800 text-xs md:text-sm">Envía tu diseño y recibe precio exacto</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white text-brand-600 flex items-center justify-center shadow-sm font-bold">
+                        <i class="fa-regular fa-calendar-check text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-stone-500 font-semibold uppercase">Tiempo de Anticipación</span>
+                        <span id="displayMinDaysNotice" class="font-bold text-brand-800 text-xs md:text-sm">Mínimo 5 días hábiles</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMULARIO DE RECOPILACIÓN -->
+            <fieldset id="orderFormFieldset" class="space-y-6">
+                <form id="orderForm" onsubmit="handleReviewOrder(event)" class="space-y-6">
+
+                    <!-- DATOS DEL CLIENTE -->
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px]">1</span>
+                            Tus Datos de Contacto
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-700 mb-1">Nombre Completo *</label>
+                                <input type="text" id="custName" required placeholder="Ej. María González" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-700 mb-1">WhatsApp / Teléfono *</label>
+                                <input type="tel" id="custPhone" required placeholder="Ej. 8112345678" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <h4 class="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px]">2</span>
+                            Especificaciones del Pedido
+                        </h4>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-xs font-semibold text-stone-700">Fecha Requerida de Entrega *</label>
+                                    <button type="button" onclick="openCalendarModal()" class="text-[10px] font-bold text-brand-600 hover:underline">🔍 Ver Agenda</button>
+                                </div>
+                                <input type="date" id="orderDate" required onchange="checkDateAvailability(this.value)" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all font-medium">
+                                <span id="dateNotice" class="text-[10px] font-semibold block mt-1"></span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-700 mb-1">Temática / Personaje Deseado *</label>
+                                <input type="text" id="orderTheme" required placeholder="Ej. Mario Bros, Spiderman, Número 5 Rosa..." class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-700 mb-1">Nombre o Edad del Festejado (Opcional)</label>
+                                <input type="text" id="orderCelebrant" placeholder="Ej. Mateo - 4 Años" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-700 mb-1">Tamaño y Formato *</label>
+                                <select id="orderSize" required onchange="calculateLiveQuote()" class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all bg-white font-medium">
+                                    <!-- Opciones renderizadas por JS -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXTRAS Y ADICIONALES -->
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                                <span class="w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px]">3</span>
+                                Opciones Extras y Detalle (Puedes elegir más de una)
+                            </h4>
+                            <span class="text-[10px] font-semibold text-brand-600 bg-pink-50 px-2 py-0.5 rounded-md">Multiselección</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="extrasContainer">
+                            <!-- Renderizado dinámico de extras -->
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <h4 class="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px]">4</span>
+                            Método y Horario de Entrega
+                        </h4>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-center gap-3 p-3.5 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-pink-50/50 cursor-pointer text-xs font-semibold transition-all">
+                                <input type="radio" name="deliveryMethod" value="Recoger en Taller" checked onchange="toggleDeliveryMethod('Recoger en Taller')" class="accent-brand-600 w-4 h-4">
+                                <div>
+                                    <span class="block text-stone-800">🏬 Recoger en Taller</span>
+                                    <span class="text-[10px] text-stone-500 font-normal">Sin costo extra de transporte</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-3.5 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-pink-50/50 cursor-pointer text-xs font-semibold transition-all">
+                                <input type="radio" name="deliveryMethod" value="Envío a Domicilio" onchange="toggleDeliveryMethod('Envío a Domicilio')" class="accent-brand-600 w-4 h-4">
+                                <div>
+                                    <span class="block text-stone-800">🚚 Envío a Domicilio</span>
+                                    <span class="text-[10px] text-stone-500 font-normal">Se cotiza el envío según tu zona</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- DIRECCIÓN DE ENVÍO -->
+                        <div id="deliveryAddressSection" class="hidden p-4 rounded-2xl bg-pink-50/50 border border-pink-100 space-y-3">
+                            <span class="block text-xs font-bold text-brand-800">📍 Dirección Completa de Entrega</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-[11px] font-semibold text-stone-600 mb-1">Calle / Avenida *</label>
+                                    <input type="text" id="addrStreet" placeholder="Ej. Av. Universidad" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-stone-600 mb-1">Número Ext / Int *</label>
+                                    <input type="text" id="addrNumber" placeholder="Ej. #123 Int B" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs bg-white">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-stone-600 mb-1">Colonia / Fraccionamiento *</label>
+                                    <input type="text" id="addrColony" placeholder="Ej. Col. Anáhuac" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-stone-600 mb-1">Municipio / Estado *</label>
+                                    <input type="text" id="addrCity" placeholder="Ej. San Nicolás, N.L." class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HORARIO DE ENTREGA -->
+                        <div class="pt-1">
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Horario Preferido (<span id="scheduleLabelText">para Recoger en Taller</span>) *</label>
+                            <select id="orderTimeSlot" required class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all bg-white font-medium">
+                                <!-- Opciones renderizadas por JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- NOTAS Y DETALLES ADICIONALES -->
+                    <div class="space-y-2 pt-2">
+                        <label class="block text-xs font-semibold text-stone-700">Detalles Adicionales, Colores o Especificaciones</label>
+                        <textarea id="orderDetails" rows="3" placeholder="Escribe aquí si requieres colores específicos, cantidad de dulces estimada, o algún otro requerimiento..." class="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-pink-100 outline-none text-xs transition-all"></textarea>
+                    </div>
+
+                    <!-- RESUMEN EN TIEMPO REAL -->
+                    <div class="p-5 bg-gradient-to-r from-pink-500 to-brand-600 rounded-2xl text-white space-y-3 shadow-md">
+                        <div class="flex justify-between items-center text-xs border-b border-white/20 pb-2">
+                            <span class="uppercase tracking-wider font-semibold"><i class="fa-solid fa-list-check mr-1"></i> Resumen de tu Solicitud</span>
+                            <span class="bg-white/20 px-2 py-0.5 rounded text-[10px]">Cotización en WhatsApp</span>
+                        </div>
+                        <div class="space-y-1.5 text-xs text-pink-50">
+                            <p>📏 <strong>Tamaño:</strong> <span id="summarySelectedSize" class="text-white font-bold">Cargando...</span></p>
+                            <p>✨ <strong>Extras elegidos:</strong> <span id="summarySelectedExtras" class="text-amber-200 font-semibold">Ninguno</span></p>
+                        </div>
+                        <p class="text-[11px] text-pink-100 italic border-t border-white/10 pt-2">
+                            💬 Al dar clic abajo, armaremos un mensaje claro con tus datos para responderte por WhatsApp con el costo exacto.
+                        </p>
+                    </div>
+
+                    <button type="submit" id="submitOrderBtn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Revisar y Enviar Solicitud por WhatsApp
+                    </button>
+
+                </form>
+            </fieldset>
+        </section>
+    </main>
+
+    <footer class="bg-stone-900 text-stone-400 py-8 border-t border-stone-800 text-xs no-print">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <div>
+                <p id="footer-business-name" class="font-bold text-stone-200 text-sm">Mi Taller de Piñatas</p>
+                <p id="footer-business-subtitle" class="text-[11px]">Diseños exclusivos artesanales</p>
+            </div>
+            <p class="text-[11px] text-stone-500">
+                &copy; <span id="currentYear">2026</span> Sistema de Cotización & Agenda. Todos los derechos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <!-- LIGHTBOX / GALERÍA MODAL -->
+    <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm" onclick="closeImageLightbox()">
+        <div class="relative max-w-3xl w-full flex flex-col items-center space-y-3" onclick="event.stopPropagation()">
+            <button onclick="closeImageLightbox()" class="absolute -top-10 right-0 text-white hover:text-pink-400 text-2xl font-bold p-2 transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="rounded-2xl overflow-hidden shadow-2xl border border-white/10 max-h-[80vh] flex items-center justify-center bg-stone-950">
+                <img id="lightboxImg" src="" alt="Vista previa de piñata" class="max-h-[75vh] w-auto object-contain">
+            </div>
+            <div class="text-center text-white space-y-1">
+                <h4 id="lightboxTitle" class="font-serif font-bold text-lg text-pink-200">--</h4>
+                <p id="lightboxDesc" class="text-xs text-stone-300">--</p>
+                <button id="lightboxSelectBtn" class="mt-2 px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl transition-all shadow-lg">
+                    <i class="fa-solid fa-check mr-1"></i> Seleccionar este Modelo para Cotizar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: REVISIÓN DE SOLICITUD ANTES DE WHATSAPP -->
+    <div id="reviewModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border border-pink-100">
+            <button onclick="closeReviewModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 rounded-2xl bg-pink-100 text-brand-600 mx-auto flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+                <h3 class="text-lg font-serif font-bold text-stone-800">Confirma tu Solicitud</h3>
+                <p class="text-xs text-stone-500">Verifica los datos antes de iniciar el chat de WhatsApp.</p>
+            </div>
+
+            <div id="reviewDetailsContainer" class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2 text-stone-700">
+                <!-- Inyectado por JS -->
+            </div>
+
+            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-800 flex items-start gap-2">
+                <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
+                <span><strong>Aviso:</strong> Si tienes una foto de referencia de Pinterest o internet, podrás adjuntarla directamente en el chat que se abrirá.</span>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeReviewModal()" class="w-1/2 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all">
+                    Modificar
+                </button>
+                <button onclick="confirmAndSendWhatsApp()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-100">
+                    <i class="fa-brands fa-whatsapp"></i> Ir a WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CALENDARIO PÚBLICO -->
+    <div id="calendarModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative border border-pink-100">
+            <button onclick="closeCalendarModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+                <div>
+                    <h3 class="text-base font-serif font-bold text-stone-800">Calendario de Disponibilidad</h3>
+                    <p class="text-xs text-stone-500">Consulta los días con agenda abierta antes de hacer tu pedido</p>
+                </div>
+                <div class="flex gap-1">
+                    <button onclick="changeCalMonth(-1)" class="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-xs"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="calMonthLabel" class="text-xs font-bold px-2 py-1 bg-pink-50 text-brand-700 rounded-lg flex items-center">--</span>
+                    <button onclick="changeCalMonth(1)" class="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-xs"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-7 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+            </div>
+
+            <div id="publicCalGrid" class="grid grid-cols-7 gap-1.5 text-xs text-center">
+                <!-- Días renderizados por JS -->
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-stone-100 text-[10px] font-semibold">
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Disponible</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Poca Disponibilidad</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Agenda Llena / Cerrado</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOGIN ADMIN -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 rounded-2xl bg-stone-900 text-white mx-auto flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+                <h3 class="text-base font-serif font-bold text-stone-800">Panel Administrativo</h3>
+                <p class="text-xs text-stone-500">Ingresa tu PIN de acceso (Por defecto: 1234)</p>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-3">
+                <div>
+                    <input type="password" id="adminPinInput" placeholder="PIN de 4 dígitos" required class="w-full text-center px-4 py-2.5 rounded-xl border border-stone-200 focus:border-brand-500 outline-none text-sm font-mono tracking-widest">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-stone-900 hover:bg-black text-white font-bold text-xs rounded-xl transition-all">
+                    Ingresar al Panel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PANEL ADMIN -->
+    <div id="adminPanelModal" class="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl relative overflow-hidden border border-stone-200">
+            
+            <!-- Header Admin -->
+            <div class="p-4 bg-stone-900 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-gauge text-brand-400"></i>
+                    <div>
+                        <h3 class="text-sm font-bold">Panel de Control de Taller</h3>
+                        <p class="text-[10px] text-stone-400">Administra solicitudes, finanzas, calendario y horarios</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeAdminPanel()" class="w-7 h-7 rounded-lg bg-white/10 text-stone-300 hover:bg-white/20 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Métricas Rápidas -->
+            <div class="grid grid-cols-3 gap-2 p-3 bg-stone-100 border-b border-stone-200 text-xs shrink-0">
+                <div class="bg-white p-2.5 rounded-xl border border-stone-200 text-center">
+                    <span class="text-[10px] text-stone-400 uppercase block font-semibold">Total Solicitudes</span>
+                    <span id="metricTotalOrders" class="font-bold text-base text-stone-800">0</span>
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-stone-200 text-center">
+                    <span class="text-[10px] text-amber-500 uppercase block font-semibold">Pendientes</span>
+                    <span id="metricPendingOrders" class="font-bold text-base text-amber-600">0</span>
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-stone-200 text-center">
+                    <span class="text-[10px] text-emerald-500 uppercase block font-semibold">Confirmados</span>
+                    <span id="metricConfirmedOrders" class="font-bold text-base text-emerald-600">0</span>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex border-b border-stone-200 bg-stone-50 px-4 gap-2 text-xs font-semibold overflow-x-auto shrink-0">
+                <button onclick="switchAdminTab('orders')" id="tab-orders" class="py-3 px-3 text-brand-600 border-b-2 border-brand-600 flex items-center gap-1.5 whitespace-nowrap font-bold">
+                    <i class="fa-solid fa-list-check"></i> Pedidos (<span id="tabOrderCount">0</span>)
+                </button>
+                <button onclick="switchAdminTab('calendar')" id="tab-calendar" class="py-3 px-3 text-stone-500 hover:text-stone-800 flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-calendar-days"></i> Bloquear Fechas
+                </button>
+                <button onclick="switchAdminTab('sizes')" id="tab-sizes" class="py-3 px-3 text-stone-500 hover:text-stone-800 flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Tamaños y Formatos
+                </button>
+                <button onclick="switchAdminTab('extras')" id="tab-extras" class="py-3 px-3 text-stone-500 hover:text-stone-800 flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-puzzle-piece"></i> Catálogo de Extras
+                </button>
+                <button onclick="switchAdminTab('settings')" id="tab-settings" class="py-3 px-3 text-stone-500 hover:text-stone-800 flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-gear"></i> Ajustes y Horarios
+                </button>
+            </div>
+
+            <!-- Contenido de las pestañas -->
+            <div class="p-4 overflow-y-auto flex-1 space-y-4">
+
+                <!-- TAB 1: LISTA DE SOLICITUDES / PEDIDOS -->
+                <div id="adminTab-orders" class="space-y-3">
+                    <div class="flex flex-col sm:flex-row justify-between gap-2">
+                        <input type="text" id="adminSearchInput" onkeyup="renderAdminOrders()" placeholder="🔍 Buscar por cliente, folio o temática..." class="px-3 py-1.5 rounded-xl border border-stone-200 text-xs w-full sm:w-64">
+                        <select id="adminStatusFilter" onchange="renderAdminOrders()" class="px-3 py-1.5 rounded-xl border border-stone-200 text-xs bg-white">
+                            <option value="ALL">Todos los estatus</option>
+                            <option value="Pendiente">Pendientes</option>
+                            <option value="Confirmado">Confirmados</option>
+                            <option value="Entregado">Entregados</option>
+                            <option value="Cancelado">Cancelados</option>
+                        </select>
+                    </div>
+
+                    <div id="adminOrdersList" class="space-y-3">
+                        <!-- Pedidos renderizados dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- TAB 2: GESTIÓN DE DISPONIBILIDAD DE CALENDARIO -->
+                <div id="adminTab-calendar" class="space-y-4 hidden">
+                    <div class="bg-pink-50 p-3 rounded-2xl border border-pink-100 text-xs text-brand-900 space-y-1">
+                        <span class="font-bold block flex items-center gap-1"><i class="fa-solid fa-sliders text-brand-600"></i> Bloqueo Simple de Disponibilidad</span>
+                        <p class="text-[11px] text-stone-600">Selecciona una fecha en el calendario para cambiar rápidamente su estado (Disponible, Poca Disponibilidad o Agenda Llena).</p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span id="adminCalMonthLabel" class="font-bold text-xs text-stone-800">--</span>
+                        <div class="flex gap-1">
+                            <button onclick="changeAdminCalMonth(-1)" class="p-1 bg-stone-100 hover:bg-stone-200 rounded text-xs"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="changeAdminCalMonth(1)" class="p-1 bg-stone-100 hover:bg-stone-200 rounded text-xs"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                        <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                    </div>
+                    <div id="adminCalGrid" class="grid grid-cols-7 gap-1 text-xs text-center">
+                        <!-- Días del calendario admin -->
+                    </div>
+                </div>
+
+                <!-- TAB 3: TAMAÑOS Y FORMATOS -->
+                <div id="adminTab-sizes" class="space-y-4 hidden">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-stone-600">Catálogo de Tamaños y Formatos</h4>
+                            <p class="text-[11px] text-stone-400">Administra la lista de tamaños disponibles para los clientes</p>
+                        </div>
+                        <button onclick="addNewSizeItem()" class="px-3 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-xl hover:bg-brand-700">+ Agregar Tamaño</button>
+                    </div>
+                    <div id="adminSizesList" class="space-y-3">
+                        <!-- Renderizado por JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 4: EXTRAS Y ADICIONALES -->
+                <div id="adminTab-extras" class="space-y-4 hidden">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-stone-600">Catálogo de Opciones Extras</h4>
+                            <p class="text-[11px] text-stone-400">Agrega o modifica los detalles adicionales que el cliente puede solicitar</p>
+                        </div>
+                        <button onclick="addNewExtraItem()" class="px-3 py-1.5 bg-brand-600 text-white text-xs font-semibold rounded-xl hover:bg-brand-700">+ Agregar Extra</button>
+                    </div>
+                    <div id="adminExtrasList" class="space-y-3">
+                        <!-- Renderizado por JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 5: CONFIGURACIÓN GENERAL Y HORARIOS -->
+                <div id="adminTab-settings" class="space-y-5 hidden bg-white p-5 rounded-2xl border border-stone-200 text-xs">
+                    
+                    <!-- BLOQUE 1: AJUSTES GENERALES DEL TALLER -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-stone-800">Ajustes Generales del Taller</h4>
+                            <button onclick="saveGeneralSettings()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar Ajustes Generales
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-stone-700 mb-1">Nombre de la Piñatería / Negocio</label>
+                                <input type="text" id="cfgBusinessName" class="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-stone-700 mb-1">Subtítulo / Eslogan</label>
+                                <input type="text" id="cfgBusinessSubtitle" class="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-stone-700 mb-1">Número WhatsApp Recepción (Con código país)</label>
+                                <input type="tel" id="cfgPhone" placeholder="Ej. 5218112345678" class="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-stone-700 mb-1">PIN de Acceso Administrativo</label>
+                                <input type="text" id="cfgAdminPin" class="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs font-mono">
+                            </div>
+                        </div>
+
+                        <!-- DIRECCIÓN PRIVADA DEL TALLER -->
+                        <div class="p-3 bg-pink-50/60 rounded-xl border border-pink-100 space-y-2">
+                            <label class="block font-bold text-brand-900 text-xs">📍 Dirección Privada / Ubicación GPS del Taller (Para enviar por privado)</label>
+                            <p class="text-[11px] text-stone-500">Esta dirección no aparecerá pública en la web; se enviará con el botón "Enviar Ubicación Privada".</p>
+                            <input type="text" id="cfgPrivateAddress" placeholder="Ej. Calle Morelos #456, Col. Centro, Mty. Link Google Maps: https://maps.app.goo.gl/..." class="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs bg-white font-medium">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-stone-700 mb-1">Datos Bancarios / Cuenta para Anticipos (Transferencia)</label>
+                            <textarea id="cfgBankDetails" rows="2" placeholder="Ej. Banco BBVA - CLABE: 012180001234567890 - Titular: Taller Piñatas" class="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs font-mono"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-stone-700 mb-1">Días Mínimos de Anticipación</label>
+                            <input type="number" id="cfgMinDays" min="1" max="30" class="w-full px-3 py-2 border border-stone-200 rounded-xl text-xs">
+                        </div>
+
+                        <!-- RECEPCIÓN DE PEDIDOS Y DÍAS HÁBILES -->
+                        <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-3">
+                            <span class="block font-bold text-stone-800 text-xs">🗓️ Días y Horarios para Recibir Pedidos Nuevos</span>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="cfgLimitOrderDays" class="w-4 h-4 accent-brand-600 rounded">
+                                <label for="cfgLimitOrderDays" class="font-semibold text-stone-700">Restringir días/horas de toma de pedidos en el formulario</label>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] pt-1">
+                                <label class="flex items-center gap-1.5"><input type="checkbox" id="day-1" class="day-check accent-brand-600"> Lunes</label>
+                                <label class="flex items-center gap-1.5"><input type="checkbox" id="day-2" class="day-check accent-brand-600"> Martes</label>
+                                <label class="flex items-center gap-1.5"><input type="checkbox" id="day-3" class="day-check accent-brand-600"> Miércoles</label>
+                                <label class="flex items-center gap-1.5"><input type="checkbox" id="day-4" class="day-check accent-brand-600"> Jueves</label>
+                                <label class="flex items-center gap-1.5"><input type="checkbox" id="day-5" class="day-check accent-brand-600"> Viernes</label>
+                                <label class="flex items-center gap-1.5"><input type="checkbox" id="day-6" class="day-check accent-brand-600"> Sábado</label>
+                                <label class="flex items-center gap-1.5"><input type="checkbox" id="day-0" class="day-check accent-brand-600"> Domingo</label>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                                <div>
+                                    <label class="block text-[11px] text-stone-600 font-semibold mb-1">Hora Inicio Recepción</label>
+                                    <input type="time" id="cfgOrderTimeStart" value="09:00" class="w-full px-3 py-1.5 border border-stone-200 rounded-xl bg-white text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-stone-600 font-semibold mb-1">Hora Cierre Recepción</label>
+                                    <input type="time" id="cfgOrderTimeEnd" value="19:00" class="w-full px-3 py-1.5 border border-stone-200 rounded-xl bg-white text-xs">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BOTÓN DE GUARDAR AJUSTES GENERALES -->
+                        <div class="pt-1">
+                            <button onclick="saveGeneralSettings()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar Ajustes Generales del Taller
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE 2: CONFIGURACIÓN DE HORARIOS DE ENTREGA -->
+                    <div class="border-t border-stone-200 pt-5 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h5 class="font-bold text-xs uppercase tracking-wider text-stone-700">🏬 Horarios para Recoger en Taller</h5>
+                                <p class="text-[11px] text-stone-500">Bloques de horarios disponibles para recolección en tienda</p>
+                            </div>
+                            <button type="button" onclick="addScheduleItem('pickup')" class="px-2.5 py-1 bg-pink-100 text-brand-700 hover:bg-pink-200 rounded-lg text-xs font-bold transition-all">
+                                + Agregar Horario
+                            </button>
+                        </div>
+                        <div id="adminPickupSchedulesList" class="space-y-2">
+                            <!-- Renderizado dinámicamente -->
+                        </div>
+                    </div>
+
+                    <div class="border-t border-stone-200 pt-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h5 class="font-bold text-xs uppercase tracking-wider text-stone-700">🚚 Horarios para Envío a Domicilio</h5>
+                                <p class="text-[11px] text-stone-500">Bloques de horarios programados para entregas a domicilio</p>
+                            </div>
+                            <button type="button" onclick="addScheduleItem('delivery')" class="px-2.5 py-1 bg-pink-100 text-brand-700 hover:bg-pink-200 rounded-lg text-xs font-bold transition-all">
+                                + Agregar Horario
+                            </button>
+                        </div>
+                        <div id="adminDeliverySchedulesList" class="space-y-2">
+                            <!-- Renderizado dinámicamente -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COTIZACIÓN Y ANTICIPO (ENVIAR DATOS PARA PAGO DE ANTICIPO) -->
+    <div id="quoteModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border border-pink-100">
+            <button onclick="closeQuoteModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 mx-auto flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <h3 class="text-base font-serif font-bold text-stone-800">Enviar Cotización y Anticipo</h3>
+                <p class="text-xs text-stone-500" id="quoteModalFolioLabel">Folio: --</p>
+            </div>
+
+            <form onsubmit="handleSendQuoteWA(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="quoteOrderId">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Costo Total ($) *</label>
+                        <input type="number" id="quoteTotal" required min="0" step="1" placeholder="Ej. 800" oninput="recalcQuoteModal('amount')" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-bold text-stone-800">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">% Anticipo Requerido</label>
+                        <select id="quotePct" onchange="recalcQuoteModal('pct')" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-bold bg-white text-stone-800">
+                            <option value="50">50% del Total</option>
+                            <option value="40">40% del Total</option>
+                            <option value="30">30% del Total</option>
+                            <option value="60">60% del Total</option>
+                            <option value="100">100% (Pago Total)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Monto Anticipo ($)</label>
+                        <input type="number" id="quoteDeposit" required min="0" step="1" placeholder="Ej. 400" oninput="recalcQuoteModal('manualDeposit')" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-bold text-emerald-700">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Restante al Entregar ($)</label>
+                        <input type="number" id="quoteBalance" readonly class="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-100 text-xs font-bold text-brand-700">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-stone-700 mb-1">Datos Bancarios a Adjuntar</label>
+                    <textarea id="quoteBankDetails" rows="3" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-mono"></textarea>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
+                        <i class="fa-brands fa-whatsapp text-base"></i> Enviar Cotización y Cuenta de Anticipo por WA
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ESTADO DE FINANZAS (SOLO MUESTRA RESTANTE, SIN INFORMACIÓN BANCARIA) -->
+    <div id="financeModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border border-pink-100">
+            <button onclick="closeFinanceModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+                <h3 class="text-base font-serif font-bold text-stone-800">Estado Financiero de la Orden</h3>
+                <p class="text-xs text-stone-500" id="finModalFolioLabel">Folio: --</p>
+            </div>
+
+            <form onsubmit="handleSaveFinance(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="finOrderId">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Total Pedido ($) *</label>
+                        <input type="number" id="finTotal" required min="0" step="1" placeholder="Ej. 850" oninput="recalcFinanceModal()" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-bold text-stone-800">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Anticipo Pagado ($) *</label>
+                        <input type="number" id="finDeposit" required min="0" step="1" placeholder="Ej. 400" oninput="recalcFinanceModal()" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-bold text-emerald-700">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Restante ($)</label>
+                        <input type="number" id="finBalance" readonly class="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-100 text-xs font-bold text-brand-700">
+                    </div>
+                </div>
+
+                <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between">
+                    <div>
+                        <span class="block font-bold text-stone-800 text-xs">Estatus de Pago</span>
+                        <span id="finStatusText" class="text-[11px] font-semibold text-stone-500">Pendiente de liquidar</span>
+                    </div>
+                    <button type="button" onclick="markAsPaidInModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center gap-1">
+                        <i class="fa-solid fa-check-double"></i> Marcar Pagado ($0)
+                    </button>
+                </div>
+
+                <div class="p-3 bg-pink-50/60 rounded-xl border border-pink-100 text-[11px] text-stone-600">
+                    <p class="font-semibold text-brand-900"><i class="fa-solid fa-shield-halved text-brand-600 mr-1"></i> Envío de Estado de Cuenta Privado</p>
+                    <span>El mensaje enviado por WhatsApp indicará únicamente el resto pendiente a pagar al recibir el producto (sin incluir datos bancarios).</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button type="submit" class="py-2.5 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs rounded-xl transition-all">
+                        Guardar Finanza
+                    </button>
+                    <button type="button" onclick="sendFinanceWAFromModal()" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Enviar Saldo Restante por WA
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL FICHA IMPRESA PARA TALLER -->
+    <div id="printModal" class="fixed inset-0 bg-stone-900/80 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white p-6 rounded-2xl max-w-lg w-full space-y-4 text-black font-sans shadow-2xl relative">
+            <div class="no-print flex justify-between items-center border-b pb-2">
+                <span class="font-bold text-xs text-stone-500">Vista de Impresión / Ficha de Producción</span>
+                <button onclick="closePrintModal()" class="text-xs bg-stone-200 hover:bg-stone-300 px-3 py-1 rounded-lg">Cerrar</button>
+            </div>
+
+            <!-- TICKET IMPRESO -->
+            <div id="printableContent" class="space-y-3 border-2 border-dashed border-stone-300 p-4 rounded-xl">
+                <div class="text-center border-b border-black pb-2">
+                    <h2 class="font-bold text-base uppercase tracking-wider">FICHA DE PRODUCCIÓN DE TALLER</h2>
+                    <p id="pTkFolio" class="font-mono text-sm font-bold">FOLIO: COT-0000</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <span class="block text-[10px] text-stone-500 uppercase font-bold">FECHA Y HORARIO</span>
+                        <span id="pTkDate" class="font-bold text-sm">--/--/----</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-stone-500 uppercase font-bold">CLIENTE</span>
+                        <span id="pTkCustomer" class="font-bold">--</span> (<span id="pTkPhone">--</span>)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs border-t border-b py-2 border-stone-200">
+                    <div>
+                        <span class="block text-[10px] text-stone-500 uppercase font-bold">TEMÁTICA</span>
+                        <span id="pTkTheme" class="font-bold text-sm">--</span>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] text-stone-500 uppercase font-bold">FESTEJADO / EDAD</span>
+                        <span id="pTkCelebrant" class="font-bold">--</span>
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <span class="block text-[10px] text-stone-500 uppercase font-bold">TAMAÑO Y FORMATO</span>
+                    <span id="pTkSize" class="font-bold text-sm">--</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs bg-pink-50 p-3 rounded-xl border border-pink-200">
+                    <div>
+                        <span class="text-[10px] text-stone-500 font-bold block">TIPO DE COTIZACIÓN</span>
+                        <span class="font-bold text-stone-800 text-sm">A la medida (Custom)</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-stone-500 font-bold block">ESTATUS</span>
+                        <span id="pTkDeposit" class="font-bold text-brand-700 text-sm">Ficha de Taller</span>
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <span class="block text-[10px] font-bold text-stone-500 uppercase">EXTRAS SOLICITADOS</span>
+                    <p id="pTkExtras" class="font-semibold text-stone-800">--</p>
+                </div>
+
+                <div class="text-xs">
+                    <span class="block text-[10px] font-bold text-stone-500 uppercase">MÉTODO Y DIRECCIÓN DE ENTREGA</span>
+                    <p id="pTkDelivery" class="font-semibold text-stone-800">--</p>
+                </div>
+
+                <div class="text-xs">
+                    <span class="block text-[10px] font-bold text-stone-500 uppercase">NOTAS / ESPECIFICACIONES</span>
+                    <p id="pTkNotes" class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 font-mono text-[11px] text-stone-700">--</p>
+                </div>
+            </div>
+
+            <!-- BOTONES ACCIÓN MODAL IMPRESIÓN -->
+            <div class="no-print flex justify-end gap-2 pt-2">
+                <button onclick="sendPrintTicketWA()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Enviar Ficha por WA
+                </button>
+                <button onclick="window.print()" class="px-4 py-2 bg-stone-900 text-white rounded-xl text-xs font-bold hover:bg-black flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> Imprimir Ficha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR SOLICITUD DESDE ADMIN -->
+    <div id="editOrderModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative border border-stone-200 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeEditOrderModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-stone-100 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-serif font-bold text-stone-800">Editar Solicitud</h3>
+                    <p class="text-xs text-stone-500" id="editModalFolioLabel">Folio: --</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleSaveEditedOrder(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="editOrderId">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Nombre del Cliente *</label>
+                        <input type="text" id="editCustName" required class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">WhatsApp / Teléfono *</label>
+                        <input type="tel" id="editCustPhone" required class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Fecha de Entrega *</label>
+                        <input type="date" id="editOrderDate" required class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-semibold">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-stone-700 mb-1">Estatus del Pedido *</label>
+                        <select id="editOrderStatus" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-semibold bg-white">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-stone-700 mb-1">Temática / Personaje *</label>
+                    <input type="text" id="editOrderTheme" required class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-stone-700 mb-1">Festejado / Edad</label>
+                    <input type="text" id="editOrderCelebrant" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-stone-700 mb-1">Detalles / Notas Adicionales</label>
+                    <textarea id="editOrderNotes" rows="2" class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs"></textarea>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditOrderModal()" class="w-1/2 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl">Cancelar</button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LÓGICA PRINCIPAL -->
+    <script>
+        // ESTADO GLOBAL Y CONFIGURACIÓN POR DEFECTO
+        const DEFAULT_SETTINGS = {
+            businessName: "Mi Taller de Piñatas",
+            businessSubtitle: "Piñatas Artesanales y Personalizadas",
+            phone: "5218112345678",
+            adminPin: "1234",
+            privateAddress: "Calle Principal #123, Col. Centro (A 2 cuadras de la plaza). Ubi Google Maps: https://maps.app.goo.gl/pinataTaller",
+            bankDetails: "Banco BBVA\nCuenta: 0123456789\nCLABE: 012180001234567890\nTitular: Taller de Piñatas",
+            minDaysNotice: 5,
+            limitOrderDays: false,
+            orderDays: { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 0: false },
+            orderTimeStart: "09:00",
+            orderTimeEnd: "19:00",
+            pickupSchedules: ["Morning Slot (10:00 AM - 1:00 PM)", "Afternoon Slot (3:00 PM - 7:00 PM)"],
+            deliverySchedules: ["Rango Medio Día (11:00 AM - 2:00 PM)", "Rango Tarde (4:00 PM - 7:00 PM)"]
+        };
+
+        const DEFAULT_SIZES = [
+            { id: "sz1", name: "Chica / Mini (50 - 60 cm)", desc: "Ideal para mesas de dulces o festejos íntimos (10-15 niños)" },
+            { id: "sz2", name: "Mediana Estándar (70 - 80 cm)", desc: "La más vendida, ideal para fiestas tradicionales (15-25 niños)" },
+            { id: "sz3", name: "Grande Especial (90 - 100 cm)", desc: "Gran impacto visual con espacio para bastantes dulces (25-40 niños)" },
+            { id: "sz4", name: "JUMBO / XXL (110 - 120 cm)", desc: "Pieza monumental para eventos grandes y sesiones de fotos" }
+        ];
+
+        const DEFAULT_EXTRAS = [
+            { id: "ex1", name: "Palo Decorado Temático", desc: "Forrado a juego con la piñata" },
+            { id: "ex2", name: "Caja de Dulces Surtidos Extra", desc: "Golosinas empaquetadas listas para rellenar" },
+            { id: "ex3", name: "Listones de Tirar / Apertura Segura", desc: "Ideal para niños pequeños sin usar palo" },
+            { id: "ex4", name: "Detalles en Escarcha o Glitter Gold", desc: "Acentúa los acabados brillantes" }
+        ];
+
+        // 4 MODELOS DESTACADOS CON IMÁGENES
+        const FEATURED_CATALOG = [
+            {
+                id: "cat1",
+                title: "Personajes Animados 3D",
+                desc: "Relieve tridimensional completo con acabados en papel crepe de alta textura.",
+                img: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=600&q=80",
+                recommendedSize: "sz2"
+            },
+            {
+                id: "cat2",
+                title: "Números Decorados & Florales",
+                desc: "Ideal para cumpleaños. Personalizable con flores de papel, temática de princesa o superhéroe.",
+                img: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80",
+                recommendedSize: "sz2"
+            },
+            {
+                id: "cat3",
+                title: "Estrellas y Picos Tradicionales",
+                desc: "Estilo mexicano clásico metálico reluciente con picos dorados y listones brillantes.",
+                img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80",
+                recommendedSize: "sz3"
+            },
+            {
+                id: "cat4",
+                title: "Temáticas Especiales & Figuras Custom",
+                desc: "Cualquier forma, coche, castillo o logo elaborado meticulosamente a mano.",
+                img: "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=600&q=80",
+                recommendedSize: "sz3"
+            }
+        ];
+
+        // INICIALIZACIÓN DE LOCAL STORAGE
+        let appSettings = JSON.parse(localStorage.getItem('pinata_settings')) || DEFAULT_SETTINGS;
+        let appSizes = JSON.parse(localStorage.getItem('pinata_sizes')) || DEFAULT_SIZES;
+        let appExtras = JSON.parse(localStorage.getItem('pinata_extras')) || DEFAULT_EXTRAS;
+        let appOrders = JSON.parse(localStorage.getItem('pinata_orders')) || [];
+        let blockedDates = JSON.parse(localStorage.getItem('pinata_blocked_dates')) || {};
+
+        let currentCalDate = new Date();
+        let adminCalDate = new Date();
+        let currentDraftOrder = null;
+
+        // AL CARGAR LA PÁGINA
+        document.addEventListener('DOMContentLoaded', () => {
+            updateBrandInfo();
+            renderCatalog();
+            renderFormOptions();
+            setupMinDateInPicker();
+            checkOrderingHoursAvailability();
+            renderPublicCalendar();
+            
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        });
+
+        // NOTIFICACIONES TOAST
+        function showToast(msg, iconClass = "fa-circle-info") {
+            const toast = document.getElementById('toastNotification');
+            const icon = document.getElementById('toastIcon');
+            const txt = document.getElementById('toastMsg');
+            
+            icon.className = `fa-solid ${iconClass} text-pink-400`;
+            txt.textContent = msg;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+
+        function updateBrandInfo() {
+            document.getElementById('brand-title').textContent = appSettings.businessName;
+            document.getElementById('brand-subtitle').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span> ${appSettings.businessSubtitle}`;
+            document.getElementById('footer-business-name').textContent = appSettings.businessName;
+            document.getElementById('footer-business-subtitle').textContent = appSettings.businessSubtitle;
+            document.getElementById('displayMinDaysNotice').textContent = `Mínimo ${appSettings.minDaysNotice} días hábiles`;
+        }
+
+        // CONTROL DE HORARIOS Y DÍAS DE TOMA DE PEDIDOS (BLOQUEO DE FORMULARIO)
+        function checkOrderingHoursAvailability() {
+            const banner = document.getElementById('orderStatusBanner');
+            const bannerText = document.getElementById('orderStatusBannerText');
+            const fieldset = document.getElementById('orderFormFieldset');
+            const submitBtn = document.getElementById('submitOrderBtn');
+
+            if (!appSettings.limitOrderDays) {
+                banner.classList.add('hidden');
+                fieldset.removeAttribute('disabled');
+                if (submitBtn) submitBtn.disabled = false;
+                return;
+            }
+
+            const now = new Date();
+            const currentDayIndex = now.getDay(); // 0 = Domingo, 1 = Lunes...
+            const dayAllowed = appSettings.orderDays ? appSettings.orderDays[currentDayIndex] : true;
+
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+            const [sH, sM] = (appSettings.orderTimeStart || "09:00").split(':').map(Number);
+            const [eH, eM] = (appSettings.orderTimeEnd || "19:00").split(':').map(Number);
+            const startMinutes = sH * 60 + sM;
+            const endMinutes = eH * 60 + eM;
+
+            const timeAllowed = nowMinutes >= startMinutes && nowMinutes <= endMinutes;
+
+            const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+            const allowedDaysText = Object.keys(appSettings.orderDays || {})
+                                        .filter(k => appSettings.orderDays[k])
+                                        .map(k => dayNames[k])
+                                        .join(', ');
+
+            if (!dayAllowed || !timeAllowed) {
+                banner.classList.remove('hidden');
+                bannerText.innerHTML = `Horarios de atención para recibir nuevos pedidos: <strong>${allowedDaysText || 'Días seleccionados'}</strong> de <strong>${appSettings.orderTimeStart}</strong> a <strong>${appSettings.orderTimeEnd}</strong>. En este momento el formulario se encuentra cerrado. Por favor intenta dentro del horario indicado.`;
+                
+                // Deshabilitar el formulario para que no se pueda llenar ni enviar
+                fieldset.setAttribute('disabled', 'true');
+                if (submitBtn) submitBtn.disabled = true;
+            } else {
+                banner.classList.add('hidden');
+                fieldset.removeAttribute('disabled');
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        }
+
+        // RENDERIZAR GALERÍA DE 4 MODELOS CON BOTÓN DE VER Y SELECCIONAR
+        function renderCatalog() {
+            const container = document.getElementById('catalog-grid');
+            container.innerHTML = '';
+
+            FEATURED_CATALOG.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-pink-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group";
+                card.innerHTML = `
+                    <div class="relative h-48 overflow-hidden bg-stone-100 cursor-pointer" onclick="openImageLightbox('${item.img}', '${item.title}', '${item.desc}', '${item.recommendedSize}')">
+                        <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                        <span class="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
+                            <i class="fa-solid fa-expand"></i> Ampliar
+                        </span>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                        <div>
+                            <h4 class="font-serif font-bold text-stone-800 text-sm group-hover:text-brand-600 transition-colors">${item.title}</h4>
+                            <p class="text-[11px] text-stone-500 mt-1 leading-relaxed">${item.desc}</p>
+                        </div>
+                        <button onclick="selectCatalogItem('${item.title}', '${item.recommendedSize}')" class="w-full py-2 bg-pink-50 hover:bg-brand-600 hover:text-white text-brand-700 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 border border-pink-200">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Cotizar este Modelo
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openImageLightbox(imgUrl, title, desc, recSize) {
+            document.getElementById('lightboxImg').src = imgUrl;
+            document.getElementById('lightboxTitle').textContent = title;
+            document.getElementById('lightboxDesc').textContent = desc;
+            
+            const btn = document.getElementById('lightboxSelectBtn');
+            btn.onclick = () => {
+                closeImageLightbox();
+                selectCatalogItem(title, recSize);
+            };
+
+            document.getElementById('imageLightboxModal').classList.remove('hidden');
+        }
+
+        function closeImageLightbox() {
+            document.getElementById('imageLightboxModal').classList.add('hidden');
+        }
+
+        function selectCatalogItem(themeName, sizeId) {
+            document.getElementById('orderTheme').value = themeName;
+            if (sizeId && document.getElementById('orderSize')) {
+                document.getElementById('orderSize').value = sizeId;
+            }
+            calculateLiveQuote();
+            document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
+            showToast(`Cargado "${themeName}" en el formulario`, "fa-wand-magic-sparkles");
+        }
+
+        function renderFormOptions() {
+            const sizeSelect = document.getElementById('orderSize');
+            sizeSelect.innerHTML = appSizes.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+            const extrasContainer = document.getElementById('extrasContainer');
+            extrasContainer.innerHTML = appExtras.map(ex => `
+                <label class="flex items-start gap-2.5 p-3 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-pink-50/40 cursor-pointer transition-all">
+                    <input type="checkbox" name="orderExtra" value="${ex.id}" onchange="calculateLiveQuote()" class="mt-0.5 accent-brand-600 w-4 h-4 rounded">
+                    <div>
+                        <span class="block text-xs font-semibold text-stone-800">${ex.name}</span>
+                        <span class="text-[10px] text-stone-500">${ex.desc}</span>
+                    </div>
+                </label>
+            `).join('');
+
+            toggleDeliveryMethod('Recoger en Taller');
+        }
+
+        function toggleDeliveryMethod(method) {
+            const addrSec = document.getElementById('deliveryAddressSection');
+            const schedLabel = document.getElementById('scheduleLabelText');
+            const selectTime = document.getElementById('orderTimeSlot');
+
+            if (method === 'Envío a Domicilio') {
+                addrSec.classList.remove('hidden');
+                schedLabel.textContent = "para Entrega a Domicilio";
+                selectTime.innerHTML = appSettings.deliverySchedules.map(s => `<option value="${s}">${s}</option>`).join('');
+            } else {
+                addrSec.classList.add('hidden');
+                schedLabel.textContent = "para Recoger en Taller";
+                selectTime.innerHTML = appSettings.pickupSchedules.map(s => `<option value="${s}">${s}</option>`).join('');
+            }
+        }
+
+        function setupMinDateInPicker() {
+            const dateInput = document.getElementById('orderDate');
+            const minDays = parseInt(appSettings.minDaysNotice) || 5;
+            const today = new Date();
+            today.setDate(today.getDate() + minDays);
+            
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            dateInput.min = `${yyyy}-${mm}-${dd}`;
+        }
+
+        function checkDateAvailability(dateStr) {
+            const notice = document.getElementById('dateNotice');
+            if (!dateStr) return;
+
+            const status = blockedDates[dateStr];
+            if (status === 'FULL') {
+                notice.textContent = '❌ Agenda Llena en esta fecha. Elige otra disponible.';
+                notice.className = 'text-[10px] font-bold text-rose-600 block mt-1';
+            } else if (status === 'BUSY') {
+                notice.textContent = '⚠️ Poca disponibilidad en esta fecha.';
+                notice.className = 'text-[10px] font-bold text-amber-600 block mt-1';
+            } else {
+                notice.textContent = '✅ Fecha con disponibilidad abierta.';
+                notice.className = 'text-[10px] font-bold text-emerald-600 block mt-1';
+            }
+        }
+
+        function calculateLiveQuote() {
+            const sizeId = document.getElementById('orderSize').value;
+            const sizeObj = appSizes.find(s => s.id === sizeId);
+            
+            document.getElementById('summarySelectedSize').textContent = sizeObj ? sizeObj.name : "No seleccionado";
+
+            const checkedExtras = Array.from(document.querySelectorAll('input[name="orderExtra"]:checked'));
+            if (checkedExtras.length === 0) {
+                document.getElementById('summarySelectedExtras').textContent = "Ninguno";
+            } else {
+                const names = checkedExtras.map(cb => {
+                    const ex = appExtras.find(e => e.id === cb.value);
+                    return ex ? ex.name : "";
+                }).join(', ');
+                document.getElementById('summarySelectedExtras').textContent = names;
+            }
+        }
+
+        // REVISAR Y REGISTRAR SOLICITUD
+        function handleReviewOrder(e) {
+            e.preventDefault();
+
+            // Verificar disponibilidad de fecha
+            const chosenDate = document.getElementById('orderDate').value;
+            if (blockedDates[chosenDate] === 'FULL') {
+                showToast("La fecha elegida está llena. Revisa el calendario para elegir otro día.", "fa-circle-xmark");
+                return;
+            }
+
+            const delMethod = document.querySelector('input[name="deliveryMethod"]:checked').value;
+            let fullAddress = "N/A - Recoge en Taller";
+
+            if (delMethod === 'Envío a Domicilio') {
+                const st = document.getElementById('addrStreet').value.trim();
+                const num = document.getElementById('addrNumber').value.trim();
+                const col = document.getElementById('addrColony').value.trim();
+                const ct = document.getElementById('addrCity').value.trim();
+
+                if (!st || !num || !col || !ct) {
+                    showToast("Por favor completa la dirección completa de envío.", "fa-triangle-exclamation");
+                    return;
+                }
+                fullAddress = `${st} #${num}, Col. ${col}, ${ct}`;
+            }
+
+            const sizeObj = appSizes.find(s => s.id === document.getElementById('orderSize').value);
+            const checkedExtras = Array.from(document.querySelectorAll('input[name="orderExtra"]:checked'))
+                                       .map(cb => appExtras.find(e => e.id === cb.value)?.name)
+                                       .filter(Boolean);
+
+            const folio = 'COT-' + Math.floor(1000 + Math.random() * 9000);
+
+            currentDraftOrder = {
+                id: Date.now().toString(),
+                folio: folio,
+                custName: document.getElementById('custName').value.trim(),
+                custPhone: document.getElementById('custPhone').value.trim(),
+                orderDate: chosenDate,
+                theme: document.getElementById('orderTheme').value.trim(),
+                celebrant: document.getElementById('orderCelebrant').value.trim() || 'No especificado',
+                sizeName: sizeObj ? sizeObj.name : 'Estándar',
+                extras: checkedExtras.length > 0 ? checkedExtras.join(', ') : 'Sin extras',
+                deliveryMethod: delMethod,
+                address: fullAddress,
+                timeSlot: document.getElementById('orderTimeSlot').value,
+                notes: document.getElementById('orderDetails').value.trim() || 'Sin notas especiales',
+                status: 'Pendiente',
+                createdAt: new Date().toISOString(),
+                total: 0,
+                deposit: 0,
+                balance: 0
+            };
+
+            // Mostrar modal de revisión
+            const reviewContainer = document.getElementById('reviewDetailsContainer');
+            reviewContainer.innerHTML = `
+                <p><strong>Folio:</strong> ${currentDraftOrder.folio}</p>
+                <p><strong>Cliente:</strong> ${currentDraftOrder.custName} (${currentDraftOrder.custPhone})</p>
+                <p><strong>Fecha Entrega:</strong> ${currentDraftOrder.orderDate}</p>
+                <p><strong>Temática:</strong> ${currentDraftOrder.theme}</p>
+                <p><strong>Festejado:</strong> ${currentDraftOrder.celebrant}</p>
+                <p><strong>Tamaño:</strong> ${currentDraftOrder.sizeName}</p>
+                <p><strong>Extras:</strong> ${currentDraftOrder.extras}</p>
+                <p><strong>Método Entrega:</strong> ${currentDraftOrder.deliveryMethod}</p>
+                <p><strong>Horario:</strong> ${currentDraftOrder.timeSlot}</p>
+                ${delMethod === 'Envío a Domicilio' ? `<p><strong>Dirección:</strong> ${currentDraftOrder.address}</p>` : ''}
+            `;
+
+            document.getElementById('reviewModal').classList.remove('hidden');
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.add('hidden');
+        }
+
+        function confirmAndSendWhatsApp() {
+            if (!currentDraftOrder) return;
+
+            appOrders.unshift(currentDraftOrder);
+            localStorage.setItem('pinata_orders', JSON.stringify(appOrders));
+
+            let text = `🎉 *SOLICITUD DE COTIZACIÓN DE PIÑATA* 🎉\n`;
+            text += `*Folio:* ${currentDraftOrder.folio}\n\n`;
+            text += `👤 *Cliente:* ${currentDraftOrder.custName}\n`;
+            text += `📱 *Tel:* ${currentDraftOrder.custPhone}\n`;
+            text += `📅 *Fecha Requerida:* ${currentDraftOrder.orderDate}\n`;
+            text += `🎨 *Temática:* ${currentDraftOrder.theme}\n`;
+            text += `🎈 *Festejado/Edad:* ${currentDraftOrder.celebrant}\n`;
+            text += `📏 *Tamaño:* ${currentDraftOrder.sizeName}\n`;
+            text += `✨ *Extras:* ${currentDraftOrder.extras}\n`;
+            text += `🚚 *Método:* ${currentDraftOrder.deliveryMethod}\n`;
+            text += `⏰ *Horario:* ${currentDraftOrder.timeSlot}\n`;
+            if (currentDraftOrder.deliveryMethod === 'Envío a Domicilio') {
+                text += `📍 *Dirección:* ${currentDraftOrder.address}\n`;
+            }
+            text += `📝 *Notas:* ${currentDraftOrder.notes}\n\n`;
+            text += `_Quedo al pendiente del costo total y datos para el anticipo. ¡Gracias!_`;
+
+            const url = `https://wa.me/${appSettings.phone}?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+
+            closeReviewModal();
+            document.getElementById('orderForm').reset();
+            calculateLiveQuote();
+            showToast("Solicitud registrada y enviada a WhatsApp", "fa-check-double");
+        }
+
+        // CALENDARIO PÚBLICO
+        function openCalendarModal() {
+            renderPublicCalendar();
+            document.getElementById('calendarModal').classList.remove('hidden');
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.add('hidden');
+        }
+
+        function changeCalMonth(delta) {
+            currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+            renderPublicCalendar();
+        }
+
+        function renderPublicCalendar() {
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
+            
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('calMonthLabel').textContent = `${monthNames[month]} ${year}`;
+
+            const grid = document.getElementById('publicCalGrid');
+            grid.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayEl = document.createElement('div');
+                
+                let bgClass = "bg-emerald-100 text-emerald-800 font-semibold";
+                const status = blockedDates[dayStr];
+                
+                if (status === 'FULL') {
+                    bgClass = "bg-rose-500 text-white font-bold";
+                } else if (status === 'BUSY') {
+                    bgClass = "bg-amber-400 text-stone-900 font-bold";
+                }
+
+                dayEl.className = `p-2 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all ${bgClass}`;
+                dayEl.innerHTML = `<span class="text-xs">${d}</span>`;
+                grid.appendChild(dayEl);
+            }
+        }
+
+        // ACCESO ADMINISTRATIVO
+        function openAdminModal() {
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === appSettings.adminPin) {
+                closeAdminModal();
+                document.getElementById('adminPinInput').value = '';
+                openAdminPanel();
+            } else {
+                showToast("PIN Incorrecto. Intenta de nuevo.", "fa-triangle-exclamation");
+            }
+        }
+
+        function openAdminPanel() {
+            document.getElementById('adminPanelModal').classList.remove('hidden');
+            switchAdminTab('orders');
+            renderAdminOrders();
+            renderAdminSettings();
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminPanelModal').classList.add('hidden');
+        }
+
+        function switchAdminTab(tabName) {
+            ['orders', 'calendar', 'sizes', 'extras', 'settings'].forEach(t => {
+                document.getElementById(`adminTab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.classList.remove('text-brand-600', 'border-b-2', 'border-brand-600', 'font-bold');
+                    btn.classList.add('text-stone-500');
+                }
+            });
+
+            document.getElementById(`adminTab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('text-brand-600', 'border-b-2', 'border-brand-600', 'font-bold');
+                activeBtn.classList.remove('text-stone-500');
+            }
+
+            if (tabName === 'calendar') renderAdminCalendar();
+            if (tabName === 'sizes') renderAdminSizes();
+            if (tabName === 'extras') renderAdminExtras();
+        }
+
+        // RENDER DE PEDIDOS EN EL ADMIN
+        function renderAdminOrders() {
+            const list = document.getElementById('adminOrdersList');
+            const search = document.getElementById('adminSearchInput').value.toLowerCase();
+            const filter = document.getElementById('adminStatusFilter').value;
+
+            let filtered = appOrders.filter(o => {
+                const matchSearch = o.custName.toLowerCase().includes(search) || 
+                                    o.folio.toLowerCase().includes(search) || 
+                                    o.theme.toLowerCase().includes(search);
+                const matchFilter = filter === 'ALL' || o.status === filter;
+                return matchSearch && matchFilter;
+            });
+
+            document.getElementById('metricTotalOrders').textContent = appOrders.length;
+            document.getElementById('metricPendingOrders').textContent = appOrders.filter(o => o.status === 'Pendiente').length;
+            document.getElementById('metricConfirmedOrders').textContent = appOrders.filter(o => o.status === 'Confirmado').length;
+            document.getElementById('tabOrderCount').textContent = appOrders.length;
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<p class="text-center text-xs text-stone-400 py-6">No hay solicitudes o pedidos registrados.</p>`;
+                return;
+            }
+
+            list.innerHTML = filtered.map(o => {
+                let badgeClass = "bg-amber-100 text-amber-800";
+                if (o.status === 'Confirmado') badgeClass = "bg-emerald-100 text-emerald-800";
+                if (o.status === 'Entregado') badgeClass = "bg-blue-100 text-blue-800";
+                if (o.status === 'Cancelado') badgeClass = "bg-rose-100 text-rose-800";
+
+                const isPickup = o.deliveryMethod === 'Recoger en Taller';
+
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3 text-xs">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-stone-100 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono font-bold text-stone-900">${o.folio}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${badgeClass}">${o.status}</span>
+                            </div>
+                            <span class="text-stone-400 text-[11px]">Fecha Entrega: <strong class="text-stone-800">${o.orderDate}</strong></span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-stone-700">
+                            <div>👤 <strong>Cliente:</strong> ${o.custName} (${o.custPhone})</div>
+                            <div>🎨 <strong>Temática:</strong> ${o.theme} (${o.celebrant})</div>
+                            <div>📏 <strong>Tamaño:</strong> ${o.sizeName}</div>
+                            <div>✨ <strong>Extras:</strong> ${o.extras}</div>
+                            <div>🚚 <strong>Entrega:</strong> ${o.deliveryMethod} (${o.timeSlot})</div>
+                            ${!isPickup ? `<div class="sm:col-span-2">📍 <strong>Dirección:</strong> ${o.address}</div>` : ''}
+                        </div>
+
+                        <!-- BARRA DE FINANZAS Y COTIZACIÓN DE ESTE PEDIDO -->
+                        <div class="p-2.5 bg-pink-50/60 rounded-xl border border-pink-100 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                            <div>
+                                <span>Total: <strong class="text-stone-800">$${o.total || 0}</strong></span> | 
+                                <span>Anticipo: <strong class="text-emerald-700">$${o.deposit || 0}</strong></span> | 
+                                <span>Restante: <strong class="text-brand-700">$${o.balance || 0}</strong></span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <!-- BOTÓN DE COTIZACIÓN Y ANTICIPO RESTAURADO -->
+                                <button onclick="openQuoteModal('${o.id}')" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-calculator"></i> Cotización / Anticipo
+                                </button>
+                                <!-- BOTÓN DE ESTADO DE FINANZAS (VER SALDO RESTANTE) -->
+                                <button onclick="openFinanceModal('${o.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-receipt"></i> Finanzas
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN RÁPIDA DE PEDIDOS -->
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <!-- BOTÓN DE RECOLECCIÓN (SIN FINANZAS NI PRECIOS) -->
+                            <button onclick="sendPickupReminderWA('${o.id}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-[11px] flex items-center gap-1">
+                                <i class="fa-brands fa-whatsapp"></i> Avisar Recolección
+                            </button>
+
+                            <!-- BOTÓN SOLICITAR COMPROBANTE DE PAGO -->
+                            <button onclick="requestPaymentReceiptWA('${o.id}')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-[11px] flex items-center gap-1">
+                                <i class="fa-solid fa-receipt"></i> Pedir Comprobante
+                            </button>
+
+                            <!-- BOTÓN ENVIAR DIRECCIÓN PRIVADA (SÓLO TALLER) -->
+                            ${isPickup ? `
+                                <button onclick="sendPrivateAddressWA('${o.id}')" class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-[11px] flex items-center gap-1">
+                                    <i class="fa-solid fa-location-dot"></i> Ubicación Privada
+                                </button>
+                            ` : ''}
+
+                            <!-- BOTONES DE CALENDARIO SEPARADOS: GOOGLE / ANDROID Y APPLE / IPHONE -->
+                            <button onclick="addToGoogleCalendar('${o.id}')" class="px-2.5 py-1.5 bg-green-700 hover:bg-green-800 text-white font-semibold rounded-xl text-[11px] flex items-center gap-1" title="Agendar en Google Calendar / Android">
+                                <i class="fa-brands fa-google text-amber-300"></i> Calendar Android
+                            </button>
+                            
+                            <button onclick="addToAppleCalendar('${o.id}')" class="px-2.5 py-1.5 bg-stone-800 hover:bg-stone-900 text-white font-semibold rounded-xl text-[11px] flex items-center gap-1" title="Agendar en iCal / Apple / iPhone">
+                                <i class="fa-brands fa-apple text-pink-300"></i> Calendar iPhone
+                            </button>
+
+                            <!-- FICHA DE PRODUCCIÓN -->
+                            <button onclick="openPrintModal('${o.id}')" class="px-2.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl text-[11px] flex items-center gap-1">
+                                <i class="fa-solid fa-print"></i> Ficha
+                            </button>
+
+                            <!-- EDITAR SOLICITUD -->
+                            <button onclick="openEditOrderModal('${o.id}')" class="px-2.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl text-[11px] flex items-center gap-1">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </button>
+
+                            <!-- ELIMINAR -->
+                            <button onclick="deleteOrder('${o.id}')" class="px-2 py-1.5 text-rose-600 hover:bg-rose-50 rounded-xl text-[11px]">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ACCIÓN 1: AVISO DE RECOLECCIÓN (SE LE QUITÓ TOTALMENTE LA INFORMACIÓN DE FINANZAS)
+        function sendPickupReminderWA(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            let text = `👋 ¡Hola *${o.custName}*! Te saludamos de *${appSettings.businessName}*.\n\n`;
+            text += `🎉 Te informamos que tu piñata de *${o.theme}* está lista para entrega:\n\n`;
+            text += `📅 *Fecha de Entrega:* ${o.orderDate}\n`;
+            text += `⏰ *Horario:* ${o.timeSlot}\n`;
+            text += `🚚 *Forma de Entrega:* ${o.deliveryMethod}\n`;
+            if (o.deliveryMethod === 'Envío a Domicilio') {
+                text += `📍 *Dirección de Entrega:* ${o.address}\n`;
+            }
+            text += `\n¡Ya casi está todo listo para tu festejo! Si tienes alguna duda, escríbenos por aquí. ✨`;
+
+            const cleanPhone = o.custPhone.replace(/[^0-9]/g, '');
+            const dest = cleanPhone.length === 10 ? `521${cleanPhone}` : cleanPhone;
+            window.open(`https://wa.me/${dest}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // ACCIÓN 2: SOLICITAR COMPROBANTE DE PAGO
+        function requestPaymentReceiptWA(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            let text = `👋 Hola *${o.custName}*, te escribimos de *${appSettings.businessName}* respecto a tu pedido (*${o.folio}* - *${o.theme}*).\n\n`;
+            text += `📌 Te solicitamos amablemente si nos puedes compartir tu *comprobante de pago o transferencia* del anticipo para dejar confirmada tu fecha (*${o.orderDate}*) en agenda.\n\n`;
+            text += `¡Muchas gracias! 🙌`;
+
+            const cleanPhone = o.custPhone.replace(/[^0-9]/g, '');
+            const dest = cleanPhone.length === 10 ? `521${cleanPhone}` : cleanPhone;
+            window.open(`https://wa.me/${dest}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // ACCIÓN 3: ENVIAR UBICACIÓN PRIVADA DEL TALLER
+        function sendPrivateAddressWA(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            let text = `🏬 *UBICACIÓN PARA RECOGER TU PIÑATA* 🏬\n\n`;
+            text += `Hola *${o.custName}*, aquí tienes la dirección exacta de nuestro taller para pasar por tu piñata de *${o.theme}* el día *${o.orderDate}* (${o.timeSlot}):\n\n`;
+            text += `📍 *Ubicación Taller:* ${appSettings.privateAddress}\n\n`;
+            text += `Te esperamos en el horario acordado. ¡Buen viaje! 🎈`;
+
+            const cleanPhone = o.custPhone.replace(/[^0-9]/g, '');
+            const dest = cleanPhone.length === 10 ? `521${cleanPhone}` : cleanPhone;
+            window.open(`https://wa.me/${dest}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // BOTÓN AGENDAR EN GOOGLE CALENDAR (ANDROID / WEB)
+        function addToGoogleCalendar(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            const dateClean = o.orderDate.replace(/-/g, '');
+            const title = encodeURIComponent(`🎉 Entrega Piñata: ${o.theme} (${o.custName})`);
+            const details = encodeURIComponent(`Folio: ${o.folio}\nCliente: ${o.custName}\nTel: ${o.custPhone}\nTamaño: ${o.sizeName}\nEntrega: ${o.deliveryMethod} - ${o.timeSlot}\nNotas: ${o.notes}`);
+            const location = encodeURIComponent(o.deliveryMethod === 'Envío a Domicilio' ? o.address : appSettings.privateAddress);
+
+            // Evento todo el día en fecha
+            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateClean}/${dateClean}&details=${details}&location=${location}`;
+            window.open(url, '_blank');
+            showToast("Abriendo Google Calendar para Android/Web", "fa-google");
+        }
+
+        // BOTÓN AGENDAR EN APPLE CALENDAR / IPHONE (.ICS)
+        function addToAppleCalendar(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            const dateFormatted = o.orderDate.replace(/-/g, '');
+            const icsData = [
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "PRODID:-//Mi Taller de Piñatas//NONSGML Event//ES",
+                "BEGIN:VEVENT",
+                `UID:pinata-${o.id}@taller`,
+                `DTSTAMP:${dateFormatted}T090000Z`,
+                `DTSTART;VALUE=DATE:${dateFormatted}`,
+                `DTEND;VALUE=DATE:${dateFormatted}`,
+                `SUMMARY:🎉 Piñata: ${o.theme} (${o.custName})`,
+                `DESCRIPTION:Folio: ${o.folio}\\nCliente: ${o.custName} (${o.custPhone})\\nTamaño: ${o.sizeName}\\nHorario: ${o.timeSlot}\\nNotas: ${o.notes}`,
+                `LOCATION:${o.deliveryMethod === 'Envío a Domicilio' ? o.address : appSettings.privateAddress}`,
+                "END:VEVENT",
+                "END:VCALENDAR"
+            ].join("\n");
+
+            const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute("download", `Pinata_${o.folio}.ics`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast("Descargando archivo .ics para Apple / iPhone", "fa-apple");
+        }
+
+        // BOTÓN MODAL COTIZACIÓN / ANTICIPO (PONÍA TOTAL, CANTIDAD PORCENTAJE, CANTIDAD ANTICIPO EN AUTOMÁTICO Y DATOS BANCARIOS)
+        function openQuoteModal(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            document.getElementById('quoteOrderId').value = o.id;
+            document.getElementById('quoteModalFolioLabel').textContent = `Folio: ${o.folio} - Cliente: ${o.custName}`;
+            
+            const total = o.total || 0;
+            document.getElementById('quoteTotal').value = total;
+            document.getElementById('quotePct').value = "50";
+            document.getElementById('quoteBankDetails').value = appSettings.bankDetails;
+
+            recalcQuoteModal('pct');
+            document.getElementById('quoteModal').classList.remove('hidden');
+        }
+
+        function closeQuoteModal() {
+            document.getElementById('quoteModal').classList.add('hidden');
+        }
+
+        function recalcQuoteModal(source) {
+            const total = parseFloat(document.getElementById('quoteTotal').value) || 0;
+            const pct = parseFloat(document.getElementById('quotePct').value) || 50;
+            
+            let deposit = 0;
+            if (source === 'manualDeposit') {
+                deposit = parseFloat(document.getElementById('quoteDeposit').value) || 0;
+            } else {
+                deposit = Math.round((total * pct) / 100);
+                document.getElementById('quoteDeposit').value = deposit;
+            }
+
+            const balance = Math.max(0, total - deposit);
+            document.getElementById('quoteBalance').value = balance;
+        }
+
+        function handleSendQuoteWA(e) {
+            e.preventDefault();
+            const orderId = document.getElementById('quoteOrderId').value;
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            const total = parseFloat(document.getElementById('quoteTotal').value) || 0;
+            const deposit = parseFloat(document.getElementById('quoteDeposit').value) || 0;
+            const balance = parseFloat(document.getElementById('quoteBalance').value) || 0;
+            const bankDetails = document.getElementById('quoteBankDetails').value;
+            const pctVal = document.getElementById('quotePct').value;
+
+            // Actualizar datos financieros en la orden
+            o.total = total;
+            o.deposit = deposit;
+            o.balance = balance;
+            o.status = deposit > 0 ? 'Confirmado' : 'Pendiente';
+            
+            localStorage.setItem('pinata_orders', JSON.stringify(appOrders));
+            renderAdminOrders();
+
+            // Armar mensaje con cotización completa, anticipo y DATOS BANCARIOS
+            let text = `🎨 *COTIZACIÓN DE PIÑATA Y DATOS DE ANTICIPO* 🎨\n`;
+            text += `Hola *${o.custName}*, te adjuntamos el desglose de tu pedido (*${o.folio}*):\n\n`;
+            text += `📌 *Temática:* ${o.theme}\n`;
+            text += `📏 *Tamaño:* ${o.sizeName}\n`;
+            text += `✨ *Extras:* ${o.extras}\n`;
+            text += `📅 *Fecha de Entrega:* ${o.orderDate}\n\n`;
+            text += `💵 *Costo Total:* $${total} MXN\n`;
+            text += `💳 *Anticipo Requerido (${pctVal}%):* $${deposit} MXN\n`;
+            text += `🛍️ *Restante al Entregar:* $${balance} MXN\n\n`;
+            text += `🏦 *DATOS BANCARIOS PARA EL ANTICIPO:*\n${bankDetails}\n\n`;
+            text += `Por favor envíanos tu comprobante de pago por este medio para confirmar tu fecha en agenda. ¡Muchas gracias!`;
+
+            const cleanPhone = o.custPhone.replace(/[^0-9]/g, '');
+            const dest = cleanPhone.length === 10 ? `521${cleanPhone}` : cleanPhone;
+            window.open(`https://wa.me/${dest}?text=${encodeURIComponent(text)}`, '_blank');
+
+            closeQuoteModal();
+            showToast("Cotización y datos bancarios enviados por WhatsApp", "fa-paper-plane");
+        }
+
+        // MODAL FINANZAS (SOLO MUESTRA Y ENVÍA EL RESTANTE QUE FALTA, SIN DATOS BANCARIOS)
+        function openFinanceModal(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            document.getElementById('finOrderId').value = o.id;
+            document.getElementById('finModalFolioLabel').textContent = `Folio: ${o.folio} - Cliente: ${o.custName}`;
+            
+            document.getElementById('finTotal').value = o.total || 0;
+            document.getElementById('finDeposit').value = o.deposit || 0;
+            
+            recalcFinanceModal();
+            document.getElementById('financeModal').classList.remove('hidden');
+        }
+
+        function closeFinanceModal() {
+            document.getElementById('financeModal').classList.add('hidden');
+        }
+
+        function recalcFinanceModal() {
+            const total = parseFloat(document.getElementById('finTotal').value) || 0;
+            const deposit = parseFloat(document.getElementById('finDeposit').value) || 0;
+            const balance = Math.max(0, total - deposit);
+            
+            document.getElementById('finBalance').value = balance;
+            
+            const statusText = document.getElementById('finStatusText');
+            if (balance === 0 && total > 0) {
+                statusText.textContent = "✅ PAGADO COMPLETAMENTE";
+                statusText.className = "text-[11px] font-bold text-emerald-600";
+            } else if (deposit > 0) {
+                statusText.textContent = `⏳ Anticipo recibido ($${deposit}). Restan $${balance}`;
+                statusText.className = "text-[11px] font-semibold text-amber-600";
+            } else {
+                statusText.textContent = "⚠️ Pendiente de anticipo";
+                statusText.className = "text-[11px] font-semibold text-rose-600";
+            }
+        }
+
+        function markAsPaidInModal() {
+            const total = parseFloat(document.getElementById('finTotal').value) || 0;
+            document.getElementById('finDeposit').value = total;
+            recalcFinanceModal();
+            showToast("Marcado como liquidado completamente", "fa-check-double");
+        }
+
+        function handleSaveFinance(e) {
+            e.preventDefault();
+            const orderId = document.getElementById('finOrderId').value;
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            const total = parseFloat(document.getElementById('finTotal').value) || 0;
+            const deposit = parseFloat(document.getElementById('finDeposit').value) || 0;
+            const balance = parseFloat(document.getElementById('finBalance').value) || 0;
+
+            o.total = total;
+            o.deposit = deposit;
+            o.balance = balance;
+            if (balance === 0 && total > 0) o.status = 'Entregado';
+            else if (deposit > 0) o.status = 'Confirmado';
+
+            localStorage.setItem('pinata_orders', JSON.stringify(appOrders));
+            renderAdminOrders();
+            closeFinanceModal();
+            showToast("Estado financiero actualizado", "fa-floppy-disk");
+        }
+
+        // ENVIAR POR WHATSAPP SOLO LO QUE FALTA (RESTANTE), SIN INFORMACIÓN BANCARIA
+        function sendFinanceWAFromModal() {
+            const orderId = document.getElementById('finOrderId').value;
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            const total = parseFloat(document.getElementById('finTotal').value) || 0;
+            const deposit = parseFloat(document.getElementById('finDeposit').value) || 0;
+            const balance = parseFloat(document.getElementById('finBalance').value) || 0;
+
+            // Guardar cambios primero
+            o.total = total;
+            o.deposit = deposit;
+            o.balance = balance;
+            localStorage.setItem('pinata_orders', JSON.stringify(appOrders));
+            renderAdminOrders();
+
+            let text = `📄 *ESTADO DE CUENTA DE TU PEDIDO* 📄\n`;
+            text += `Hola *${o.custName}*, te compartimos el resumen de saldo de tu piñata de *${o.theme}* (*${o.folio}*):\n\n`;
+            
+            if (balance === 0) {
+                text += `🎉 *Estatus:* Tu pedido se encuentra *TOTALMENTE PAGADO*. ¡Muchas gracias! ✨\n`;
+            } else {
+                text += `💰 *Monto Restante a Liquidar:* $${balance} MXN\n`;
+                text += `📅 *Fecha de Entrega:* ${o.orderDate} (${o.timeSlot})\n`;
+                text += `\n*Nota:* Este saldo restante se liquida al recibir tu producto. ¡Gracias por tu preferencia!`;
+            }
+
+            const cleanPhone = o.custPhone.replace(/[^0-9]/g, '');
+            const dest = cleanPhone.length === 10 ? `521${cleanPhone}` : cleanPhone;
+            window.open(`https://wa.me/${dest}?text=${encodeURIComponent(text)}`, '_blank');
+
+            closeFinanceModal();
+            showToast("Estado de saldo restante enviado a WhatsApp", "fa-whatsapp");
+        }
+
+        // FICHA DE PRODUCCIÓN IMPRESA
+        function openPrintModal(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            document.getElementById('pTkFolio').textContent = `FOLIO: ${o.folio}`;
+            document.getElementById('pTkDate').textContent = `${o.orderDate} (${o.timeSlot})`;
+            document.getElementById('pTkCustomer').textContent = o.custName;
+            document.getElementById('pTkPhone').textContent = o.custPhone;
+            document.getElementById('pTkTheme').textContent = o.theme;
+            document.getElementById('pTkCelebrant').textContent = o.celebrant;
+            document.getElementById('pTkSize').textContent = o.sizeName;
+            document.getElementById('pTkDeposit').textContent = `$${o.deposit || 0} de $${o.total || 0}`;
+            document.getElementById('pTkExtras').textContent = o.extras;
+            document.getElementById('pTkDelivery').textContent = `${o.deliveryMethod} - ${o.address}`;
+            document.getElementById('pTkNotes').textContent = o.notes;
+
+            document.getElementById('printModal').classList.remove('hidden');
+        }
+
+        function closePrintModal() {
+            document.getElementById('printModal').classList.add('hidden');
+        }
+
+        function sendPrintTicketWA() {
+            const folio = document.getElementById('pTkFolio').textContent;
+            const custName = document.getElementById('pTkCustomer').textContent;
+            const theme = document.getElementById('pTkTheme').textContent;
+            const date = document.getElementById('pTkDate').textContent;
+
+            let text = `📋 *FICHA DE PRODUCCIÓN DE TALLER* 📋\n`;
+            text += `${folio}\n`;
+            text += `👤 Cliente: ${custName}\n`;
+            text += `🎨 Temática: ${theme}\n`;
+            text += `📅 Entrega: ${date}\n\n`;
+            text += `Documento generado desde el panel de taller.`;
+
+            window.open(`https://wa.me/${appSettings.phone}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // EDITAR SOLICITUD
+        function openEditOrderModal(orderId) {
+            const o = appOrders.find(item => item.id === orderId);
+            if (!o) return;
+
+            document.getElementById('editOrderId').value = o.id;
+            document.getElementById('editModalFolioLabel').textContent = `Folio: ${o.folio}`;
+            document.getElementById('editCustName').value = o.custName;
+            document.getElementById('editCustPhone').value = o.custPhone;
+            document.getElementById('editOrderDate').value = o.orderDate;
+            document.getElementById('editOrderStatus').value = o.status;
+            document.getElementById('editOrderTheme').value = o.theme;
+            document.getElementById('editOrderCelebrant').value = o.celebrant;
+            document.getElementById('editOrderNotes').value = o.notes;
+
+            document.getElementById('editOrderModal').classList.remove('hidden');
+        }
+
+        function closeEditOrderModal() {
+            document.getElementById('editOrderModal').classList.add('hidden');
+        }
+
+        function handleSaveEditedOrder(e) {
+            e.preventDefault();
+            const id = document.getElementById('editOrderId').value;
+            const o = appOrders.find(item => item.id === id);
+            if (!o) return;
+
+            o.custName = document.getElementById('editCustName').value.trim();
+            o.custPhone = document.getElementById('editCustPhone').value.trim();
+            o.orderDate = document.getElementById('editOrderDate').value;
+            o.status = document.getElementById('editOrderStatus').value;
+            o.theme = document.getElementById('editOrderTheme').value.trim();
+            o.celebrant = document.getElementById('editOrderCelebrant').value.trim();
+            o.notes = document.getElementById('editOrderNotes').value.trim();
+
+            localStorage.setItem('pinata_orders', JSON.stringify(appOrders));
+            renderAdminOrders();
+            closeEditOrderModal();
+            showToast("Solicitud modificada con éxito", "fa-check");
+        }
+
+        function deleteOrder(orderId) {
+            if (confirm("¿Estás seguro de eliminar este registro del historial?")) {
+                appOrders = appOrders.filter(o => o.id !== orderId);
+                localStorage.setItem('pinata_orders', JSON.stringify(appOrders));
+                renderAdminOrders();
+                showToast("Registro eliminado", "fa-trash");
+            }
+        }
+
+        // CALENDARIO DEL ADMIN PARA BLOQUEAR FECHAS
+        function renderAdminCalendar() {
+            const year = adminCalDate.getFullYear();
+            const month = adminCalDate.getMonth();
+            
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('adminCalMonthLabel').textContent = `${monthNames[month]} ${year}`;
+
+            const grid = document.getElementById('adminCalGrid');
+            grid.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayEl = document.createElement('div');
+                
+                const status = blockedDates[dayStr] || 'OPEN';
+                let bgClass = "bg-emerald-100 text-emerald-900 border-emerald-300";
+                let label = "Disponible";
+
+                if (status === 'FULL') {
+                    bgClass = "bg-rose-500 text-white font-bold border-rose-600";
+                    label = "Llena";
+                } else if (status === 'BUSY') {
+                    bgClass = "bg-amber-400 text-stone-900 font-bold border-amber-500";
+                    label = "Poca";
+                }
+
+                dayEl.className = `p-2 rounded-xl border flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-105 ${bgClass}`;
+                dayEl.onclick = () => toggleAdminDateStatus(dayStr);
+                dayEl.innerHTML = `
+                    <span class="text-xs font-bold">${d}</span>
+                    <span class="text-[9px] uppercase tracking-tighter">${label}</span>
+                `;
+                grid.appendChild(dayEl);
+            }
+        }
+
+        function changeAdminCalMonth(delta) {
+            adminCalDate.setMonth(adminCalDate.getMonth() + delta);
+            renderAdminCalendar();
+        }
+
+        function toggleAdminDateStatus(dayStr) {
+            const current = blockedDates[dayStr] || 'OPEN';
+            if (current === 'OPEN') blockedDates[dayStr] = 'BUSY';
+            else if (current === 'BUSY') blockedDates[dayStr] = 'FULL';
+            else delete blockedDates[dayStr];
+
+            localStorage.setItem('pinata_blocked_dates', JSON.stringify(blockedDates));
+            renderAdminCalendar();
+            renderPublicCalendar();
+            showToast(`Fecha ${dayStr} actualizada`, "fa-calendar-day");
+        }
+
+        // CATALOG DE TAMAÑOS Y EXTRAS EN ADMIN
+        function renderAdminSizes() {
+            const list = document.getElementById('adminSizesList');
+            list.innerHTML = appSizes.map((s, idx) => `
+                <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 flex items-center gap-2">
+                    <input type="text" value="${s.name}" onchange="updateSizeItem(${idx}, 'name', this.value)" class="flex-1 px-2.5 py-1.5 border rounded-lg text-xs font-bold">
+                    <input type="text" value="${s.desc}" onchange="updateSizeItem(${idx}, 'desc', this.value)" class="flex-1 px-2.5 py-1.5 border rounded-lg text-xs">
+                    <button onclick="removeSizeItem(${idx})" class="p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function addNewSizeItem() {
+            appSizes.push({ id: 'sz' + Date.now(), name: 'Nuevo Tamaño', desc: 'Descripción del tamaño' });
+            localStorage.setItem('pinata_sizes', JSON.stringify(appSizes));
+            renderAdminSizes();
+            renderFormOptions();
+        }
+
+        function updateSizeItem(idx, key, val) {
+            appSizes[idx][key] = val;
+            localStorage.setItem('pinata_sizes', JSON.stringify(appSizes));
+            renderFormOptions();
+        }
+
+        function removeSizeItem(idx) {
+            appSizes.splice(idx, 1);
+            localStorage.setItem('pinata_sizes', JSON.stringify(appSizes));
+            renderAdminSizes();
+            renderFormOptions();
+        }
+
+        function renderAdminExtras() {
+            const list = document.getElementById('adminExtrasList');
+            list.innerHTML = appExtras.map((e, idx) => `
+                <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 flex items-center gap-2">
+                    <input type="text" value="${e.name}" onchange="updateExtraItem(${idx}, 'name', this.value)" class="flex-1 px-2.5 py-1.5 border rounded-lg text-xs font-bold">
+                    <input type="text" value="${e.desc}" onchange="updateExtraItem(${idx}, 'desc', this.value)" class="flex-1 px-2.5 py-1.5 border rounded-lg text-xs">
+                    <button onclick="removeExtraItem(${idx})" class="p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function addNewExtraItem() {
+            appExtras.push({ id: 'ex' + Date.now(), name: 'Nuevo Extra', desc: 'Detalle del extra' });
+            localStorage.setItem('pinata_extras', JSON.stringify(appExtras));
+            renderAdminExtras();
+            renderFormOptions();
+        }
+
+        function updateExtraItem(idx, key, val) {
+            appExtras[idx][key] = val;
+            localStorage.setItem('pinata_extras', JSON.stringify(appExtras));
+            renderFormOptions();
+        }
+
+        function removeExtraItem(idx) {
+            appExtras.splice(idx, 1);
+            localStorage.setItem('pinata_extras', JSON.stringify(appExtras));
+            renderAdminExtras();
+            renderFormOptions();
+        }
+
+        // RENDER DE AJUSTES Y HORARIOS
+        function renderAdminSettings() {
+            document.getElementById('cfgBusinessName').value = appSettings.businessName;
+            document.getElementById('cfgBusinessSubtitle').value = appSettings.businessSubtitle;
+            document.getElementById('cfgPhone').value = appSettings.phone;
+            document.getElementById('cfgAdminPin').value = appSettings.adminPin;
+            document.getElementById('cfgPrivateAddress').value = appSettings.privateAddress || '';
+            document.getElementById('cfgBankDetails').value = appSettings.bankDetails;
+            document.getElementById('cfgMinDays').value = appSettings.minDaysNotice;
+            document.getElementById('cfgLimitOrderDays').checked = appSettings.limitOrderDays || false;
+            document.getElementById('cfgOrderTimeStart').value = appSettings.orderTimeStart || "09:00";
+            document.getElementById('cfgOrderTimeEnd').value = appSettings.orderTimeEnd || "19:00";
+
+            for (let i = 0; i <= 6; i++) {
+                const chk = document.getElementById(`day-${i}`);
+                if (chk) chk.checked = appSettings.orderDays ? !!appSettings.orderDays[i] : true;
+            }
+
+            renderSchedulesList('pickup');
+            renderSchedulesList('delivery');
+        }
+
+        function saveGeneralSettings() {
+            appSettings.businessName = document.getElementById('cfgBusinessName').value.trim();
+            appSettings.businessSubtitle = document.getElementById('cfgBusinessSubtitle').value.trim();
+            appSettings.phone = document.getElementById('cfgPhone').value.trim();
+            appSettings.adminPin = document.getElementById('cfgAdminPin').value.trim();
+            appSettings.privateAddress = document.getElementById('cfgPrivateAddress').value.trim();
+            appSettings.bankDetails = document.getElementById('cfgBankDetails').value.trim();
+            appSettings.minDaysNotice = parseInt(document.getElementById('cfgMinDays').value) || 5;
+            appSettings.limitOrderDays = document.getElementById('cfgLimitOrderDays').checked;
+            appSettings.orderTimeStart = document.getElementById('cfgOrderTimeStart').value;
+            appSettings.orderTimeEnd = document.getElementById('cfgOrderTimeEnd').value;
+
+            appSettings.orderDays = {};
+            for (let i = 0; i <= 6; i++) {
+                const chk = document.getElementById(`day-${i}`);
+                if (chk) appSettings.orderDays[i] = chk.checked;
+            }
+
+            localStorage.setItem('pinata_settings', JSON.stringify(appSettings));
+            updateBrandInfo();
+            setupMinDateInPicker();
+            checkOrderingHoursAvailability();
+            showToast("Ajustes guardados correctamente", "fa-floppy-disk");
+        }
+
+        function renderSchedulesList(type) {
+            const listContainer = type === 'pickup' ? document.getElementById('adminPickupSchedulesList') : document.getElementById('adminDeliverySchedulesList');
+            const arr = type === 'pickup' ? appSettings.pickupSchedules : appSettings.deliverySchedules;
+
+            listContainer.innerHTML = arr.map((item, idx) => `
+                <div class="flex items-center gap-2">
+                    <input type="text" value="${item}" onchange="updateScheduleItem('${type}', ${idx}, this.value)" class="flex-1 px-3 py-1.5 border border-stone-200 rounded-xl text-xs">
+                    <button type="button" onclick="removeScheduleItem('${type}', ${idx})" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function addScheduleItem(type) {
+            const arr = type === 'pickup' ? appSettings.pickupSchedules : appSettings.deliverySchedules;
+            arr.push('Nuevo Horario (00:00 - 00:00)');
+            localStorage.setItem('pinata_settings', JSON.stringify(appSettings));
+            renderSchedulesList(type);
+            renderFormOptions();
+        }
+
+        function updateScheduleItem(type, idx, val) {
+            const arr = type === 'pickup' ? appSettings.pickupSchedules : appSettings.deliverySchedules;
+            arr[idx] = val;
+            localStorage.setItem('pinata_settings', JSON.stringify(appSettings));
+            renderFormOptions();
+        }
+
+        function removeScheduleItem(type, idx) {
+            const arr = type === 'pickup' ? appSettings.pickupSchedules : appSettings.deliverySchedules;
+            arr.splice(idx, 1);
+            localStorage.setItem('pinata_settings', JSON.stringify(appSettings));
+            renderSchedulesList(type);
+            renderFormOptions();
+        }
+    </script>
+</body>
+</html>

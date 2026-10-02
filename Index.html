@@ -3,6 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <!-- =========================================================
+         ✨ PERSONALIZACIÓN RÁPIDA — EDITA SOLO ESTA PARTE ✨
+         Puedes cambiar la apariencia principal sin buscar por todo el HTML.
+         - logoUrl: deja "" para conservar el ícono. También acepta images/logo.png
+         - portadaUrl: foto principal del encabezado
+         - colores: usa códigos HEX, por ejemplo #e11d48
+         - títulos/textos: cambia aquí los textos principales de Inicio
+         ========================================================= -->
+    <script>
+        const PERSONALIZACION = {
+            marca: "Piñatas Magia & Fiesta",
+            logoUrl: "", // Ejemplo: "images/logo.png"
+            portadaUrl: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=85&w=1800",
+            colores: {
+                principal: "#e11d48",
+                oscuro: "#9f1239",
+                suave: "#fef2f4"
+            },
+            textos: {
+                etiquetaHero: "HECHAS A MANO CON AMOR Y MÁXIMA RESISTENCIA",
+                tituloHero: "Dale más alegría y color a tu fiesta",
+                descripcionHero: "Diseños 100% personalizados para que tu celebración sea inolvidable. Elige tu temática y aparta tu fecha con tiempo.",
+                botonFecha: "Apartar Mi Fecha",
+                botonGaleria: "Ver Trabajos",
+                etiquetaGaleria: "GALERÍA DE CREACIONES",
+                tituloGaleria: "Piñatas que hacen mágico cualquier festejo",
+                descripcionGaleria: "Conoce parte de nuestros trabajos personalizados y acabados perfectos. Haz clic en cualquier imagen para verla en grande.",
+                etiquetaEsencia: "NUESTRA MAGIA",
+                tituloEsencia: "¿Por qué elegir nuestras piñatas?"
+            }
+        };
+
+        document.documentElement.style.setProperty('--personalizacion-principal', PERSONALIZACION.colores.principal);
+        document.documentElement.style.setProperty('--personalizacion-oscuro', PERSONALIZACION.colores.oscuro);
+        document.documentElement.style.setProperty('--personalizacion-suave', PERSONALIZACION.colores.suave);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const p = PERSONALIZACION;
+            const setText = (selector, value) => {
+                const el = document.querySelector(selector);
+                if (el && value !== undefined) el.textContent = value;
+            };
+
+            setText('#navBusinessName', p.marca);
+            document.title = `${p.marca} - Agenda de Pedidos`;
+            setText('#heroBadgeText', p.textos.etiquetaHero);
+            setText('#heroTitle', p.textos.tituloHero);
+            setText('#heroDescription', p.textos.descripcionHero);
+            setText('#heroDateButton', p.textos.botonFecha);
+            setText('#heroGalleryButton', p.textos.botonGaleria);
+            setText('#galleryEyebrow', p.textos.etiquetaGaleria);
+            setText('#galleryTitle', p.textos.tituloGaleria);
+            setText('#galleryDescription', p.textos.descripcionGaleria);
+            setText('#essenceEyebrow', p.textos.etiquetaEsencia);
+            setText('#essenceTitle', p.textos.tituloEsencia);
+
+            const hero = document.querySelector('body > section:first-of-type');
+            if (hero && p.portadaUrl) {
+                hero.style.setProperty('background-image', `linear-gradient(90deg, rgba(34,25,25,.72) 0%, rgba(34,25,25,.52) 42%, rgba(34,25,25,.22) 100%), url("${p.portadaUrl}")`, 'important');
+            }
+
+            const logoBox = document.getElementById('quickBrandLogo');
+            const logoIcon = document.getElementById('quickBrandLogoIcon');
+            if (logoBox && logoIcon && p.logoUrl) {
+                logoIcon.style.display = 'none';
+                logoBox.style.backgroundImage = `url("${p.logoUrl}")`;
+                logoBox.style.backgroundSize = 'cover';
+                logoBox.style.backgroundPosition = 'center';
+                logoBox.style.backgroundColor = '#fff';
+            }
+        });
+    </script>
     <title>Piñatas Magia & Fiesta - Agenda de Pedidos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -56,6 +130,408 @@
             animation: floatEffect 5s ease-in-out infinite;
         }
     </style>
+
+    <!-- COMPACT DEMO LAYOUT: solo reduce espacios y aprovecha mejor el ancho, sin cambiar funciones -->
+    <style id="compact-demo-overrides">
+        /* Navegación más compacta */
+        body > header:first-of-type > div { height: 4rem !important; }
+        body > header:first-of-type { min-height: 4rem !important; }
+
+        /* Hero: menos altura y mejor aprovechamiento horizontal */
+        body > section:first-of-type {
+            padding-top: 2.5rem !important;
+            padding-bottom: 2.5rem !important;
+        }
+        body > section:first-of-type .max-w-6xl { gap: 2rem !important; }
+        body > section:first-of-type .space-y-6 { gap: 1rem !important; }
+        body > section:first-of-type h2 { font-size: clamp(2rem, 4vw, 3rem) !important; }
+        body > section:first-of-type p { font-size: .9rem !important; }
+        body > section:first-of-type .pt-2 { padding-top: .25rem !important; }
+
+        /* Galería */
+        #galeriaTrabajos { padding-top: 2.75rem !important; padding-bottom: 2.75rem !important; }
+        #galeriaTrabajos > div:first-child { margin-bottom: 1.5rem !important; }
+        #galeriaTrabajos > .grid { gap: .75rem !important; }
+        #galeriaTrabajos .rounded-3xl { border-radius: 1.15rem !important; }
+
+        /* Sección informativa */
+        #galeriaTrabajos + section { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+        #galeriaTrabajos + section .gap-8 { gap: 1rem !important; }
+        #galeriaTrabajos + section .p-8,
+        #galeriaTrabajos + section .sm\:p-10 { padding: 1.5rem !important; }
+
+        /* Formulario: más ancho y compacto */
+        #formularioPedido {
+            max-width: 72rem !important;
+            padding-top: 2.75rem !important;
+            padding-bottom: 2.75rem !important;
+            gap: 1.25rem !important;
+        }
+        #formularioPedido > .space-y-3 { gap: .35rem !important; }
+        #formularioPedido > .space-y-3 h2 { font-size: 1.6rem !important; }
+        #formularioPedido > .space-y-3 p { font-size: .75rem !important; }
+
+        #formularioPedido .rounded-3xl { border-radius: 1.15rem !important; }
+        #formularioPedido > .bg-brand-50 { padding: 1rem !important; }
+        #formularioPedido > .bg-white.rounded-3xl { padding: 1.25rem !important; }
+        #formularioPedido #orderForm { gap: 1rem !important; }
+
+        /* Calendario más bajo */
+        #formularioPedido #calendarDaysGrid { gap: .35rem !important; }
+        #formularioPedido #calendarDaysGrid > * { min-height: 2.4rem !important; }
+        #formularioPedido #calendarDaysGrid + div { padding-top: .65rem !important; }
+
+        /* Aviso de disponibilidad */
+        #formularioPedido #orderAvailabilityNotice .p-5,
+        #formularioPedido #orderAvailabilityNotice .sm\:p-6 { padding: 1rem !important; }
+        #formularioPedido #orderAvailabilityNotice .mt-4 { margin-top: .75rem !important; }
+        #formularioPedido #orderAvailabilityNotice .px-4.py-3 { padding: .6rem .75rem !important; }
+
+        /* Campos del formulario: menos aire vertical */
+        #formularioPedido #orderForm .space-y-6 { gap: .9rem !important; }
+        #formularioPedido #orderForm .space-y-5 { gap: .75rem !important; }
+        #formularioPedido #orderForm textarea { min-height: 5rem !important; }
+        #formularioPedido #orderForm input,
+        #formularioPedido #orderForm select,
+        #formularioPedido #orderForm textarea { font-size: .75rem !important; }
+
+        /* Footer más compacto */
+        #siteFooter { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+        #siteFooter .gap-6 { gap: .75rem !important; }
+        body > div[aria-hidden="true"] { height: 4.5rem !important; }
+
+        /* En pantallas pequeñas conservamos respiración suficiente */
+        @media (max-width: 640px) {
+            body > section:first-of-type { padding-top: 1.75rem !important; padding-bottom: 1.75rem !important; }
+            #galeriaTrabajos { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+            #formularioPedido { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+            #formularioPedido > .bg-white.rounded-3xl { padding: 1rem !important; }
+        }
+    
+
+/* =========================================================
+   MEJORA VISUAL — solo apariencia, sin cambiar funcionalidad
+   ========================================================= */
+:root{
+  --pm-rose:#e11d48;
+  --pm-rose-dark:#9f1239;
+  --pm-cream:#fffaf8;
+  --pm-ink:#292524;
+  --pm-line:#eee7e3;
+}
+
+body{
+  background:
+    radial-gradient(circle at 10% 8%, rgba(225,29,72,.055), transparent 26rem),
+    radial-gradient(circle at 90% 42%, rgba(251,191,36,.045), transparent 28rem),
+    #faf9f7 !important;
+}
+
+/* Encabezado: más fino y con sensación de marca */
+body > header:first-of-type{
+  background:rgba(255,255,255,.92) !important;
+  border-bottom:1px solid rgba(231,229,228,.8) !important;
+  box-shadow:0 5px 24px rgba(41,37,36,.06) !important;
+}
+body > header:first-of-type > div{
+  height:4.35rem !important;
+}
+body > header:first-of-type .w-11{
+  width:2.65rem !important;
+  height:2.65rem !important;
+  border-radius:1rem !important;
+  box-shadow:0 8px 18px rgba(225,29,72,.18) !important;
+}
+body > header:first-of-type button{
+  border-radius:999px !important;
+  padding:.65rem 1rem !important;
+}
+
+/* HERO: protagonista, elegante y con más identidad */
+body > section:first-of-type{
+  position:relative !important;
+  overflow:hidden !important;
+  min-height:25rem !important;
+  display:flex !important;
+  align-items:center !important;
+  padding:4.75rem 1rem !important;
+  border-bottom:0 !important;
+  background-image:
+    linear-gradient(90deg, rgba(34,25,25,.72) 0%, rgba(34,25,25,.52) 42%, rgba(34,25,25,.22) 100%),
+    url('https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=85&w=1800') !important;
+  background-size:cover !important;
+  background-position:center 48% !important;
+}
+body > section:first-of-type::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:5px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+  opacity:.55;
+}
+body > section:first-of-type .max-w-6xl{
+  position:relative !important;
+  z-index:1 !important;
+  width:100% !important;
+  max-width:78rem !important;
+}
+body > section:first-of-type .lg\:col-span-7{
+  grid-column:1 / -1 !important;
+  width:min(100%, 48rem) !important;
+  margin:auto !important;
+}
+body > section:first-of-type .lg\:col-span-5{
+  display:none !important;
+}
+body > section:first-of-type .space-y-6{
+  gap:1rem !important;
+}
+body > section:first-of-type .inline-flex{
+  background:rgba(255,255,255,.16) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.32) !important;
+  backdrop-filter:blur(8px) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.12) !important;
+}
+body > section:first-of-type h2{
+  color:#fff !important;
+  font-family:Georgia, 'Times New Roman', serif !important;
+  font-weight:500 !important;
+  letter-spacing:-.025em !important;
+  text-shadow:0 3px 20px rgba(0,0,0,.28) !important;
+  font-size:clamp(2.15rem,5vw,4rem) !important;
+  line-height:1.02 !important;
+}
+body > section:first-of-type p{
+  color:rgba(255,255,255,.92) !important;
+  max-width:42rem !important;
+  line-height:1.65 !important;
+  text-shadow:0 2px 10px rgba(0,0,0,.22) !important;
+}
+body > section:first-of-type .bg-brand-500{
+  background:#fff !important;
+  color:var(--pm-rose-dark) !important;
+  box-shadow:0 10px 28px rgba(0,0,0,.18) !important;
+}
+body > section:first-of-type .bg-brand-500:hover{background:#fff !important; transform:translateY(-2px);}
+body > section:first-of-type a:not(.bg-brand-500){
+  background:rgba(255,255,255,.12) !important;
+  color:#fff !important;
+  border-color:rgba(255,255,255,.42) !important;
+  backdrop-filter:blur(7px) !important;
+}
+
+/* Secciones: ritmo editorial más parecido a una marca premium */
+#galeriaTrabajos{
+  padding-top:4rem !important;
+  padding-bottom:3.25rem !important;
+}
+#galeriaTrabajos > div:first-child{
+  margin-bottom:1.75rem !important;
+}
+#galeriaTrabajos > div:first-child h3{
+  letter-spacing:.22em !important;
+  color:var(--pm-rose-dark) !important;
+}
+#galeriaTrabajos > div:first-child h2{
+  font-family:Georgia,'Times New Roman',serif !important;
+  font-weight:500 !important;
+  font-size:clamp(1.8rem,3vw,2.35rem) !important;
+}
+#galeriaTrabajos > div:first-child p{
+  max-width:38rem !important;
+  margin-inline:auto !important;
+  color:#78716c !important;
+}
+#galeriaTrabajos > .grid{
+  gap:.9rem !important;
+}
+#galeriaTrabajos > .grid > div{
+  border:0 !important;
+  box-shadow:0 10px 30px rgba(41,37,36,.08) !important;
+  border-radius:1.35rem !important;
+  background:#fff !important;
+}
+#galeriaTrabajos > .grid > div:hover{
+  transform:translateY(-4px) !important;
+  box-shadow:0 18px 42px rgba(41,37,36,.14) !important;
+}
+
+/* Bloque de información: más editorial y menos plano */
+#galeriaTrabajos + section{
+  padding-top:2rem !important;
+  padding-bottom:3rem !important;
+}
+#galeriaTrabajos + section > div > div{
+  border-radius:1.5rem !important;
+  box-shadow:0 12px 34px rgba(41,37,36,.07) !important;
+}
+#galeriaTrabajos + section > div > div:first-child{
+  background:linear-gradient(145deg,#be123c,#881337) !important;
+  color:#fff !important;
+  border:0 !important;
+  position:relative !important;
+  overflow:hidden !important;
+}
+#galeriaTrabajos + section > div > div:first-child::after{
+  content:"✦";
+  position:absolute;
+  right:1.5rem;
+  bottom:-1rem;
+  font-size:7rem;
+  color:rgba(255,255,255,.08);
+  transform:rotate(-15deg);
+}
+#galeriaTrabajos + section > div > div:first-child *{color:inherit !important;}
+#galeriaTrabajos + section > div > div:last-child{
+  border:1px solid var(--pm-line) !important;
+}
+
+/* Formulario: que se sienta como una sección de reserva premium */
+#formularioPedido{
+  padding-top:3rem !important;
+  padding-bottom:3.5rem !important;
+}
+#formularioPedido > .space-y-3 h3{
+  color:var(--pm-rose-dark) !important;
+  letter-spacing:.2em !important;
+}
+#formularioPedido > .space-y-3 h2{
+  font-family:Georgia,'Times New Roman',serif !important;
+  font-weight:500 !important;
+  font-size:clamp(1.85rem,3vw,2.4rem) !important;
+}
+#formularioPedido > .space-y-3 p{color:#78716c !important;}
+#formularioPedido > .bg-brand-50{
+  background:linear-gradient(135deg,#fff1f2,#fffaf8) !important;
+  border-color:#fecdd3 !important;
+  box-shadow:0 8px 26px rgba(225,29,72,.07) !important;
+}
+#formularioPedido .bg-white.rounded-3xl{
+  border-color:#eee7e3 !important;
+  box-shadow:0 12px 34px rgba(41,37,36,.065) !important;
+}
+#formularioPedido .input-canva,
+#formularioPedido input,
+#formularioPedido select,
+#formularioPedido textarea{
+  border-color:#e7e0dc !important;
+  background:#fffdfc !important;
+}
+#formularioPedido .input-canva:focus,
+#formularioPedido input:focus,
+#formularioPedido select:focus,
+#formularioPedido textarea:focus{
+  border-color:#fb7185 !important;
+  box-shadow:0 0 0 3px rgba(251,113,133,.12) !important;
+}
+
+/* Botones principales */
+#formularioPedido button[type="submit"],
+#formularioPedido .bg-brand-500{
+  box-shadow:0 10px 24px rgba(225,29,72,.16) !important;
+}
+
+/* Footer: elegante pero ligero */
+#siteFooter{
+  background:linear-gradient(135deg,#3f1720,#5b2630) !important;
+  border-top:0 !important;
+}
+
+@media (max-width:640px){
+  body > section:first-of-type{
+    min-height:23rem !important;
+    padding:3.5rem 1rem !important;
+    background-position:center !important;
+  }
+  body > section:first-of-type h2{font-size:2.25rem !important;}
+  #galeriaTrabajos{padding-top:3rem !important;}
+  #galeriaTrabajos > .grid{gap:.7rem !important;}
+}
+</style>
+
+<style id="footer-apariencia-normal">
+#siteFooter{
+  position:relative !important;
+  inset:auto !important;
+  width:100% !important;
+  margin-top:0 !important;
+}
+</style>
+
+    <style id="personalizacion-rapida-colores">
+        /* Los colores se controlan desde PERSONALIZACION, arriba del HTML. */
+        .bg-brand-500 { background-color: var(--personalizacion-principal) !important; }
+        .hover\:bg-brand-500:hover { background-color: var(--personalizacion-principal) !important; }
+        .bg-brand-600, .hover\:bg-brand-600:hover { background-color: var(--personalizacion-oscuro) !important; }
+        .text-brand-500, .text-brand-600 { color: var(--personalizacion-principal) !important; }
+        .text-brand-700 { color: var(--personalizacion-oscuro) !important; }
+        .bg-brand-50, .bg-brand-100 { background-color: var(--personalizacion-suave) !important; }
+        .border-brand-200 { border-color: color-mix(in srgb, var(--personalizacion-principal) 22%, white) !important; }
+        .focus\:border-brand-500:focus { border-color: var(--personalizacion-principal) !important; }
+        .focus\:ring-brand-500:focus { --tw-ring-color: var(--personalizacion-principal) !important; }
+        .selection\:bg-brand-500::selection { background-color: var(--personalizacion-principal) !important; }
+        .selection\:text-white::selection { color: #fff !important; }
+    </style>
+
+
+<style id="hero-editorial-nuevo">
+.pm-editorial-hero{background:#fbf8f5;overflow:hidden;position:relative}
+.pm-editorial-hero:before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:#f7e8e8;right:-220px;top:-250px;opacity:.65}
+.pm-editorial-grid{min-height:610px;display:grid;grid-template-columns:1.02fr .98fr;align-items:center;gap:5rem;position:relative;z-index:1}
+.pm-editorial-copy{padding:4.5rem 0}
+.pm-kicker{display:flex;align-items:center;gap:12px;color:#9f1239;font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;margin-bottom:22px}
+.pm-kicker-line{display:inline-block;width:38px;height:1px;background:#9f1239}
+.pm-editorial-copy h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(2.65rem,4.8vw,4.65rem);line-height:.99;letter-spacing:-.045em;color:#241d1b;font-weight:500;max-width:680px;margin:0 0 25px}
+.pm-editorial-copy p{font-size:1.05rem;line-height:1.8;color:#655c58;max-width:570px;margin:0 0 31px;font-weight:500}
+.pm-editorial-actions{display:flex;align-items:center;gap:25px;flex-wrap:wrap}
+.pm-main-btn{display:inline-flex;align-items:center;gap:10px;background:#9f1239;color:#fff;padding:14px 22px;border-radius:8px;font-weight:800;font-size:14px;box-shadow:0 12px 28px rgba(159,18,57,.16);transition:.2s;text-decoration:none}
+.pm-main-btn:hover{background:#881337;transform:translateY(-1px)}
+.pm-text-btn{display:inline-flex;align-items:center;gap:10px;color:#302725;font-size:14px;font-weight:800;text-decoration:none;border-bottom:1px solid #cfc5c0;padding-bottom:5px}
+.pm-text-btn i{font-size:12px;transition:.2s}.pm-text-btn:hover i{transform:translateX(4px)}
+.pm-editorial-details{display:flex;gap:25px;margin-top:38px;padding-top:20px;border-top:1px solid #e6dfda;color:#817773;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.pm-editorial-details span{display:flex;align-items:center;gap:7px}.pm-editorial-details i{color:#9f1239}
+.pm-editorial-visual{position:relative;height:610px;display:flex;align-items:center;justify-content:center}
+.pm-visual-backdrop{position:absolute;width:390px;height:510px;background:#f1ddd9;right:8%;top:50%;transform:translateY(-50%) rotate(5deg)}
+.pm-photo-frame{position:relative;width:min(390px,78%);height:540px;background:#fff;padding:11px;box-shadow:0 25px 55px rgba(58,38,31,.18);transform:rotate(-2.2deg)}
+.pm-photo-frame img{width:100%;height:100%;display:block;object-fit:cover}
+.pm-photo-tag{position:absolute;top:23px;left:-18px;z-index:2;background:#9f1239;color:#fff;padding:9px 14px;font-size:9px;font-weight:900;letter-spacing:.13em;box-shadow:0 7px 16px rgba(72,24,34,.18)}
+.pm-photo-stamp{position:absolute;right:-29px;bottom:28px;width:83px;height:83px;border-radius:50%;background:#fff;border:1px solid #d8cbc5;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(7deg);box-shadow:0 8px 20px rgba(0,0,0,.1);color:#9f1239}
+.pm-photo-stamp span{font-family:Georgia,serif;font-size:18px;line-height:1}.pm-photo-stamp small{font-size:7px;font-weight:900;letter-spacing:.16em;margin-top:4px}
+.pm-visual-caption{position:absolute;bottom:28px;left:0;display:flex;gap:13px;align-items:flex-start;background:rgba(255,255,255,.94);padding:13px 17px;box-shadow:0 10px 25px rgba(52,35,30,.09);min-width:235px}
+.pm-visual-caption>span{font-family:Georgia,serif;color:#9f1239;font-size:18px}.pm-visual-caption strong{display:block;color:#302725;font-size:11px}.pm-visual-caption small{display:block;color:#8b817d;font-size:9px;margin-top:3px;letter-spacing:.05em}
+@media(max-width:1023px){.pm-editorial-grid{grid-template-columns:1fr;gap:1rem}.pm-editorial-copy{text-align:center;padding:4rem 0 1.5rem}.pm-editorial-copy h2,.pm-editorial-copy p{margin-left:auto;margin-right:auto}.pm-editorial-actions,.pm-editorial-details{justify-content:center}.pm-editorial-visual{height:560px}.pm-visual-caption{left:8%}}
+@media(max-width:640px){.pm-editorial-copy{padding:3rem 0 1rem}.pm-editorial-copy h2{font-size:2.65rem}.pm-editorial-copy p{font-size:.96rem}.pm-editorial-visual{height:490px}.pm-photo-frame{height:430px;width:75%}.pm-visual-backdrop{height:400px;width:72%}.pm-photo-tag{left:-9px}.pm-photo-stamp{right:-22px}.pm-visual-caption{left:0;bottom:16px}.pm-editorial-details{gap:13px;flex-wrap:wrap}}
+</style>
+
+<style id="hero-ajuste-contraste-botones">
+/* Ajuste visual solicitado: botón secundario más equilibrado y textos de acento con mayor contraste */
+.pm-kicker{color:#7f1836 !important;text-shadow:0 0 0 transparent;}
+.pm-kicker-line{background:#7f1836 !important;}
+.pm-photo-tag{background:#7f1836 !important;}
+.pm-photo-stamp strong{color:#7f1836 !important;}
+.pm-text-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:9px !important;
+  min-height:46px !important;
+  padding:0 18px !important;
+  border:1px solid #cdb8b5 !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  color:#302725 !important;
+  box-shadow:0 6px 16px rgba(58,38,31,.06) !important;
+  transition:.2s !important;
+}
+.pm-text-btn:hover{background:#fdf7f5 !important;border-color:#a88984 !important;transform:translateY(-1px);}
+.pm-text-btn i{color:#7f1836 !important;}
+@media(max-width:767px){
+  .pm-text-btn{width:100%;}
+}
+</style>
+
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
@@ -63,8 +539,8 @@
     <header class="bg-white/95 backdrop-blur-md border-b border-stone-200 sticky top-0 z-40 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 bg-brand-500 rounded-2xl flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                <div id="quickBrandLogo" class="w-11 h-11 bg-brand-500 rounded-2xl flex items-center justify-center text-white shadow-md">
+                    <i id="quickBrandLogoIcon" class="fa-solid fa-wand-magic-sparkles text-xl"></i>
                 </div>
                 <div>
                     <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-stone-900" id="navBusinessName">Piñatas Magia & Fiesta</h1>
@@ -80,49 +556,43 @@
         </div>
     </header>
 
-    <!-- HERO BANNER -->
-    <section class="bg-stone-100 border-b border-stone-200 py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 bg-brand-100 text-brand-700 px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide uppercase">
-                    <i class="fa-solid fa-star"></i> Hechas a mano con amor y máxima resistencia
-                </div>
-                <h2 class="text-3xl sm:text-5xl font-extrabold text-stone-900 tracking-tight leading-tight">
-                    Dale más alegría y color a tu fiesta
-                </h2>
-                <p class="text-stone-600 text-base sm:text-lg font-medium max-w-xl mx-auto lg:mx-0">
-                    Diseños 100% personalizados para que tu celebración sea inolvidable. Elige tu temática y aparta tu fecha con tiempo.
-                </p>
-                <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
-                    <a href="#formularioPedido" class="px-7 py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-2xl shadow-md transition flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-calendar-check"></i> Apartar Mi Fecha
-                    </a>
-                    <a href="#galeriaTrabajos" class="px-7 py-3.5 bg-white hover:bg-stone-50 text-stone-800 font-bold rounded-2xl border border-stone-300 shadow-xs transition flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-images"></i> Ver Trabajos
-                    </a>
-                </div>
-            </div>
-            <div class="lg:col-span-5 flex justify-center">
-                <div class="bg-white p-4 rounded-3xl border border-stone-200 shadow-xl max-w-sm w-full relative floating-art">
-                    <div class="absolute -top-3 -right-3 bg-brand-500 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow">
-                        ⭐ 100% Personalizadas
-                    </div>
-                    <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=600" alt="Piñata Artesanal" class="w-full h-72 object-cover rounded-2xl shadow-inner" onerror="this.src='https://placehold.co/600x400/fef2f4/e11d48?text=Pinata'">
-                    <div class="mt-4 text-center">
-                        <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Artesanía de Calidad</span>
-                        <h4 class="font-extrabold text-stone-900 text-base">Magia y Diversión Garantizada</h4>
-                    </div>
-                </div>
-            </div>
+    <!-- HERO BANNER — NUEVA PROPUESTA EDITORIAL -->
+<section class="pm-editorial-hero border-b border-stone-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="pm-editorial-grid">
+      <div class="pm-editorial-copy">
+        <div class="pm-kicker"><span class="pm-kicker-line"></span><span id="heroBadgeText">PIÑATAS HECHAS A MANO</span></div>
+        <h2 id="heroTitle">Piñatas que convierten una celebración en un recuerdo.</h2>
+        <p id="heroDescription">Diseños personalizados, hechos con dedicación para que cada fiesta tenga una pieza tan especial como quien la celebra.</p>
+        <div class="pm-editorial-actions">
+          <a href="#formularioPedido" class="pm-main-btn"><i class="fa-solid fa-calendar-check"></i><span id="heroDateButton">Apartar Mi Fecha</span></a>
+          <a href="#galeriaTrabajos" class="pm-text-btn"><span id="heroGalleryButton">Ver trabajos</span><i class="fa-solid fa-arrow-right"></i></a>
         </div>
-    </section>
+        <div class="pm-editorial-details">
+          <span><i class="fa-solid fa-wand-magic-sparkles"></i> Personalizadas</span>
+          <span><i class="fa-solid fa-heart"></i> Hechas con amor</span>
+        </div>
+      </div>
 
-    <!-- GALLERY SECTION -->
+      <div class="pm-editorial-visual">
+        <div class="pm-visual-backdrop"></div>
+        <div class="pm-photo-frame">
+          <div class="pm-photo-tag">100% PERSONALIZADA</div>
+          <img src="https://images.unsplash.com/photo-1528185796833-c5827a298584?auto=format&fit=crop&q=88&w=1000" alt="Piñata artesanal" onerror="this.src='https://placehold.co/760x950/f7eee9/9f1239?text=Tu+piñata'">
+          <div class="pm-photo-stamp"><span>MAGIA</span><small>&amp; FIESTA</small></div>
+        </div>
+        <div class="pm-visual-caption"><span>01</span><div><strong>Una pieza hecha para celebrar</strong><small>Artesanía · Color · Detalle</small></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY SECTION -->
     <section id="galeriaTrabajos" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="text-center max-w-2xl mx-auto mb-12 space-y-3">
-            <h3 class="text-xs font-extrabold uppercase tracking-widest text-brand-600">Galería de Creaciones</h3>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">Piñatas que hacen mágico cualquier festejo</h2>
-            <p class="text-sm text-stone-600 font-medium">Conoce parte de nuestros trabajos personalizados y acabados perfectos. Haz clic en cualquier imagen para verla en grande.</p>
+            <h3 id="galleryEyebrow" class="text-xs font-extrabold uppercase tracking-widest text-brand-600">Galería de Creaciones</h3>
+            <h2 id="galleryTitle" class="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">Piñatas que hacen mágico cualquier festejo</h2>
+            <p id="galleryDescription" class="text-sm text-stone-600 font-medium">Conoce parte de nuestros trabajos personalizados y acabados perfectos. Haz clic en cualquier imagen para verla en grande.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div onclick="openLightbox('https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=1000&h=1333', 'Trabajo Artesanal 1')" class="group relative bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-xl transition cursor-pointer aspect-[3/4]">
@@ -179,9 +649,9 @@
         <div class="bg-white rounded-3xl p-8 sm:p-12 border border-stone-200 shadow-sm grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6">
                 <div class="inline-flex items-center gap-2 bg-brand-100 text-brand-700 px-3.5 py-1 rounded-full text-xs font-bold uppercase">
-                    <i class="fa-solid fa-heart"></i> Nuestra Magia
+                    <i class="fa-solid fa-heart"></i> <span id="essenceEyebrow">Nuestra Magia</span>
                 </div>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">¿Por qué elegir nuestras piñatas?</h3>
+                <h3 id="essenceTitle" class="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">¿Por qué elegir nuestras piñatas?</h3>
                 <p class="text-stone-600 text-sm leading-relaxed font-medium">
                     Cada piñata es elaborada de manera artesanal cuidando cada detalle estético y estructural. Usamos materiales de primera para garantizar resistencia óptima y sonrisas inolvidables.
                 </p>
@@ -865,14 +1335,35 @@
                     </div>
                     <div id="adminCalendarDaysGrid" class="grid grid-cols-7 gap-2"></div>
                 </div>
+                <div class="p-4 bg-white border-2 border-brand-200 rounded-2xl space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="min-w-0">
+                            <h5 class="font-extrabold text-stone-900 text-sm">Capacidad de pedidos por día</h5>
+                            <p class="text-[11px] text-stone-500 mt-1">Define cuántos pedidos puedes aceptar en un mismo día. Al llegar al límite, la fecha se marcará automáticamente como <strong>Agenda llena</strong>.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                        <div class="p-3 bg-stone-50 border border-stone-200 rounded-xl">
+                            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-1">Máximo de pedidos por día</label>
+                            <input type="number" id="orderDailyCapacityInput" min="1" max="100" step="1" value="3" onchange="saveOrderDailyCapacity(this.value)" class="input-canva text-sm font-extrabold">
+                            <p class="text-[10px] text-stone-500 mt-1">Esta capacidad se aplica automáticamente a todos los días.</p>
+                        </div>
+                        <div class="p-3 bg-brand-50/70 border border-brand-100 rounded-xl">
+                            <strong id="orderDailyCapacityPreview" class="block text-xs text-brand-900">Máximo 3 pedidos por día</strong>
+                            <span class="block text-[10px] text-stone-600 mt-1">Si un día tiene 3 pedidos registrados, ya no aparecerá disponible para nuevos pedidos.</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-[10px] text-stone-500 bg-stone-50 rounded-xl px-3 py-2.5"><i class="fa-solid fa-circle-info text-brand-500"></i><span>La capacidad general y la anticipación mínima son independientes.</span></div>
+                </div>
                 <div class="pt-2 border-t border-stone-200 space-y-4">
                     <div>
                         <p class="text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-2">Estado de la fecha seleccionada</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <button type="button" onclick="setAdminDateStatus('available')" class="w-full min-h-11 px-3 py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-circle-check"></i> Disponible</button>
-                            <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Pocos lugares</button>
-                            <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-lock"></i> Bloquear agenda llena</button>
-                            <button type="button" onclick="setAdminDateStatus('closed')" class="w-full min-h-11 px-3 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2 sm:col-span-3"><i class="fa-solid fa-calendar-xmark"></i> Cerrado para pedidos</button>
+                            <button type="button" onclick="setAdminDateStatus('few')" class="w-full min-h-11 px-3 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Pocos lugares</button>
+                            <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-lock"></i> Agenda llena</button>
+                            <button type="button" onclick="setAdminDateStatus('closed')" class="w-full min-h-11 px-3 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-calendar-xmark"></i> Cerrado para pedidos</button>
                         </div>
                     </div>
                     <div class="p-4 bg-brand-50/60 border border-brand-200 rounded-2xl space-y-3">
@@ -1106,7 +1597,7 @@
     </div>
 
     <!-- FOOTER -->
-    <footer id="siteFooter" class="fixed bottom-0 left-0 right-0 w-full z-20 bg-stone-900 text-stone-300 py-4 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
+    <footer id="siteFooter" class="relative w-full z-20 bg-stone-900 text-stone-300 py-4 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
             <div class="space-y-2">
                 <h3 class="font-extrabold text-white text-lg tracking-tight flex items-center justify-center md:justify-start gap-2">
@@ -1120,9 +1611,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Espacio para la barra inferior fija -->
-    <div aria-hidden="true" class="h-24 sm:h-20"></div>
 
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-stone-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-bold">
@@ -1214,6 +1702,8 @@
         let orderLeadTimeDays = parseInt(localStorage.getItem('pinata_order_lead_time_days') || '5', 10);
         if (!Number.isFinite(orderLeadTimeDays) || orderLeadTimeDays < 0) orderLeadTimeDays = 5;
         let orderLeadTimeEnabled = localStorage.getItem('pinata_order_lead_time_enabled') !== 'false';
+        let orderDailyCapacity = parseInt(localStorage.getItem('pinata_order_daily_capacity') || '3', 10);
+        if (!Number.isFinite(orderDailyCapacity) || orderDailyCapacity < 1) orderDailyCapacity = 3;
         let orderSchedule = JSON.parse(localStorage.getItem('pinata_order_schedule')) || { openTime: '09:00', closeTime: '18:00', mode: 'both' };
         if (!['time','days','both'].includes(orderSchedule.mode)) orderSchedule.mode = 'both';
         let upcomingRefreshTimer = null;
@@ -1241,6 +1731,7 @@
             renderFormOptionsInClient();
             renderCalendar();
             renderAdminCalendar();
+            syncOrderDailyCapacityControls();
             updateOrdersBadge();
             renderHeaderSocials();
             renderFooterSocials();
@@ -1651,13 +2142,17 @@
                 const dObj = new Date(year, month, d);
                 const dow = dObj.getDay();
 
-                let status = dayStatuses[dateStr] || (operationalDays[dow] === false ? 'closed' : 'available');
+                let status = getAutomaticDateStatus(dateStr);
+                const orderCount = getOrderCountForDate(dateStr);
                 const leadBlocked = isDateBeforeOrderLeadTime(dateStr);
                 let bgClass = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200';
                 let dotClass = 'bg-emerald-500';
                 if (leadBlocked) { bgClass = 'bg-stone-100 text-stone-400 border-stone-200 opacity-70'; dotClass = 'bg-stone-300'; }
 
                 if (status === 'full') {
+                    bgClass = 'bg-orange-50 text-orange-800 border-orange-200 opacity-70';
+                    dotClass = 'bg-orange-500';
+                } else if (status === 'few') {
                     bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
                 } else if (status === 'closed') {
@@ -1670,9 +2165,10 @@
                 }
 
                 grid.innerHTML += `
-                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${leadBlocked ? 'cursor-not-allowed' : ''}">
+                    <button type="button" ${(leadBlocked || status === 'full' || status === 'closed') ? 'disabled' : `onclick="selectDate('${dateStr}')"`} class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${(leadBlocked || status === 'full' || status === 'closed') ? 'cursor-not-allowed' : ''}">
                         <span>${d}</span>
                         <span class="w-1.5 h-1.5 rounded-full ${dotClass} mt-0.5"></span>
+                        <span class="text-[8px] leading-none mt-0.5 opacity-70">${orderCount}/${orderDailyCapacity}</span>
                     </button>
                 `;
             }
@@ -1684,6 +2180,11 @@
         }
 
         function selectDate(dateStr) {
+            if (isDateUnavailableForOrders(dateStr)) {
+                const status = getAutomaticDateStatus(dateStr);
+                showToast(status === 'full' ? `Esta fecha ya alcanzó la capacidad máxima de ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'}.` : 'Lo sentimos, esta fecha está cerrada para pedidos.', 'error');
+                return;
+            }
             if (isDateBeforeOrderLeadTime(dateStr)) { showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error'); return; }
             selectedDateStr = dateStr;
             const dateInput = document.getElementById('eventDate');
@@ -1698,6 +2199,14 @@
 
         function onFormDateChange(dateStr) {
             if (!dateStr) return;
+            if (isDateUnavailableForOrders(dateStr)) {
+                document.getElementById('eventDate').value = '';
+                selectedDateStr = null;
+                const status = getAutomaticDateStatus(dateStr);
+                showToast(status === 'full' ? `Esta fecha ya alcanzó la capacidad máxima de ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'}.` : 'Lo sentimos, esta fecha está cerrada para pedidos.', 'error');
+                renderCalendar();
+                return;
+            }
             if (isDateBeforeOrderLeadTime(dateStr)) { document.getElementById('eventDate').value = ''; selectedDateStr = null; showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error'); return; }
             selectedDateStr = dateStr;
             
@@ -1747,6 +2256,11 @@
             }
 
             const editingIndex = parseInt(document.getElementById('editingOrderIndex').value);
+            if (getAutomaticDateStatus(date, editingIndex) === 'full') {
+                showToast(`Esta fecha ya alcanzó la capacidad máxima de ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'}. Elige otra fecha.`, 'error');
+                renderCalendar();
+                return;
+            }
             const name = document.getElementById('clientName').value.trim();
             const phone = document.getElementById('clientPhone').value.trim();
             const style = document.getElementById('pinataStyle').value;
@@ -1871,7 +2385,7 @@
             document.getElementById('formTitleHeader').innerText = 'Formulario de Solicitud';
             document.getElementById('formSubmitBtn').innerHTML = `<i class="fa-solid fa-check-to-slot"></i> Revisar y Enviar Solicitud`;
 
-            let msg = `¡Hola! 👋 Me gustaría confirmar mi pedido con folio *${o.folio}* en *${CLIENT_CONFIG.businessName}*:
+            let msg = `¡Hola! 👋 Me gustaría enviar una solicitud de pedido con folio *${o.folio}* en *${CLIENT_CONFIG.businessName}*:
 
 *🏷️ Folio:* ${o.folio}
 *👤 Nombre:* ${o.name}
@@ -1895,7 +2409,7 @@
             msg += `\n*📝 Detalles y Colores:*
 ${o.details}
 
-Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
+Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobada, podremos coordinar el anticipo y confirmar mi fecha. ✨`;
 
             const encodedURL = `https://wa.me/${CLIENT_CONFIG.whatsappNumber}?text=${encodeURIComponent(msg)}`;
             window.open(encodedURL, '_blank');
@@ -1913,17 +2427,32 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             return 'FOL-' + String(n).slice(-6).padStart(6, '0');
         }
 
+        // Siempre toma la versión más reciente del pedido antes de preparar un mensaje de WhatsApp.
+        // Así, cualquier cambio realizado desde "Editar formulario" se refleja inmediatamente.
+        function getFreshSavedOrder(index) {
+            try {
+                const stored = localStorage.getItem('pinata_saved_orders');
+                if (stored) {
+                    const latest = JSON.parse(stored);
+                    if (Array.isArray(latest)) savedOrders = latest;
+                }
+            } catch (e) {}
+            return savedOrders[index] || null;
+        }
+
         function confirmOrderDialog(index) {
-            const ord = savedOrders[index];
+            const ord = getFreshSavedOrder(index);
             if (!ord) return;
-            const msg = `¡Hola ${ord.name}! 👋 Te confirmamos que tu pedido con folio *${ord.folio}* para el evento del *${ord.date}* (${ord.theme}) está registrado y ¡todo es CORRECTO! ✨ ¿Hay algo más que desees agregar?`;
+            const raw = ord.rawDeliveryDetails || {};
+            let msg = `Hola ${ord.name}. 👋\n\nTe escribimos para compartirte el resumen de la información de tu pedido:\n\n*🏷️ Folio:* ${ord.folio}\n*👤 Nombre:* ${ord.name}\n*📞 WhatsApp:* ${ord.phone}\n*📅 Fecha del evento:* ${ord.date}\n*✨ Temática / Personaje:* ${ord.theme || 'No especificado'}\n*⭐ Estilo:* ${ord.style || 'No especificado'}\n*📏 Tamaño:* ${ord.size || 'No especificado'}\n*🏷️ Nombre/Número:* ${ord.nameNumberInfo || 'No'}\n*🎁 Extras:* ${ord.extrasText || 'Ninguno'}\n*🚚 Método de entrega:* ${ord.deliveryText || raw.method || 'No especificado'}\n*💳 Método de pago:* ${ord.payment || 'No especificado'}\n*📝 Detalles:*\n${ord.details || 'Sin detalles adicionales'}`;
+            msg += `\n\nPor favor confirma si todo está correcto o menciónanos si hay algún error para corregirlo a tiempo. ¡Muchas gracias!\n\nEnseguida te enviaremos la cotización de tu pedido.`;
             const encodedURL = `https://wa.me/${ord.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
             window.open(encodedURL, '_blank');
             showToast(`Mensaje de confirmación enviado para el folio ${ord.folio}.`, 'success');
         }
 
         function editOrderFromList(index) {
-            const ord = savedOrders[index];
+            const ord = getFreshSavedOrder(index);
             if (!ord) return;
 
             const modal = document.getElementById('adminEditOrderModal');
@@ -2117,9 +2646,18 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             const updated = {
                 ...existing,
                 name, phone, date, style, size, theme, deliveryText,
-                rawDeliveryDetails: { method: delivery, time, location },
+                rawDeliveryDetails: { ...existing.rawDeliveryDetails, method: delivery, time, location },
                 payment, extrasText, nameNumberInfo, details,
-                paymentInfo: existing.paymentInfo || {}, additionalPaid: existing.additionalPaid || 0
+                // Los botones de WhatsApp leen estos mismos datos, por lo que al editar
+                // el pedido quedan actualizados de inmediato sin crear una copia antigua.
+                paymentInfo: existing.paymentInfo || {},
+                totalAmount: Number(existing.totalAmount) || 0,
+                advancePercent: Number(existing.advancePercent) || 0,
+                advanceAmount: Number(existing.advanceAmount) || 0,
+                remainingAmount: Number(existing.remainingAmount) || 0,
+                additionalPaid: Number(existing.additionalPaid) || 0,
+                additionalPaidEnabled: existing.additionalPaidEnabled === true,
+                isPaid: existing.isPaid === true
             };
 
             savedOrders[index] = updated;
@@ -2138,10 +2676,12 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
         function downloadICSForOrder(ord){const d=new Date(`${ord.date}T${(ord.rawDeliveryDetails&&ord.rawDeliveryDetails.time)||'12:00'}`),end=new Date(d.getTime()+60*60*1000);const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:${ord.id||ord.folio}@pinatasmagiafiesta\r\nDTSTAMP:${formatICSDate(new Date())}\r\nDTSTART:${formatICSDate(d)}\r\nDTEND:${formatICSDate(end)}\r\nSUMMARY:Pedido ${ord.folio} - ${ord.theme}\r\nDESCRIPTION:Cliente ${ord.name}\, Folio ${ord.folio}\r\nEND:VEVENT\r\nEND:VCALENDAR`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));a.download=`${ord.folio}.ics`;document.body.appendChild(a);a.click();a.remove();}
 
         function sendDeliveryReminder(index) {
-            const ord = savedOrders[index];
+            const ord = getFreshSavedOrder(index);
             if (!ord) return;
-            let reminderType = ord.rawDeliveryDetails.method || 'Entrega';
-            let msg = `¡Hola ${ord.name}! 🌟 Te enviamos un recordatorio amistoso sobre tu ${reminderType.toLowerCase()} programada para el día *${ord.date}*. Temática: *${ord.theme}* (Folio: ${ord.folio}). ¡Nos vemos pronto!`;
+            const raw = ord.rawDeliveryDetails || {};
+            const method = raw.method || 'Entrega';
+            const time = raw.time || 'Horario no especificado';
+            const msg = `Hola ${ord.name}. 👋\n\nTe enviamos este mensaje para recordarte la entrega de tu pedido *${ord.folio}*.\n\n*📅 Fecha:* ${ord.date}\n*🚚 Tipo de entrega:* ${method}\n*🕐 Hora:* ${time}\n\nCualquier detalle o ajuste, quedamos con gusto a tus órdenes. ¡Muchas gracias!`;
             const encodedURL = `https://wa.me/${ord.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
             window.open(encodedURL, '_blank');
             showToast(`Recordatorio de entrega enviado para el folio ${ord.folio}.`, 'success');
@@ -2197,29 +2737,23 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
         }
 
         function sendAdvanceWhatsApp(index) {
-            const ord=savedOrders[index]; if(!ord) return;
-            const total=Number(ord.totalAmount)||0, adv=Number(ord.advanceAmount)||0, rem=Number(ord.remainingAmount)||0;
-            const msg=`¡Hola ${ord.name}! 👋 Para apartar tu fecha del pedido *${ord.folio}*, la cotización es de *$${total.toFixed(2)}* y el anticipo solicitado es de *$${adv.toFixed(2)}* (${ord.advancePercent||0}%).
-
-*💰 Cotización:* $${total.toFixed(2)}
-*💵 Anticipo:* $${adv.toFixed(2)}
-*📌 Restante:* $${rem.toFixed(2)}
-
-En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. ✨`;
-            window.open(`https://wa.me/${ord.phone.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
+            const ord = savedOrders[index]; if (!ord) return;
+            const total = Number(ord.totalAmount) || 0, adv = Number(ord.advanceAmount) || 0;
+            const msg = `Hola ${ord.name}. 👋\n\nTe enviamos la información para apartar tu fecha del pedido *${ord.folio}*.\n\n*💰 Cotización:* $${total.toFixed(2)}\n*💵 Anticipo:* $${adv.toFixed(2)}\n\nEn breve te enviaremos el método de pago.\n\nEn cuanto realices el anticipo, puedes enviarnos tu comprobante por este medio. ¡Muchas gracias!`;
+            window.open(`https://wa.me/${ord.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function requestOrderReceipt(index) {
-            const ord = savedOrders[index];
+            const ord = getFreshSavedOrder(index);
             if (!ord) return;
-            let msg = `¡Hola ${ord.name}! 🧾 Solicitamos el comprobante o datos fiscales para emitir la nota/recibo correspondiente a tu pedido con folio *${ord.folio}* (${ord.theme}). Quedamos atentos.`;
+            const msg = `Hola ${ord.name}. 👋\n\nFolio: *${ord.folio}*\n\n¿Nos podrías enviar por este medio el comprobante de pago de tu anticipo correspondiente a tu pedido? Con esto podremos registrar oficialmente tu fecha en nuestra agenda. ¡Muchas gracias!\n\nQuedamos atentos.`;
             const encodedURL = `https://wa.me/${ord.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
             window.open(encodedURL, '_blank');
             showToast(`Solicitud de comprobante enviada para el folio ${ord.folio}.`, 'success');
         }
 
         function sendPaymentProofInfo(index) {
-            const ord = savedOrders[index];
+            const ord = getFreshSavedOrder(index);
             if (!ord) return;
             document.getElementById('paymentInfoOrderIndex').value = index;
             document.getElementById('paymentInfoFolio').innerText = `Folio: ${ord.folio} · ${ord.name}`;
@@ -2239,9 +2773,9 @@ En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. �
             const v=id=>document.getElementById(id).value.trim();
             const info={bank:v('paymentBankName'),holder:v('paymentAccountHolder'),account:v('paymentAccountNumber'),clabe:v('paymentClabe'),card:v('paymentCardNumber'),extra:v('paymentExtraInfo')};
             savedOrders[index].paymentInfo=info; localStorage.setItem('pinata_saved_orders',JSON.stringify(savedOrders));
-            let msg=`¡Hola ${ord.name}! 💳 Te compartimos la información para realizar tu pago del pedido *${ord.folio}* en *${CLIENT_CONFIG.businessName}*:\n\n`;
+            let msg=`¡Hola ${ord.name}! 👋\n\nTe compartimos la información para realizar tu pago del pedido *${ord.folio}*:\n\n`;
             if(info.bank) msg+=`*🏦 Banco:* ${info.bank}\n`; if(info.holder) msg+=`*👤 Titular:* ${info.holder}\n`; if(info.account) msg+=`*🔢 Número de cuenta:* ${info.account}\n`; if(info.clabe) msg+=`*🔐 CLABE:* ${info.clabe}\n`; if(info.card) msg+=`*💳 Tarjeta:* ${info.card}\n`; if(info.extra) msg+=`\n*📝 Información adicional:*\n${info.extra}\n`;
-            msg+=`\nPor favor envíanos tu comprobante por este mismo medio. ✨`;
+            msg+=`\nPor favor envíanos tu comprobante por este mismo medio. ¡Muchas gracias!`;
             window.open(`https://wa.me/${ord.phone.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(msg)}`,'_blank'); closePaymentInfoModal(); showToast(`Información de pago enviada para ${ord.folio}.`,'success');
         }
 
@@ -2291,11 +2825,12 @@ En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. �
             localStorage.setItem('pinata_saved_orders',JSON.stringify(savedOrders)); renderAdminOrdersList(); openInvoicesModal(i); showToast(`Abono de $${applied.toFixed(2)} guardado.`,'success');
         }
         function sendInvoiceWhatsApp(){
-            const i=parseInt(document.getElementById('invoiceOrderIndex').value,10),ord=savedOrders[i]; if(!ord) return;
-            const total=Number(ord.totalAmount)||0, adv=Number(ord.advanceAmount)||0, abonos=Number(ord.additionalPaid)||0, paid=Math.min(total,adv+abonos), rem=ord.isPaid?0:Math.max(0,total-paid);
-            const extraLine = ord.additionalPaidEnabled === true ? `*➕ Abono adicional:* $${abonos.toFixed(2)}\n` : '';
-            const msg=`¡Hola ${ord.name}! 🧾 Te compartimos el estado de cuenta de tu pedido *${ord.folio}*:\n\n*💰 Cotización:* $${total.toFixed(2)}\n*💵 Anticipo:* $${adv.toFixed(2)}\n${extraLine}*💳 Total abonado:* $${paid.toFixed(2)}\n*📌 Faltante:* $${rem.toFixed(2)}\n\n${ord.isPaid?'✅ Tu pedido está liquidado.':'Quedamos atentos a tu siguiente abono. ✨'}`;
-            window.open(`https://wa.me/${ord.phone.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
+            const i = parseInt(document.getElementById('invoiceOrderIndex').value, 10), ord = getFreshSavedOrder(i); if (!ord) return;
+            const total = Number(ord.totalAmount) || 0, adv = Number(ord.advanceAmount) || 0, abonos = Number(ord.additionalPaid) || 0, paid = Math.min(total, adv + abonos), rem = ord.isPaid ? 0 : Math.max(0, total - paid);
+            const extraLine = (ord.additionalPaidEnabled === true || abonos > 0) ? `*➕ Abono adicional:* $${abonos.toFixed(2)}\n` : '';
+            const statusLine = ord.isPaid ? '*✅ Estado:* Pedido pagado y liquidado.' : '*⏳ Estado:* Pago pendiente.';
+            const msg = `Hola ${ord.name}. 👋\n\nTe compartimos el estado de cuenta de tu pedido *${ord.folio}*.\n\n*💰 Cotización:* $${total.toFixed(2)}\n*💵 Anticipo:* $${adv.toFixed(2)}\n${extraLine}*📌 Faltante:* $${rem.toFixed(2)}\n${statusLine}\n\nCualquier duda, quedamos atentos. ¡Muchas gracias!`;
+            window.open(`https://wa.me/${ord.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function markOrderAsPaid() {
@@ -2771,6 +3306,23 @@ En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. �
             if (desc) desc.innerText = `La primera fecha disponible será con ${orderLeadTimeDays} ${orderLeadTimeDays === 1 ? 'día hábil' : 'días hábiles'} de anticipación.`;
             const enabled = document.getElementById('orderLeadTimeEnabled');
             if (enabled) enabled.checked = orderLeadTimeEnabled;
+
+            // Mantiene el campo de fecha del cliente en sincronía con la anticipación mínima.
+            // Así las fechas anteriores ni siquiera aparecen como seleccionables en el selector nativo.
+            const eventDateInput = document.getElementById('eventDate');
+            if (eventDateInput) {
+                if (orderLeadTimeEnabled) {
+                    const minDate = getOrderLeadTimeStartDate();
+                    const yyyy = minDate.getFullYear();
+                    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(minDate.getDate()).padStart(2, '0');
+                    eventDateInput.min = `${yyyy}-${mm}-${dd}`;
+                    eventDateInput.title = `Primera fecha disponible: ${dd}/${mm}/${yyyy}`;
+                } else {
+                    eventDateInput.removeAttribute('min');
+                    eventDateInput.removeAttribute('title');
+                }
+            }
             updateFormLeadTimeNotice();
         }
 
@@ -2779,6 +3331,55 @@ En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. �
             const timeText = document.getElementById('formLeadTimeText');
             if (timeText) timeText.innerText = orderLeadTimeEnabled ? (`Mínimo ${orderLeadTimeDays} ${orderLeadTimeDays === 1 ? 'día hábil' : 'días hábiles'}`) : 'Consulta disponibilidad para la fecha que necesitas';
             if (notice) notice.classList.toggle('hidden', !(orderLeadTimeEnabled && orderLeadTimeDays === 1));
+        }
+
+        function getOrderCountForDate(dateStr, excludeIndex = -1) {
+            return savedOrders.reduce((count, order, index) => {
+                if (index === excludeIndex) return count;
+                const orderDate = String(order?.date || '').split('T')[0];
+                return orderDate === dateStr ? count + 1 : count;
+            }, 0);
+        }
+
+        function getAutomaticDateStatus(dateStr, excludeIndex = -1) {
+            const parts = String(dateStr).split('-');
+            if (parts.length !== 3) return 'available';
+            const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const dow = dObj.getDay();
+            const manualStatus = dayStatuses[dateStr];
+            if (['few', 'full', 'closed'].includes(manualStatus)) return manualStatus;
+            if (operationalDays[dow] === false) return 'closed';
+            const count = getOrderCountForDate(dateStr, excludeIndex);
+            if (count >= orderDailyCapacity) return 'full';
+            if (count === orderDailyCapacity - 1) return 'few';
+            return 'available';
+        }
+
+        function syncOrderDailyCapacityControls() {
+            const input = document.getElementById('orderDailyCapacityInput');
+            if (input) input.value = orderDailyCapacity;
+            const preview = document.getElementById('orderDailyCapacityPreview');
+            if (preview) preview.innerText = `Máximo ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'} por día`;
+        }
+
+        function saveOrderDailyCapacity(value) {
+            const capacity = parseInt(value, 10);
+            if (!Number.isFinite(capacity) || capacity < 1 || capacity > 100) {
+                syncOrderDailyCapacityControls();
+                showToast('La capacidad debe estar entre 1 y 100 pedidos por día.', 'error');
+                return;
+            }
+            orderDailyCapacity = capacity;
+            localStorage.setItem('pinata_order_daily_capacity', String(capacity));
+            syncOrderDailyCapacityControls();
+            renderCalendar();
+            renderAdminCalendar();
+            showToast(`Capacidad actualizada: ${capacity} ${capacity === 1 ? 'pedido' : 'pedidos'} por día.`, 'success');
+        }
+
+        function isDateUnavailableForOrders(dateStr, excludeIndex = -1) {
+            const status = getAutomaticDateStatus(dateStr, excludeIndex);
+            return status === 'closed' || status === 'full';
         }
 
         function renderAdminCalendar() {
@@ -2805,13 +3406,17 @@ En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. �
                 const dObj = new Date(year, month, d);
                 const dow = dObj.getDay();
 
-                let status = dayStatuses[dateStr] || (operationalDays[dow] === false ? 'closed' : 'available');
+                let status = getAutomaticDateStatus(dateStr);
                 const leadBlocked = isDateBeforeOrderLeadTime(dateStr);
+                const orderCount = getOrderCountForDate(dateStr);
                 let bgClass = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200';
                 let dotClass = 'bg-emerald-500';
                 if (leadBlocked) { bgClass = 'bg-stone-100 text-stone-400 border-stone-200 opacity-70'; dotClass = 'bg-stone-300'; }
 
                 if (status === 'full') {
+                    bgClass = 'bg-orange-50 text-orange-800 border-orange-200';
+                    dotClass = 'bg-orange-500';
+                } else if (status === 'few') {
                     bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
                 } else if (status === 'closed') {
@@ -2848,14 +3453,21 @@ En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. �
                 showToast('Selecciona primero una fecha en el calendario del administrador.', 'error');
                 return;
             }
-            dayStatuses[adminSelectedDateStr] = status;
+            if (status === 'available') {
+                delete dayStatuses[adminSelectedDateStr];
+            } else {
+                dayStatuses[adminSelectedDateStr] = status;
+            }
             localStorage.setItem('pinata_day_statuses', JSON.stringify(dayStatuses));
             renderAdminCalendar();
-            showToast(`Fecha ${adminSelectedDateStr} actualizada a: ${status}.`, 'success');
+            renderCalendar();
+            const labels = { available: 'Disponible', few: 'Pocos lugares', full: 'Agenda llena', closed: 'Cerrado para pedidos' };
+            showToast(`La fecha ${adminSelectedDateStr} quedó como: ${labels[status]}.`, 'success');
         }
 
         function renderAdminOptionsEditor() {
             syncOrderLeadTimeControls();
+            syncOrderDailyCapacityControls();
             renderListEditor('styles', 'Estilo de Piñata');
             renderListEditor('sizes', 'Tamaño de Piñata');
             renderListEditor('deliveries', 'Método de Entrega');
@@ -3103,6 +3715,13 @@ En cuanto realices el anticipo, puedes enviarnos tu comprobante por WhatsApp. �
             showToast('Extra eliminado.', 'success');
         }
         window.addEventListener('storage', (event) => {
+            if (event.key === 'pinata_order_daily_capacity' && event.newValue) {
+                const parsedCapacity = parseInt(event.newValue, 10);
+                if (Number.isFinite(parsedCapacity) && parsedCapacity >= 1) orderDailyCapacity = parsedCapacity;
+                syncOrderDailyCapacityControls();
+                renderCalendar();
+                renderAdminCalendar();
+            }
             if (event.key === 'pinata_order_schedule' || event.key === 'pinata_operational_days') {
                 try {
                     if (event.key === 'pinata_order_schedule' && event.newValue) {

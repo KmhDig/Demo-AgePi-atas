@@ -1107,7 +1107,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             <form onsubmit="verifyAdminPin(event)" class="space-y-4">
                 <div class="space-y-2">
                     <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">PIN de Administrador</label>
-                    <input type="password" id="adminPinInput" required maxlength="6" placeholder="••••" class="input-canva text-center font-bold tracking-widest text-lg">
+                    <input type="password" id="adminPinInput" required maxlength="12" placeholder="••••" class="input-canva text-center font-bold tracking-widest text-lg">
                 </div>
                 <div class="flex items-center justify-between gap-3">
                     <button type="button" onclick="openRememberPinModal()" class="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-[11px] font-bold uppercase tracking-wider transition">
@@ -1121,21 +1121,25 @@ body > section:first-of-type a:not(.bg-brand-500){
         </div>
     </div>
 
-    <!-- REMEMBER PIN MODAL -->
+    <!-- RESET PIN MODAL -->
     <div id="rememberPinModal" class="fixed inset-0 bg-stone-900/75 backdrop-blur-sm z-[90] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl p-6">
             <div class="flex items-center justify-between border-b border-stone-100 pb-4 mb-5">
                 <div>
                     <p class="text-[10px] font-extrabold uppercase tracking-widest text-brand-600">Recuperar acceso</p>
-                    <h3 class="text-lg font-extrabold text-stone-900">Recordar PIN</h3>
-                    <p class="text-xs text-stone-500 mt-1">Escribe la palabra o correo que guardaste en Seguridad.</p>
+                    <h3 class="text-lg font-extrabold text-stone-900">Restablecer PIN</h3>
+                    <p class="text-xs text-stone-500 mt-1">Usa tu palabra o correo de recuperación. El sistema no mostrará el PIN anterior.</p>
                 </div>
                 <button type="button" onclick="closeRememberPinModal()" class="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:bg-stone-200"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-3">
                 <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Palabra o correo de recuperación</label>
                 <input type="text" id="rememberPinInput" placeholder="Ej. mi correo o palabra clave" class="input-canva font-bold">
-                <button type="button" onclick="recoverAdminPin()" class="w-full py-3.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition">Ver PIN</button>
+                <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Nuevo PIN</label>
+                <input type="password" id="recoveryNewPinInput" inputmode="numeric" autocomplete="new-password" placeholder="Nuevo PIN" class="input-canva font-bold tracking-widest">
+                <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Confirmar nuevo PIN</label>
+                <input type="password" id="recoveryNewPinConfirmInput" inputmode="numeric" autocomplete="new-password" placeholder="Repite el nuevo PIN" class="input-canva font-bold tracking-widest">
+                <button type="button" onclick="recoverAdminPin()" class="w-full py-3.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition">Restablecer PIN</button>
             </div>
         </div>
     </div>
@@ -1335,35 +1339,14 @@ body > section:first-of-type a:not(.bg-brand-500){
                     </div>
                     <div id="adminCalendarDaysGrid" class="grid grid-cols-7 gap-2"></div>
                 </div>
-                <div class="p-4 bg-white border-2 border-brand-200 rounded-2xl space-y-3">
-                    <div class="flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-layer-group"></i></div>
-                        <div class="min-w-0">
-                            <h5 class="font-extrabold text-stone-900 text-sm">Capacidad de pedidos por día</h5>
-                            <p class="text-[11px] text-stone-500 mt-1">Define cuántos pedidos puedes aceptar en un mismo día. Al llegar al límite, la fecha se marcará automáticamente como <strong>Agenda llena</strong>.</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
-                        <div class="p-3 bg-stone-50 border border-stone-200 rounded-xl">
-                            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-1">Máximo de pedidos por día</label>
-                            <input type="number" id="orderDailyCapacityInput" min="1" max="100" step="1" value="3" onchange="saveOrderDailyCapacity(this.value)" class="input-canva text-sm font-extrabold">
-                            <p class="text-[10px] text-stone-500 mt-1">Esta capacidad se aplica automáticamente a todos los días.</p>
-                        </div>
-                        <div class="p-3 bg-brand-50/70 border border-brand-100 rounded-xl">
-                            <strong id="orderDailyCapacityPreview" class="block text-xs text-brand-900">Máximo 3 pedidos por día</strong>
-                            <span class="block text-[10px] text-stone-600 mt-1">Si un día tiene 3 pedidos registrados, ya no aparecerá disponible para nuevos pedidos.</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 text-[10px] text-stone-500 bg-stone-50 rounded-xl px-3 py-2.5"><i class="fa-solid fa-circle-info text-brand-500"></i><span>La capacidad general y la anticipación mínima son independientes.</span></div>
-                </div>
                 <div class="pt-2 border-t border-stone-200 space-y-4">
                     <div>
                         <p class="text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-2">Estado de la fecha seleccionada</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <button type="button" onclick="setAdminDateStatus('available')" class="w-full min-h-11 px-3 py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-circle-check"></i> Disponible</button>
-                            <button type="button" onclick="setAdminDateStatus('few')" class="w-full min-h-11 px-3 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Pocos lugares</button>
-                            <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-lock"></i> Agenda llena</button>
-                            <button type="button" onclick="setAdminDateStatus('closed')" class="w-full min-h-11 px-3 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-calendar-xmark"></i> Cerrado para pedidos</button>
+                            <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Pocos lugares</button>
+                            <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-lock"></i> Bloquear agenda llena</button>
+                            <button type="button" onclick="setAdminDateStatus('closed')" class="w-full min-h-11 px-3 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2 sm:col-span-3"><i class="fa-solid fa-calendar-xmark"></i> Cerrado para pedidos</button>
                         </div>
                     </div>
                     <div class="p-4 bg-brand-50/60 border border-brand-200 rounded-2xl space-y-3">
@@ -1574,7 +1557,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             <div id="adminTab-security" class="hidden space-y-6">
                 <div class="p-4 bg-stone-50 rounded-2xl">
                     <h4 class="font-bold text-stone-900 text-sm">Cambiar PIN de Acceso al Panel</h4>
-                    <p class="text-xs text-stone-600">Actualiza la contraseña numérica para proteger las funciones de administración.</p>
+                    <p class="text-xs text-stone-600">El PIN se guarda y valida desde Google Sheets mediante Apps Script. La dueña puede cambiarlo desde aquí sin entrar a la base.</p>
                 </div>
                 <div class="space-y-4 p-5 bg-stone-50 rounded-2xl border border-stone-200">
                     <div class="space-y-2">
@@ -1584,7 +1567,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                     <div class="space-y-2">
                         <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Palabra o correo para recordar el PIN</label>
                         <input type="text" id="adminPinRecoveryInput" placeholder="Ej. micorreo@ejemplo.com o palabra clave" class="input-canva font-medium">
-                        <p class="text-[10px] text-stone-500">Lo usarás en “Recordar PIN” cuando necesites recuperar tu PIN.</p>
+                        <p class="text-[10px] text-stone-500">Se guarda de forma segura en la base y sirve para restablecer el PIN si se olvida.</p>
                     </div>
                     <button type="button" onclick="saveAdminSecurity()" class="px-5 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition">Guardar</button>
                 </div>
@@ -1619,20 +1602,28 @@ body > section:first-of-type a:not(.bg-brand-500){
     </div>
 
     <script>
+        // URL de tu Web App de Google Apps Script. No pongas aquí el PIN ni la clave de recuperación.
+        const GOOGLE_SHEETS_API_URL = "PEGAR_AQUI_URL_DE_TU_WEB_APP";
+
         const DEFAULT_CLIENT_CONFIG = {
             businessName: "Piñatas Magia & Fiesta",
             whatsappNumber: "5218112345678",
             instagram: "https://instagram.com",
             facebook: "https://facebook.com",
-            tiktok: "https://tiktok.com",
-            adminPin: "1234"
+            tiktok: "https://tiktok.com"
         };
 
         let CLIENT_CONFIG = JSON.parse(localStorage.getItem('pinata_client_config')) || DEFAULT_CLIENT_CONFIG;
         CLIENT_CONFIG.socialPlacement = CLIENT_CONFIG.socialPlacement || 'header';
-        // Mantiene la sesión del panel Admin mientras el usuario trabaja dentro del sistema.
+        // El PIN y la recuperación ya no se almacenan en el navegador.
+        if (Object.prototype.hasOwnProperty.call(CLIENT_CONFIG, 'adminPin')) {
+            delete CLIENT_CONFIG.adminPin;
+            localStorage.setItem('pinata_client_config', JSON.stringify(CLIENT_CONFIG));
+        }
+        localStorage.removeItem('pinata_admin_pin_recovery');
+        // Mantiene la sesión Admin solo durante la pestaña actual.
         let adminSessionActive = false;
-        if (!CLIENT_CONFIG.adminPin) CLIENT_CONFIG.adminPin = "1234";
+        let adminSessionToken = sessionStorage.getItem('pinata_admin_session_token') || '';
 
         const DEFAULT_FORM_OPTIONS = {
             styles: [
@@ -1702,8 +1693,6 @@ body > section:first-of-type a:not(.bg-brand-500){
         let orderLeadTimeDays = parseInt(localStorage.getItem('pinata_order_lead_time_days') || '5', 10);
         if (!Number.isFinite(orderLeadTimeDays) || orderLeadTimeDays < 0) orderLeadTimeDays = 5;
         let orderLeadTimeEnabled = localStorage.getItem('pinata_order_lead_time_enabled') !== 'false';
-        let orderDailyCapacity = parseInt(localStorage.getItem('pinata_order_daily_capacity') || '3', 10);
-        if (!Number.isFinite(orderDailyCapacity) || orderDailyCapacity < 1) orderDailyCapacity = 3;
         let orderSchedule = JSON.parse(localStorage.getItem('pinata_order_schedule')) || { openTime: '09:00', closeTime: '18:00', mode: 'both' };
         if (!['time','days','both'].includes(orderSchedule.mode)) orderSchedule.mode = 'both';
         let upcomingRefreshTimer = null;
@@ -1731,7 +1720,6 @@ body > section:first-of-type a:not(.bg-brand-500){
             renderFormOptionsInClient();
             renderCalendar();
             renderAdminCalendar();
-            syncOrderDailyCapacityControls();
             updateOrdersBadge();
             renderHeaderSocials();
             renderFooterSocials();
@@ -1808,24 +1796,44 @@ body > section:first-of-type a:not(.bg-brand-500){
             showToast('Configuración de redes guardada con éxito.', 'success');
         }
 
-        function saveNewAdminPin() {
-            const newPin = document.getElementById('newAdminPinInput').value.trim();
-            if (!newPin || newPin.length < 3) {
-                showToast('El PIN debe tener al menos 3 caracteres.', 'error');
-                return;
+        async function adminApiRequest(action, payload = {}) {
+            if (!GOOGLE_SHEETS_API_URL || GOOGLE_SHEETS_API_URL.includes('PEGAR_AQUI')) {
+                throw new Error('Falta configurar la URL de Google Apps Script en GOOGLE_SHEETS_API_URL.');
             }
-            CLIENT_CONFIG.adminPin = newPin;
-            localStorage.setItem('pinata_client_config', JSON.stringify(CLIENT_CONFIG));
-            document.getElementById('newAdminPinInput').value = '';
-            showToast('PIN de administrador actualizado con éxito.', 'success');
+
+            const response = await fetch(GOOGLE_SHEETS_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, ...payload })
+            });
+
+            const text = await response.text();
+            let data;
+            try { data = JSON.parse(text); } catch (_) {
+                throw new Error('La respuesta del servidor no es válida.');
+            }
+            if (!response.ok || data.ok === false) {
+                throw new Error(data?.message || 'No fue posible completar la operación.');
+            }
+            return data;
         }
 
-        let adminPinRecovery = localStorage.getItem('pinata_admin_pin_recovery') || '';
+        function clearAdminSession() {
+            adminSessionActive = false;
+            adminSessionToken = '';
+            sessionStorage.removeItem('pinata_admin_session_token');
+        }
+
+        function validatePinInput(pin) {
+            return /^\d{3,12}$/.test(String(pin || '').trim());
+        }
 
         function openRememberPinModal() {
             const modal = document.getElementById('rememberPinModal');
-            const input = document.getElementById('rememberPinInput');
-            if (input) input.value = '';
+            ['rememberPinInput', 'recoveryNewPinInput', 'recoveryNewPinConfirmInput'].forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.value = '';
+            });
             if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         }
 
@@ -1834,44 +1842,63 @@ body > section:first-of-type a:not(.bg-brand-500){
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         }
 
-        function recoverAdminPin() {
-            const entered = (document.getElementById('rememberPinInput')?.value || '').trim().toLowerCase();
-            const saved = (adminPinRecovery || '').trim().toLowerCase();
-            if (!saved) {
-                showToast('Primero configura una palabra o correo de recuperación en Seguridad.', 'error');
+        async function recoverAdminPin() {
+            const recovery = (document.getElementById('rememberPinInput')?.value || '').trim();
+            const newPin = (document.getElementById('recoveryNewPinInput')?.value || '').trim();
+            const confirmPin = (document.getElementById('recoveryNewPinConfirmInput')?.value || '').trim();
+
+            if (!recovery) {
+                showToast('Escribe tu palabra o correo de recuperación.', 'error');
                 return;
             }
-            if (entered && entered === saved) {
-                const pin = CLIENT_CONFIG.adminPin || '1234';
+            if (!validatePinInput(newPin)) {
+                showToast('El nuevo PIN debe tener solo números y entre 3 y 12 dígitos.', 'error');
+                return;
+            }
+            if (newPin !== confirmPin) {
+                showToast('Los nuevos PIN no coinciden.', 'error');
+                return;
+            }
+
+            try {
+                await adminApiRequest('resetPin', { recovery, newPin });
                 closeRememberPinModal();
-                showToast(`Tu PIN de Administrador es: ${pin}`, 'success');
-            } else {
-                showToast('La palabra o correo no coincide.', 'error');
+                clearAdminSession();
+                showToast('PIN restablecido correctamente. Ya puedes entrar con tu nuevo PIN.', 'success');
+            } catch (error) {
+                showToast(error.message || 'No fue posible restablecer el PIN.', 'error');
             }
         }
 
-        function saveAdminSecurity() {
+        async function saveAdminSecurity() {
             const newPin = (document.getElementById('newAdminPinInput')?.value || '').trim();
             const recovery = (document.getElementById('adminPinRecoveryInput')?.value || '').trim();
-            if (!newPin || newPin.length < 3) {
-                showToast('El PIN debe tener al menos 3 caracteres.', 'error');
+
+            if (!validatePinInput(newPin)) {
+                showToast('El PIN debe tener solo números y entre 3 y 12 dígitos.', 'error');
                 return;
             }
             if (!recovery) {
-                showToast('Escribe una palabra o correo para recordar el PIN.', 'error');
+                showToast('Escribe una palabra o correo para recuperación.', 'error');
                 return;
             }
-            CLIENT_CONFIG.adminPin = newPin;
-            localStorage.setItem('pinata_client_config', JSON.stringify(CLIENT_CONFIG));
-            adminPinRecovery = recovery;
-            localStorage.setItem('pinata_admin_pin_recovery', recovery);
-            document.getElementById('newAdminPinInput').value = '';
-            showToast('Seguridad guardada correctamente.', 'success');
+            if (!adminSessionToken) {
+                showToast('Tu sesión de administrador expiró. Vuelve a entrar al panel.', 'error');
+                return;
+            }
+
+            try {
+                await adminApiRequest('changePin', { token: adminSessionToken, newPin, recovery });
+                document.getElementById('newAdminPinInput').value = '';
+                document.getElementById('adminPinRecoveryInput').value = '';
+                showToast('Seguridad guardada correctamente en la base.', 'success');
+            } catch (error) {
+                showToast(error.message || 'No fue posible guardar la seguridad.', 'error');
+            }
         }
 
         function openPinModal() {
-            // Si la sesión Admin sigue activa, simplemente volvemos a mostrar el panel.
-            if (adminSessionActive) {
+            if (adminSessionActive && adminSessionToken) {
                 openAdminModal();
                 return;
             }
@@ -1886,18 +1913,27 @@ body > section:first-of-type a:not(.bg-brand-500){
             document.getElementById('pinModal').classList.add('hidden');
         }
 
-        function verifyAdminPin(e) {
+        async function verifyAdminPin(e) {
             e.preventDefault();
             const enteredPin = document.getElementById('adminPinInput').value.trim();
-            const correctPin = CLIENT_CONFIG.adminPin || "1234";
 
-            if (enteredPin === correctPin) {
+            if (!validatePinInput(enteredPin)) {
+                showToast('Escribe un PIN válido.', 'error');
+                return;
+            }
+
+            try {
+                const data = await adminApiRequest('login', { pin: enteredPin });
+                adminSessionToken = data.token || '';
+                if (!adminSessionToken) throw new Error('El servidor no devolvió una sesión válida.');
+                sessionStorage.setItem('pinata_admin_session_token', adminSessionToken);
                 closePinModal();
                 adminSessionActive = true;
                 openAdminModal();
                 showToast('Acceso concedido correctamente.', 'success');
-            } else {
-                showToast('PIN incorrecto. Inténtalo de nuevo.', 'error');
+            } catch (error) {
+                clearAdminSession();
+                showToast(error.message || 'PIN incorrecto. Inténtalo de nuevo.', 'error');
             }
         }
 
@@ -2142,17 +2178,13 @@ body > section:first-of-type a:not(.bg-brand-500){
                 const dObj = new Date(year, month, d);
                 const dow = dObj.getDay();
 
-                let status = getAutomaticDateStatus(dateStr);
-                const orderCount = getOrderCountForDate(dateStr);
+                let status = dayStatuses[dateStr] || (operationalDays[dow] === false ? 'closed' : 'available');
                 const leadBlocked = isDateBeforeOrderLeadTime(dateStr);
                 let bgClass = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200';
                 let dotClass = 'bg-emerald-500';
                 if (leadBlocked) { bgClass = 'bg-stone-100 text-stone-400 border-stone-200 opacity-70'; dotClass = 'bg-stone-300'; }
 
                 if (status === 'full') {
-                    bgClass = 'bg-orange-50 text-orange-800 border-orange-200 opacity-70';
-                    dotClass = 'bg-orange-500';
-                } else if (status === 'few') {
                     bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
                 } else if (status === 'closed') {
@@ -2165,10 +2197,9 @@ body > section:first-of-type a:not(.bg-brand-500){
                 }
 
                 grid.innerHTML += `
-                    <button type="button" ${(leadBlocked || status === 'full' || status === 'closed') ? 'disabled' : `onclick="selectDate('${dateStr}')"`} class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${(leadBlocked || status === 'full' || status === 'closed') ? 'cursor-not-allowed' : ''}">
+                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${leadBlocked ? 'cursor-not-allowed' : ''}">
                         <span>${d}</span>
                         <span class="w-1.5 h-1.5 rounded-full ${dotClass} mt-0.5"></span>
-                        <span class="text-[8px] leading-none mt-0.5 opacity-70">${orderCount}/${orderDailyCapacity}</span>
                     </button>
                 `;
             }
@@ -2180,11 +2211,6 @@ body > section:first-of-type a:not(.bg-brand-500){
         }
 
         function selectDate(dateStr) {
-            if (isDateUnavailableForOrders(dateStr)) {
-                const status = getAutomaticDateStatus(dateStr);
-                showToast(status === 'full' ? `Esta fecha ya alcanzó la capacidad máxima de ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'}.` : 'Lo sentimos, esta fecha está cerrada para pedidos.', 'error');
-                return;
-            }
             if (isDateBeforeOrderLeadTime(dateStr)) { showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error'); return; }
             selectedDateStr = dateStr;
             const dateInput = document.getElementById('eventDate');
@@ -2199,14 +2225,6 @@ body > section:first-of-type a:not(.bg-brand-500){
 
         function onFormDateChange(dateStr) {
             if (!dateStr) return;
-            if (isDateUnavailableForOrders(dateStr)) {
-                document.getElementById('eventDate').value = '';
-                selectedDateStr = null;
-                const status = getAutomaticDateStatus(dateStr);
-                showToast(status === 'full' ? `Esta fecha ya alcanzó la capacidad máxima de ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'}.` : 'Lo sentimos, esta fecha está cerrada para pedidos.', 'error');
-                renderCalendar();
-                return;
-            }
             if (isDateBeforeOrderLeadTime(dateStr)) { document.getElementById('eventDate').value = ''; selectedDateStr = null; showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error'); return; }
             selectedDateStr = dateStr;
             
@@ -2256,11 +2274,6 @@ body > section:first-of-type a:not(.bg-brand-500){
             }
 
             const editingIndex = parseInt(document.getElementById('editingOrderIndex').value);
-            if (getAutomaticDateStatus(date, editingIndex) === 'full') {
-                showToast(`Esta fecha ya alcanzó la capacidad máxima de ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'}. Elige otra fecha.`, 'error');
-                renderCalendar();
-                return;
-            }
             const name = document.getElementById('clientName').value.trim();
             const phone = document.getElementById('clientPhone').value.trim();
             const style = document.getElementById('pinataStyle').value;
@@ -2385,7 +2398,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             document.getElementById('formTitleHeader').innerText = 'Formulario de Solicitud';
             document.getElementById('formSubmitBtn').innerHTML = `<i class="fa-solid fa-check-to-slot"></i> Revisar y Enviar Solicitud`;
 
-            let msg = `¡Hola! 👋 Me gustaría enviar una solicitud de pedido con folio *${o.folio}* en *${CLIENT_CONFIG.businessName}*:
+            let msg = `¡Hola! 👋 Me gustaría confirmar mi pedido con folio *${o.folio}* en *${CLIENT_CONFIG.businessName}*:
 
 *🏷️ Folio:* ${o.folio}
 *👤 Nombre:* ${o.name}
@@ -2409,7 +2422,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             msg += `\n*📝 Detalles y Colores:*
 ${o.details}
 
-Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobada, podremos coordinar el anticipo y confirmar mi fecha. ✨`;
+Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
 
             const encodedURL = `https://wa.me/${CLIENT_CONFIG.whatsappNumber}?text=${encodeURIComponent(msg)}`;
             window.open(encodedURL, '_blank');
@@ -2892,7 +2905,7 @@ Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobad
 
         function switchAdminTab(tab) {
             const recoveryInput = document.getElementById('adminPinRecoveryInput');
-            if (recoveryInput) recoveryInput.value = adminPinRecovery || '';
+            if (recoveryInput) recoveryInput.value = '';
             // Cambiar de pestaña nunca debe cerrar el panel.
             const adminModal = document.getElementById('adminModal');
             if (adminModal) {
@@ -3306,23 +3319,6 @@ Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobad
             if (desc) desc.innerText = `La primera fecha disponible será con ${orderLeadTimeDays} ${orderLeadTimeDays === 1 ? 'día hábil' : 'días hábiles'} de anticipación.`;
             const enabled = document.getElementById('orderLeadTimeEnabled');
             if (enabled) enabled.checked = orderLeadTimeEnabled;
-
-            // Mantiene el campo de fecha del cliente en sincronía con la anticipación mínima.
-            // Así las fechas anteriores ni siquiera aparecen como seleccionables en el selector nativo.
-            const eventDateInput = document.getElementById('eventDate');
-            if (eventDateInput) {
-                if (orderLeadTimeEnabled) {
-                    const minDate = getOrderLeadTimeStartDate();
-                    const yyyy = minDate.getFullYear();
-                    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
-                    const dd = String(minDate.getDate()).padStart(2, '0');
-                    eventDateInput.min = `${yyyy}-${mm}-${dd}`;
-                    eventDateInput.title = `Primera fecha disponible: ${dd}/${mm}/${yyyy}`;
-                } else {
-                    eventDateInput.removeAttribute('min');
-                    eventDateInput.removeAttribute('title');
-                }
-            }
             updateFormLeadTimeNotice();
         }
 
@@ -3331,55 +3327,6 @@ Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobad
             const timeText = document.getElementById('formLeadTimeText');
             if (timeText) timeText.innerText = orderLeadTimeEnabled ? (`Mínimo ${orderLeadTimeDays} ${orderLeadTimeDays === 1 ? 'día hábil' : 'días hábiles'}`) : 'Consulta disponibilidad para la fecha que necesitas';
             if (notice) notice.classList.toggle('hidden', !(orderLeadTimeEnabled && orderLeadTimeDays === 1));
-        }
-
-        function getOrderCountForDate(dateStr, excludeIndex = -1) {
-            return savedOrders.reduce((count, order, index) => {
-                if (index === excludeIndex) return count;
-                const orderDate = String(order?.date || '').split('T')[0];
-                return orderDate === dateStr ? count + 1 : count;
-            }, 0);
-        }
-
-        function getAutomaticDateStatus(dateStr, excludeIndex = -1) {
-            const parts = String(dateStr).split('-');
-            if (parts.length !== 3) return 'available';
-            const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-            const dow = dObj.getDay();
-            const manualStatus = dayStatuses[dateStr];
-            if (['few', 'full', 'closed'].includes(manualStatus)) return manualStatus;
-            if (operationalDays[dow] === false) return 'closed';
-            const count = getOrderCountForDate(dateStr, excludeIndex);
-            if (count >= orderDailyCapacity) return 'full';
-            if (count === orderDailyCapacity - 1) return 'few';
-            return 'available';
-        }
-
-        function syncOrderDailyCapacityControls() {
-            const input = document.getElementById('orderDailyCapacityInput');
-            if (input) input.value = orderDailyCapacity;
-            const preview = document.getElementById('orderDailyCapacityPreview');
-            if (preview) preview.innerText = `Máximo ${orderDailyCapacity} ${orderDailyCapacity === 1 ? 'pedido' : 'pedidos'} por día`;
-        }
-
-        function saveOrderDailyCapacity(value) {
-            const capacity = parseInt(value, 10);
-            if (!Number.isFinite(capacity) || capacity < 1 || capacity > 100) {
-                syncOrderDailyCapacityControls();
-                showToast('La capacidad debe estar entre 1 y 100 pedidos por día.', 'error');
-                return;
-            }
-            orderDailyCapacity = capacity;
-            localStorage.setItem('pinata_order_daily_capacity', String(capacity));
-            syncOrderDailyCapacityControls();
-            renderCalendar();
-            renderAdminCalendar();
-            showToast(`Capacidad actualizada: ${capacity} ${capacity === 1 ? 'pedido' : 'pedidos'} por día.`, 'success');
-        }
-
-        function isDateUnavailableForOrders(dateStr, excludeIndex = -1) {
-            const status = getAutomaticDateStatus(dateStr, excludeIndex);
-            return status === 'closed' || status === 'full';
         }
 
         function renderAdminCalendar() {
@@ -3406,17 +3353,13 @@ Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobad
                 const dObj = new Date(year, month, d);
                 const dow = dObj.getDay();
 
-                let status = getAutomaticDateStatus(dateStr);
+                let status = dayStatuses[dateStr] || (operationalDays[dow] === false ? 'closed' : 'available');
                 const leadBlocked = isDateBeforeOrderLeadTime(dateStr);
-                const orderCount = getOrderCountForDate(dateStr);
                 let bgClass = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200';
                 let dotClass = 'bg-emerald-500';
                 if (leadBlocked) { bgClass = 'bg-stone-100 text-stone-400 border-stone-200 opacity-70'; dotClass = 'bg-stone-300'; }
 
                 if (status === 'full') {
-                    bgClass = 'bg-orange-50 text-orange-800 border-orange-200';
-                    dotClass = 'bg-orange-500';
-                } else if (status === 'few') {
                     bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
                 } else if (status === 'closed') {
@@ -3453,21 +3396,14 @@ Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobad
                 showToast('Selecciona primero una fecha en el calendario del administrador.', 'error');
                 return;
             }
-            if (status === 'available') {
-                delete dayStatuses[adminSelectedDateStr];
-            } else {
-                dayStatuses[adminSelectedDateStr] = status;
-            }
+            dayStatuses[adminSelectedDateStr] = status;
             localStorage.setItem('pinata_day_statuses', JSON.stringify(dayStatuses));
             renderAdminCalendar();
-            renderCalendar();
-            const labels = { available: 'Disponible', few: 'Pocos lugares', full: 'Agenda llena', closed: 'Cerrado para pedidos' };
-            showToast(`La fecha ${adminSelectedDateStr} quedó como: ${labels[status]}.`, 'success');
+            showToast(`Fecha ${adminSelectedDateStr} actualizada a: ${status}.`, 'success');
         }
 
         function renderAdminOptionsEditor() {
             syncOrderLeadTimeControls();
-            syncOrderDailyCapacityControls();
             renderListEditor('styles', 'Estilo de Piñata');
             renderListEditor('sizes', 'Tamaño de Piñata');
             renderListEditor('deliveries', 'Método de Entrega');
@@ -3715,13 +3651,6 @@ Quedo a la espera de la revisión y cotización de mi solicitud. Una vez aprobad
             showToast('Extra eliminado.', 'success');
         }
         window.addEventListener('storage', (event) => {
-            if (event.key === 'pinata_order_daily_capacity' && event.newValue) {
-                const parsedCapacity = parseInt(event.newValue, 10);
-                if (Number.isFinite(parsedCapacity) && parsedCapacity >= 1) orderDailyCapacity = parsedCapacity;
-                syncOrderDailyCapacityControls();
-                renderCalendar();
-                renderAdminCalendar();
-            }
             if (event.key === 'pinata_order_schedule' || event.key === 'pinata_operational_days') {
                 try {
                     if (event.key === 'pinata_order_schedule' && event.newValue) {

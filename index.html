@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-    <!-- Vista previa al compartir el sitio (WhatsApp, Facebook, etc.).
-         IMPORTANTE: reemplaza TU-DOMINIO.com por el dominio real donde publiques esta página. -->
     <!-- Vista previa al compartir el sitio (WhatsApp, Facebook, etc.).
          IMPORTANTE: reemplaza TU-DOMINIO.com por el dominio real donde publiques esta página. -->
     <meta property="og:type" content="website">
@@ -19,6 +16,17 @@
     <meta name="twitter:title" content="¡PiniPo! - Piñatas personalizadas">
     <meta name="twitter:description" content="Piñatas personalizadas hechas a mano para tus celebraciones.">
     <meta name="twitter:image" content="https://pinipo-demo.vercel.app/images/logo.png">
+
+
+    <!-- =========================================================
+         ✨ PERSONALIZACIÓN RÁPIDA — EDITA SOLO ESTA PARTE ✨
+         Puedes cambiar la apariencia principal sin buscar por todo el HTML.
+         - logoUrl: deja "" para conservar el ícono. También acepta images/logo.png
+         - portadaUrl: foto principal del encabezado
+         - colores: usa códigos HEX, por ejemplo #e11d48
+         - títulos/textos: cambia aquí los textos principales de Inicio
+         ========================================================= -->
+    <script>
         const PERSONALIZACION = {
             marca: "¡PiniPo!",
             logoUrl: "images/logo.png", // Ejemplo: "images/logo.png"
@@ -72,13 +80,22 @@
             }
 
             const logoBox = document.getElementById('quickBrandLogo');
+            const logoImage = document.getElementById('quickBrandLogoImage');
             const logoIcon = document.getElementById('quickBrandLogoIcon');
-            if (logoBox && logoIcon && p.logoUrl) {
-                logoIcon.style.display = 'none';
-                logoBox.style.backgroundImage = `url("${p.logoUrl}")`;
-                logoBox.style.backgroundSize = 'cover';
-                logoBox.style.backgroundPosition = 'center';
-                logoBox.style.backgroundColor = '#fff';
+            if (logoBox && logoImage && logoIcon) {
+                if (p.logoUrl) {
+                    logoImage.src = p.logoUrl;
+                    logoImage.alt = `Logo de ${p.marca}`;
+                    logoImage.style.display = 'block';
+                    logoIcon.style.display = 'none';
+                    logoBox.style.backgroundImage = 'none';
+                    logoBox.style.backgroundColor = '#fff';
+                } else {
+                    logoImage.style.display = 'none';
+                    logoIcon.style.display = 'block';
+                    logoBox.style.backgroundImage = 'none';
+                    logoBox.style.backgroundColor = 'var(--personalizacion-principal)';
+                }
             }
         });
     </script>
@@ -544,8 +561,9 @@ body > section:first-of-type a:not(.bg-brand-500){
     <header class="bg-white/95 backdrop-blur-md border-b border-stone-200 sticky top-0 z-40 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div id="quickBrandLogo" class="w-11 h-11 bg-brand-500 rounded-2xl flex items-center justify-center text-white shadow-md">
-                    <i id="quickBrandLogoIcon" class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                <div id="quickBrandLogo" class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center text-white shadow-md overflow-hidden">
+                    <img id="quickBrandLogoImage" src="images/logo.png" alt="Logo de ¡PiniPo!" class="w-full h-full object-contain" onerror="this.style.display='none'; document.getElementById('quickBrandLogoIcon').style.display='block';">
+                    <i id="quickBrandLogoIcon" class="fa-solid fa-wand-magic-sparkles text-xl" style="display:none"></i>
                 </div>
                 <div>
                     <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-stone-900" id="navBusinessName">¡PiniPo!</h1>

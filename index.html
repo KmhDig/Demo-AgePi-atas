@@ -564,6 +564,123 @@ body > section:first-of-type a:not(.bg-brand-500){
 }
 </style>
 
+<style id="mobile-hero-ajuste-final">
+
+/* =========================================================
+   AJUSTE FINAL PARA CELULAR
+   No cambia escritorio ni funcionalidad.
+   Solo mejora proporciones del Hero en pantallas pequeñas.
+   ========================================================= */
+
+@media (max-width:640px){
+  .pm-editorial-hero{overflow:hidden !important;}
+  .pm-editorial-grid{min-height:auto !important;gap:.25rem !important;}
+
+  .pm-editorial-copy{padding:2.2rem 0 .5rem !important;}
+  .pm-kicker{gap:9px !important;font-size:9px !important;letter-spacing:.14em !important;margin-bottom:16px !important;}
+  .pm-kicker-line{width:28px !important;}
+  .pm-editorial-copy h2{
+    font-size:2.25rem !important;
+    line-height:1.05 !important;
+    letter-spacing:-.035em !important;
+    max-width:335px !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    margin-bottom:18px !important;
+  }
+  .pm-editorial-copy p{
+    font-size:.9rem !important;
+    line-height:1.55 !important;
+    max-width:335px !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    margin-bottom:22px !important;
+  }
+
+  .pm-editorial-actions{
+    gap:9px !important;
+    width:100% !important;
+    max-width:335px !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+  }
+  .pm-main-btn,.pm-text-btn{
+    min-height:44px !important;
+    font-size:12px !important;
+    padding:0 15px !important;
+  }
+  .pm-main-btn{flex:1 !important;}
+  .pm-text-btn{flex:1 !important;width:auto !important;}
+
+  .pm-editorial-details{
+    margin-top:22px !important;
+    padding-top:13px !important;
+    gap:12px !important;
+    font-size:8.5px !important;
+    letter-spacing:.035em !important;
+    width:100% !important;
+    justify-content:center !important;
+  }
+  .pm-editorial-details span{gap:5px !important;}
+
+  .pm-editorial-visual{
+    height:400px !important;
+    margin-top:.25rem !important;
+  }
+  .pm-visual-backdrop{
+    width:70% !important;
+    height:330px !important;
+    right:8% !important;
+    top:50% !important;
+  }
+  .pm-photo-frame{
+    width:72% !important;
+    height:350px !important;
+    padding:8px !important;
+  }
+
+  .pm-photo-tag{
+    top:18px !important;
+    left:-7px !important;
+    padding:8px 11px !important;
+    font-size:8px !important;
+    letter-spacing:.11em !important;
+  }
+
+  .pm-photo-stamp{
+    width:68px !important;
+    height:68px !important;
+    right:-15px !important;
+    bottom:20px !important;
+  }
+  .pm-photo-stamp span{font-size:15px !important;}
+  .pm-photo-stamp small{font-size:6px !important;margin-top:3px !important;}
+
+  .pm-visual-caption{
+    left:3% !important;
+    bottom:5px !important;
+    min-width:210px !important;
+    padding:10px 13px !important;
+    gap:10px !important;
+  }
+  .pm-visual-caption > span{font-size:16px !important;}
+  .pm-visual-caption strong{font-size:10px !important;}
+  .pm-visual-caption small{font-size:8px !important;margin-top:3px !important;}
+}
+
+@media (max-width:360px){
+  .pm-editorial-copy h2{font-size:2.05rem !important;}
+  .pm-editorial-copy p{font-size:.86rem !important;}
+  .pm-main-btn,.pm-text-btn{font-size:11px !important;padding:0 11px !important;}
+  .pm-editorial-details{font-size:8px !important;gap:8px !important;}
+  .pm-editorial-visual{height:370px !important;}
+  .pm-photo-frame{height:325px !important;}
+  .pm-visual-backdrop{height:305px !important;}
+  .pm-visual-caption{min-width:195px !important;padding:9px 11px !important;}
+}
+
+</style>
+
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
@@ -611,7 +728,7 @@ body > section:first-of-type a:not(.bg-brand-500){
         <div class="pm-visual-backdrop"></div>
         <div class="pm-photo-frame">
           <div class="pm-photo-tag">100% PERSONALIZADA</div>
-          <img src="imagen/" alt="Piñata artesanal" onerror="this.src='images/imagen1.jpg'">
+          <img src="images/imagen1.jpg" alt="Piñata artesanal">
           <div class="pm-photo-stamp">
           <span>¡PiniPo!</span>
           <small>PIÑATAS</small>

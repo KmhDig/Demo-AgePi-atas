@@ -830,6 +830,62 @@ body > section:first-of-type a:not(.bg-brand-500){
 }
 </style>
 
+
+<style id="mobile-final-polish">
+/* =========================================================
+   PULIDO FINAL MÓVIL
+   Solo afecta pantallas de 640px o menos.
+   La versión de computadora no cambia.
+   ========================================================= */
+@media (max-width:640px){
+
+  /* Un poco más de aire al comenzar el Hero */
+  .pm-editorial-copy{
+    padding-top:1.85rem !important;
+  }
+
+  /* Mantener el texto cómodo sin volver a alargar el Hero */
+  .pm-editorial-copy h2{
+    margin-bottom:15px !important;
+  }
+
+  .pm-editorial-copy p{
+    margin-bottom:18px !important;
+  }
+
+  /* Separación ligeramente más natural antes de la foto */
+  .pm-editorial-details{
+    margin-bottom:2px !important;
+  }
+
+  .pm-editorial-visual{
+    margin-top:.15rem !important;
+  }
+
+  /* La galería conserva las 2 columnas, pero termina más cerca
+     de la siguiente sección para evitar un bloque blanco innecesario. */
+  #galeriaTrabajos{
+    padding-bottom:1.35rem !important;
+  }
+
+  #galeriaTrabajos > div:first-child{
+    margin-bottom:1.15rem !important;
+  }
+
+  /* Un pequeño respiro entre la galería y la tarjeta siguiente,
+     sin dejar un hueco exagerado. */
+  #galeriaTrabajos + section{
+    padding-top:1.35rem !important;
+  }
+}
+
+@media (max-width:360px){
+  .pm-editorial-copy{
+    padding-top:1.6rem !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 

@@ -460,27 +460,10 @@ body > section:first-of-type a:not(.bg-brand-500){
   box-shadow:0 10px 24px rgba(225,29,72,.16) !important;
 }
 
-/* Footer: franja oscura limpia, en armonía con el encabezado */
+/* Footer: elegante pero ligero */
 #siteFooter{
-  background:#171717 !important;
-  border-top:1px solid #262626 !important;
-  padding-top:.8rem !important;
-  padding-bottom:.8rem !important;
-}
-#siteFooter .max-w-7xl{
-  min-height:3.2rem;
-}
-#siteFooter h3{
-  color:#fff !important;
-}
-#siteFooter p{
-  color:#a8a29e !important;
-}
-#siteFooter #footerSocialIconsContainer{
-  color:#d6d3d1 !important;
-}
-#siteFooter .text-stone-500{
-  color:#78716c !important;
+  background:linear-gradient(135deg,#3f1720,#5b2630) !important;
+  border-top:0 !important;
 }
 
 @media (max-width:640px){
@@ -533,9 +516,9 @@ body > section:first-of-type a:not(.bg-brand-500){
 .pm-main-btn{display:inline-flex;align-items:center;gap:10px;background:#9f1239;color:#fff;padding:14px 22px;border-radius:8px;font-weight:800;font-size:14px;box-shadow:0 12px 28px rgba(159,18,57,.16);transition:.2s;text-decoration:none}
 .pm-main-btn:hover{background:#881337;transform:translateY(-1px)}
 .pm-text-btn{display:inline-flex;align-items:center;gap:10px;color:#302725;font-size:14px;font-weight:800;text-decoration:none;border-bottom:1px solid #cfc5c0;padding-bottom:5px}
-.pm-text-btn i{font-size:12px;color:#ffffff !important;transition:.2s}.pm-text-btn:hover i{transform:translateX(4px)}
-.pm-editorial-details{display:flex;gap:25px;margin-top:38px;padding-top:20px;border-top:1px solid rgba(255,255,255,.75);color:#ffffff !important;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
-.pm-editorial-details span{display:flex;align-items:center;gap:7px}.pm-editorial-details i{color:color:#ffffff !important}
+.pm-text-btn i{font-size:12px;transition:.2s}.pm-text-btn:hover i{transform:translateX(4px)}
+.pm-editorial-details{display:flex;gap:25px;margin-top:38px;padding-top:20px;border-top:1px solid #e6dfda;color:#817773;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.pm-editorial-details span{display:flex;align-items:center;gap:7px}.pm-editorial-details i{color:#9f1239}
 .pm-editorial-visual{position:relative;height:610px;display:flex;align-items:center;justify-content:center}
 .pm-visual-backdrop{position:absolute;width:390px;height:510px;background:#f1ddd9;right:8%;top:50%;transform:translateY(-50%) rotate(5deg)}
 .pm-photo-frame{position:relative;width:min(390px,78%);height:540px;background:#fff;padding:11px;box-shadow:0 25px 55px rgba(58,38,31,.18);transform:rotate(-2.2deg)}
@@ -551,8 +534,8 @@ body > section:first-of-type a:not(.bg-brand-500){
 
 <style id="hero-ajuste-contraste-botones">
 /* Ajuste visual solicitado: botón secundario más equilibrado y textos de acento con mayor contraste */
-.pm-kicker{color:#ffffff !important;text-shadow:0 0 0 transparent;}
-.pm-kicker-line{background:#ffffff !important;}
+.pm-kicker{color:#7f1836 !important;text-shadow:0 0 0 transparent;}
+.pm-kicker-line{background:#7f1836 !important;}
 .pm-photo-tag{background:#7f1836 !important;}
 .pm-photo-stamp strong{color:#7f1836 !important;}
 .pm-text-btn{
@@ -570,14 +553,14 @@ body > section:first-of-type a:not(.bg-brand-500){
   transition:.2s !important;
 }
 .pm-text-btn:hover{background:#fdf7f5 !important;border-color:#a88984 !important;transform:translateY(-1px);}
-.pm-text-btn i{color:#ffffff !important;}
+.pm-text-btn i{color:#7f1836 !important;}
 @media(max-width:767px){
   .pm-text-btn{width:100%;}
 }
 </style>
 
 </head>
-  <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+<body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
     <!-- TOP NAVIGATION BAR -->
     <header class="bg-white/95 backdrop-blur-md border-b border-stone-200 sticky top-0 z-40 shadow-xs">
@@ -1628,16 +1611,13 @@ body > section:first-of-type a:not(.bg-brand-500){
     </div>
 
     <!-- FOOTER -->
-    <footer id="siteFooter" class="relative w-full z-20 text-stone-300 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
-            <div class="flex flex-col sm:flex-row items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center overflow-hidden shadow-sm shrink-0">
-                    <img src="images/logo.png" alt="Logo de ¡PiniPo!" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <h3 class="font-extrabold text-white text-base tracking-tight">¡PiniPo!</h3>
-                    <p class="text-xs text-stone-400 font-medium mt-0.5">Rompe La Rutina,Celebra La Tradición</p>
-                </div>
+    <footer id="siteFooter" class="relative w-full z-20 bg-stone-900 text-stone-300 py-4 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div class="space-y-2">
+                <h3 class="font-extrabold text-white text-lg tracking-tight flex items-center justify-center md:justify-start gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> ¡PiniPo!
+                </h3>
+                <p class="text-xs text-stone-400 font-medium">Rompe La Rutina,Celebra La Tradición</p>
             </div>
             <div id="footerSocialIconsContainer" class="flex items-center gap-4"></div>
             <div class="text-xs text-stone-500 font-medium">

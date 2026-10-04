@@ -1610,13 +1610,13 @@ body > section:first-of-type a:not(.bg-brand-500){
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
             <div class="space-y-2">
                 <h3 class="font-extrabold text-white text-lg tracking-tight flex items-center justify-center md:justify-start gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Mi Taller de Piñatas
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> ¡PiniPo!
                 </h3>
-                <p class="text-xs text-stone-400 font-medium">Piñatas Artesanales y Personalizadas</p>
+                <p class="text-xs text-stone-400 font-medium">Rompe La Rutina,Celebra La Tradición</p>
             </div>
             <div id="footerSocialIconsContainer" class="flex items-center gap-4"></div>
             <div class="text-xs text-stone-500 font-medium">
-                © 2026 Sistema de Cotización & Agenda. Todos los derechos reservados.
+                © Sistema de Cotización & Agenda. Todos los derechos reservados.
             </div>
         </div>
     </footer>
@@ -1633,14 +1633,14 @@ body > section:first-of-type a:not(.bg-brand-500){
 
         const DEFAULT_CLIENT_CONFIG = {
             businessName: "¡PiniPo!",
-            whatsappNumber: "5218112345678",
-            instagram: "https://instagram.com",
-            facebook: "https://facebook.com",
-            tiktok: "https://tiktok.com"
+            whatsappNumber: "",
+            instagram: "",
+            facebook: "",
+            tiktok: "",
+            socialPlacement: "header"
         };
 
-        let CLIENT_CONFIG = JSON.parse(localStorage.getItem('pinata_client_config')) || DEFAULT_CLIENT_CONFIG;
-        CLIENT_CONFIG.socialPlacement = CLIENT_CONFIG.socialPlacement || 'header';
+      let CLIENT_CONFIG = DEFAULT_CLIENT_CONFIG;
         // El PIN y la recuperación ya no se almacenan en el navegador.
         if (Object.prototype.hasOwnProperty.call(CLIENT_CONFIG, 'adminPin')) {
             delete CLIENT_CONFIG.adminPin;

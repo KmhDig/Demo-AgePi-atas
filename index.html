@@ -679,6 +679,40 @@ body > section:first-of-type a:not(.bg-brand-500){
   .pm-visual-caption{min-width:195px !important;padding:9px 11px !important;}
 }
 
+
+
+  /* -------------------------
+     GALERÍA EN CELULAR: 2 COLUMNAS
+     Las 6 piezas quedan visibles en una cuadrícula 2 x 3.
+     ------------------------- */
+  #galeriaTrabajos > .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:.7rem !important;
+  }
+
+  #galeriaTrabajos > .grid > div{
+    aspect-ratio:4 / 5 !important;
+    border-radius:1rem !important;
+  }
+
+  #galeriaTrabajos{
+    padding-left:1rem !important;
+    padding-right:1rem !important;
+  }
+
+  #galeriaTrabajos > div:first-child{
+    margin-bottom:1.25rem !important;
+  }
+
+  #galeriaTrabajos > div:first-child h2{
+    font-size:1.65rem !important;
+    line-height:1.15 !important;
+  }
+
+  #galeriaTrabajos > div:first-child p{
+    font-size:.8rem !important;
+    line-height:1.5 !important;
+  }
 </style>
 
 </head>

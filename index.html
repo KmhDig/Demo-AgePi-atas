@@ -460,10 +460,27 @@ body > section:first-of-type a:not(.bg-brand-500){
   box-shadow:0 10px 24px rgba(225,29,72,.16) !important;
 }
 
-/* Footer: elegante pero ligero */
+/* Footer: franja oscura limpia, en armonía con el encabezado */
 #siteFooter{
-  background:linear-gradient(135deg,#3f1720,#5b2630) !important;
-  border-top:0 !important;
+  background:#171717 !important;
+  border-top:1px solid #262626 !important;
+  padding-top:.8rem !important;
+  padding-bottom:.8rem !important;
+}
+#siteFooter .max-w-7xl{
+  min-height:3.2rem;
+}
+#siteFooter h3{
+  color:#fff !important;
+}
+#siteFooter p{
+  color:#a8a29e !important;
+}
+#siteFooter #footerSocialIconsContainer{
+  color:#d6d3d1 !important;
+}
+#siteFooter .text-stone-500{
+  color:#78716c !important;
 }
 
 @media (max-width:640px){
@@ -1611,13 +1628,16 @@ body > section:first-of-type a:not(.bg-brand-500){
     </div>
 
     <!-- FOOTER -->
-    <footer id="siteFooter" class="relative w-full z-20 bg-stone-900 text-stone-300 py-4 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-            <div class="space-y-2">
-                <h3 class="font-extrabold text-white text-lg tracking-tight flex items-center justify-center md:justify-start gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> ¡PiniPo!
-                </h3>
-                <p class="text-xs text-stone-400 font-medium">Rompe La Rutina,Celebra La Tradición</p>
+    <footer id="siteFooter" class="relative w-full z-20 text-stone-300 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center overflow-hidden shadow-sm shrink-0">
+                    <img src="images/logo.png" alt="Logo de ¡PiniPo!" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-white text-base tracking-tight">¡PiniPo!</h3>
+                    <p class="text-xs text-stone-400 font-medium mt-0.5">Rompe La Rutina,Celebra La Tradición</p>
+                </div>
             </div>
             <div id="footerSocialIconsContainer" class="flex items-center gap-4"></div>
             <div class="text-xs text-stone-500 font-medium">

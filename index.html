@@ -1645,13 +1645,8 @@ body > section:first-of-type a:not(.bg-brand-500){
             socialPlacement: "header"
         };
 
-      let CLIENT_CONFIG = DEFAULT_CLIENT_CONFIG;
-        // El PIN y la recuperación ya no se almacenan en el navegador.
-       let CLIENT_CONFIG = DEFAULT_CLIENT_CONFIG;
+        let CLIENT_CONFIG = DEFAULT_CLIENT_CONFIG;
 
-      // Mantiene la sesión Admin solo durante la pestaña actual.
-      let adminSessionActive = false;
-      let adminSessionToken = sessionStorage.getItem('pinata_admin_session_token') || '';
         // Mantiene la sesión Admin solo durante la pestaña actual.
         let adminSessionActive = false;
         let adminSessionToken = sessionStorage.getItem('pinata_admin_session_token') || '';
@@ -1828,7 +1823,6 @@ body > section:first-of-type a:not(.bg-brand-500){
             CLIENT_CONFIG.facebook = fb;
             CLIENT_CONFIG.tiktok = tk;
 
-            localStorage.setItem('pinata_client_config', JSON.stringify(CLIENT_CONFIG));
             renderHeaderSocials();
             renderFooterSocials();
             showToast('Configuración de redes guardada con éxito.', 'success');

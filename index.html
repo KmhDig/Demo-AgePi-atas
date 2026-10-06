@@ -1303,7 +1303,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                     <div class="space-y-2 sm:col-span-2">
                         <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">FECHA DE TU EVENTO <span class="text-rose-500">*</span></label>
                         <div class="flex items-center gap-3">
-                            <input type="date" id="eventDate" onchange="onFormDateChange(this.value)" class="input-canva font-bold cursor-pointer">
+                            <input type="date" id="eventDate" onchange="onFormDateChange(this.value)" onfocus="syncOrderLeadTimeControls()" class="input-canva font-bold cursor-pointer" aria-describedby="formLeadTimeText">
                             <button type="button" onclick="clearSelectedDate()" class="px-4 py-3 bg-white border border-stone-300 hover:bg-stone-100 rounded-xl text-xs font-bold text-stone-700 transition shrink-0">Limpiar</button>
                         </div>
                     </div>
@@ -3828,6 +3828,24 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
         }
 
         function syncOrderLeadTimeControls() {
+            // También aplica la anticipación mínima al selector nativo <input type="date">.
+            // Así, en Android/iPhone las fechas anteriores aparecen deshabilitadas
+            // directamente en el calendario del sistema y no solo después de elegirlas.
+            const clientDateInput = document.getElementById('eventDate');
+            if (clientDateInput) {
+                if (orderLeadTimeEnabled) {
+                    const minDate = getOrderLeadTimeStartDate();
+                    const yyyy = minDate.getFullYear();
+                    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(minDate.getDate()).padStart(2, '0');
+                    clientDateInput.min = `${yyyy}-${mm}-${dd}`;
+                    clientDateInput.title = `Primera fecha disponible: ${dd}/${mm}/${yyyy}`;
+                } else {
+                    clientDateInput.removeAttribute('min');
+                    clientDateInput.removeAttribute('title');
+                }
+            }
+
             const input = document.getElementById('orderLeadTimeInput');
             if (input) input.value = orderLeadTimeDays;
             const label = document.getElementById('orderLeadTimeLabel');

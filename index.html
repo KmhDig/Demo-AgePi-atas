@@ -1018,6 +1018,29 @@ body > section:first-of-type a:not(.bg-brand-500){
             #calendarDaysGrid > button.pm-lead-blocked span:last-child {
                 background: #9ca3af !important;
             }
+
+            /* En teléfonos y tabletas se usa el calendario visual de la página.
+               Se desactiva el selector nativo del sistema para evitar que el cliente
+               vea fechas sin los colores de disponibilidad. */
+            #eventDate.pm-mobile-date-input {
+                pointer-events: none !important;
+                cursor: default !important;
+            }
+
+            #mobileDatePickerHint {
+                display: block !important;
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            #eventDate {
+                pointer-events: none !important;
+                cursor: default !important;
+            }
+
+            #mobileDatePickerHint {
+                display: block !important;
+            }
         }
 
         @media (max-width: 380px) {
@@ -1303,8 +1326,10 @@ body > section:first-of-type a:not(.bg-brand-500){
                     <div class="space-y-2 sm:col-span-2">
                         <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">FECHA DE TU EVENTO <span class="text-rose-500">*</span></label>
                         <div class="flex items-center gap-3">
-                            <input type="date" id="eventDate" onchange="onFormDateChange(this.value)" onfocus="syncOrderLeadTimeControls()" class="input-canva font-bold cursor-pointer" aria-describedby="formLeadTimeText">
+                            <input type="date" id="eventDate" onchange="onFormDateChange(this.value)" onfocus="syncOrderLeadTimeControls()" class="input-canva font-bold cursor-pointer" aria-describedby="formLeadTimeText mobileDatePickerHint">
                             <button type="button" onclick="clearSelectedDate()" class="px-4 py-3 bg-white border border-stone-300 hover:bg-stone-100 rounded-xl text-xs font-bold text-stone-700 transition shrink-0">Limpiar</button>
+                        </div>
+                        <p id="mobileDatePickerHint" class="hidden text-[10px] font-bold text-stone-500 leading-relaxed">En celular o tableta, selecciona la fecha directamente en el calendario de arriba para ver su disponibilidad.</p>
                         </div>
                     </div>
 
@@ -3833,6 +3858,7 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             // directamente en el calendario del sistema y no solo después de elegirlas.
             const clientDateInput = document.getElementById('eventDate');
             if (clientDateInput) {
+                clientDateInput.classList.toggle('pm-mobile-date-input', window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches);
                 if (orderLeadTimeEnabled) {
                     const minDate = getOrderLeadTimeStartDate();
                     const yyyy = minDate.getFullYear();

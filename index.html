@@ -228,6 +228,12 @@
         body > div[aria-hidden="true"] { height: 4.5rem !important; }
 
         /* En pantallas pequeñas conservamos respiración suficiente */
+        /* La fecha se selecciona únicamente desde el calendario visual en cualquier dispositivo. */
+        #eventDate {
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+
         @media (max-width: 640px) {
             body > section:first-of-type { padding-top: 1.75rem !important; padding-bottom: 1.75rem !important; }
             #galeriaTrabajos { padding-top: 2rem !important; padding-bottom: 2rem !important; }
@@ -1019,27 +1025,16 @@ body > section:first-of-type a:not(.bg-brand-500){
                 background: #9ca3af !important;
             }
 
-            /* En teléfonos y tabletas se usa el calendario visual de la página.
-               Se desactiva el selector nativo del sistema para evitar que el cliente
-               vea fechas sin los colores de disponibilidad. */
-            #eventDate.pm-mobile-date-input {
-                pointer-events: none !important;
-                cursor: default !important;
-            }
-
-            #mobileDatePickerHint {
-                display: block !important;
-            }
-        }
-
-        @media (hover: none) and (pointer: coarse) {
+            /* En todos los dispositivos se usa el calendario visual de la página.
+               Se evita el selector nativo del sistema para que el cliente siempre
+               vea los colores reales de disponibilidad. */
             #eventDate {
                 pointer-events: none !important;
                 cursor: default !important;
             }
 
             #mobileDatePickerHint {
-                display: block !important;
+                display: none !important;
             }
         }
 
@@ -1259,6 +1254,15 @@ body > section:first-of-type a:not(.bg-brand-500){
                 <div class="flex items-center justify-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Agenda llena</div>
                 <div class="flex items-center justify-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Cerrado para pedidos</div>
             </div>
+            <div class="mt-4 flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl border border-brand-200 bg-brand-50 text-brand-900 shadow-xs" role="note" aria-label="Indicaciones para seleccionar fecha">
+                <div class="w-9 h-9 rounded-xl bg-white border border-brand-200 text-brand-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-calendar-check text-sm"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] font-extrabold uppercase tracking-wider text-brand-700">ANTES DE COMENZAR</p>
+                    <p class="text-xs sm:text-sm font-bold leading-relaxed mt-0.5">Consulta la disponibilidad y selecciona una fecha en el calendario antes de comenzar el formulario.</p>
+                </div>
+            </div>
         </div>
 
         <div id="orderAvailabilityNotice" class="rounded-3xl border border-stone-200 bg-white shadow-sm overflow-hidden">
@@ -1326,7 +1330,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                     <div class="space-y-2 sm:col-span-2">
                         <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">FECHA DE TU EVENTO <span class="text-rose-500">*</span></label>
                         <div class="flex items-center gap-3">
-                            <input type="date" id="eventDate" onchange="onFormDateChange(this.value)" onfocus="syncOrderLeadTimeControls()" class="input-canva font-bold cursor-pointer" aria-describedby="formLeadTimeText mobileDatePickerHint">
+                            <input type="date" id="eventDate" onchange="onFormDateChange(this.value)" onfocus="syncOrderLeadTimeControls()" onkeydown="return false" onclick="return false" class="input-canva font-bold cursor-default" aria-describedby="formLeadTimeText mobileDatePickerHint">
                             <button type="button" onclick="clearSelectedDate()" class="px-4 py-3 bg-white border border-stone-300 hover:bg-stone-100 rounded-xl text-xs font-bold text-stone-700 transition shrink-0">Limpiar</button>
                         </div>
                         <p id="mobileDatePickerHint" class="hidden text-[10px] font-bold text-stone-500 leading-relaxed">En celular o tableta, selecciona la fecha directamente en el calendario de arriba para ver su disponibilidad.</p>

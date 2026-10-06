@@ -1396,7 +1396,7 @@ body > section:first-of-type a:not(.bg-brand-500){
 
                     <div id="meetingPointContainer" class="space-y-2 sm:col-span-2 hidden">
                         <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">SELECCIONA PUNTO MEDIO <span class="text-rose-500">*</span></label>
-                        <select id="meetingPointSelect" onchange="updateLiveSummary()" class="input-canva font-medium"></select>
+                        <select id="meetingPointSelect" onchange="toggleDeliveryFields(); updateLiveSummary()" class="input-canva font-medium"></select>
                     </div>
 
                     <div id="privateSaleContainer" class="space-y-2 sm:col-span-2 hidden p-4 bg-white rounded-xl border border-stone-200">
@@ -1784,7 +1784,7 @@ body > section:first-of-type a:not(.bg-brand-500){
 
     <!-- ADD OPTION MODAL -->
     <div id="addOptionModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[10020] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl border border-stone-200">
+        <div class="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-stone-200">
             <div class="flex items-start justify-between gap-4 mb-5">
                 <div>
                     <p class="text-[10px] font-extrabold uppercase tracking-wider text-brand-600">Nueva opción</p>
@@ -1797,6 +1797,11 @@ body > section:first-of-type a:not(.bg-brand-500){
                 <div class="space-y-2">
                     <label id="addOptionLabel" class="block text-xs font-bold uppercase tracking-wider text-stone-700">Nombre de la opción</label>
                     <input id="addOptionValueInput" type="text" class="input-canva" placeholder="Escribe una opción..." autocomplete="off">
+                </div>
+                <div id="addOptionScheduleWrap" class="hidden space-y-2">
+                    <label id="addOptionScheduleLabel" class="block text-xs font-bold uppercase tracking-wider text-stone-700">Horarios</label>
+                    <input id="addOptionScheduleInput" type="text" class="input-canva" placeholder="Ej. 10:00 AM - 12:00 PM, 03:00 PM - 05:00 PM" autocomplete="off">
+                    <p class="text-[10px] text-stone-400">Puedes escribir varios horarios separados por coma.</p>
                 </div>
                 <div id="addOptionPriceWrap" class="hidden space-y-2">
                     <label class="flex items-center gap-2 text-xs font-bold text-stone-700">
@@ -2009,9 +2014,10 @@ body > section:first-of-type a:not(.bg-brand-500){
                         </div>
                         <div id="adminList-meetingPoints" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
                         <div class="pt-2 border-t border-stone-200">
-                            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-1">Horarios de Punto Medio</label>
-                            <input id="adminMeetingPointTimes" type="text" class="input-canva text-xs" placeholder="Ej. 10:00 AM - 12:00 PM, 03:00 PM - 05:00 PM">
-                            <button type="button" onclick="saveMeetingPointTimes()" class="mt-2 px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-[11px] font-extrabold">Guardar horarios</button>
+                            <div class="flex items-start gap-2.5 p-3 rounded-xl bg-brand-50 border border-brand-100">
+                                <i class="fa-solid fa-location-dot text-brand-500 mt-0.5"></i>
+                                <p class="text-[11px] text-stone-600 leading-relaxed"><span class="font-extrabold text-stone-800">Cada Punto Medio tiene su propio horario.</span> Al agregar un punto podrás indicar el lugar y los horarios disponibles para ese punto.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -2216,9 +2222,15 @@ body > section:first-of-type a:not(.bg-brand-500){
         if (!formOptions.deliveries.some(d => String(d).trim().toLowerCase() === 'punto de venta en casa (privado)')) formOptions.deliveries.splice(2, 0, 'Punto de Venta en Casa (Privado)');
         if (!formOptions.deliverySchedules || typeof formOptions.deliverySchedules !== 'object') formOptions.deliverySchedules = {};
         if (!Array.isArray(formOptions.meetingPointTimes)) formOptions.meetingPointTimes = [...(formOptions.times || DEFAULT_FORM_OPTIONS.times)];
-        formOptions.deliveries.forEach(d => { if (!Array.isArray(formOptions.deliverySchedules[d]) || !formOptions.deliverySchedules[d].length) formOptions.deliverySchedules[d] = [...(formOptions.times || DEFAULT_FORM_OPTIONS.times)]; });
+        if (!formOptions.meetingPointSchedules || typeof formOptions.meetingPointSchedules !== 'object') formOptions.meetingPointSchedules = {};
         if (!formOptions.payments) formOptions.payments = ["Efectivo", "Transferencia Bancaria"];
         if (!formOptions.meetingPoints) formOptions.meetingPoints = ["Soriana / HEB Principal (Punto A)", "Estación de Metro / Plaza Comercial (Punto B)"];
+        formOptions.meetingPoints.forEach(point => {
+            if (!Array.isArray(formOptions.meetingPointSchedules[point]) || !formOptions.meetingPointSchedules[point].length) {
+                formOptions.meetingPointSchedules[point] = [...formOptions.meetingPointTimes];
+            }
+        });
+        formOptions.deliveries.forEach(d => { if (!Array.isArray(formOptions.deliverySchedules[d]) || !formOptions.deliverySchedules[d].length) formOptions.deliverySchedules[d] = [...(formOptions.times || DEFAULT_FORM_OPTIONS.times)]; });
         if (!formOptions.sectionVisibility) formOptions.sectionVisibility = { extras: true, payments: true, meetingPoints: true };
         if (typeof formOptions.sectionVisibility.extras === 'undefined') formOptions.sectionVisibility.extras = true;
         if (typeof formOptions.sectionVisibility.payments === 'undefined') formOptions.sectionVisibility.payments = true;
@@ -2535,7 +2547,11 @@ body > section:first-of-type a:not(.bg-brand-500){
             }
 
             const meetingSelect = document.getElementById('meetingPointSelect');
-            if (meetingSelect) meetingSelect.innerHTML = formOptions.meetingPoints.map(m => `<option value="${m}">${m}</option>`).join('');
+            if (meetingSelect) {
+                const previousMeetingPoint = meetingSelect.value;
+                meetingSelect.innerHTML = formOptions.meetingPoints.map(m => `<option value="${m}">${m}</option>`).join('');
+                if (formOptions.meetingPoints.includes(previousMeetingPoint)) meetingSelect.value = previousMeetingPoint;
+            }
             const privateWrapper = document.getElementById('privateSaleContainer');
             if (privateWrapper) privateWrapper.classList.add('hidden');
             const meetingWrapper = document.getElementById('meetingPointContainer');
@@ -2581,9 +2597,12 @@ body > section:first-of-type a:not(.bg-brand-500){
             }
         }
 
-        function getDeliveryTimes(method) {
+        function getDeliveryTimes(method, meetingPoint = '') {
             const normalized = String(method || '').trim().toLowerCase();
-            if (normalized === 'punto medio') return formOptions.meetingPointTimes || formOptions.times || [];
+            if (normalized === 'punto medio') {
+                const point = meetingPoint || document.getElementById('meetingPointSelect')?.value || '';
+                return formOptions.meetingPointSchedules?.[point] || formOptions.meetingPointTimes || formOptions.times || [];
+            }
             return formOptions.deliverySchedules?.[method] || formOptions.times || [];
         }
 
@@ -2610,7 +2629,8 @@ body > section:first-of-type a:not(.bg-brand-500){
                 else timeLabel.innerHTML = 'HORA DE RECOGIDA EN TALLER <span class="text-rose-500">*</span>';
             }
             if (timeSelect) {
-                const times = getDeliveryTimes(method);
+                const meetingPoint = document.getElementById('meetingPointSelect')?.value || '';
+                const times = getDeliveryTimes(method, meetingPoint);
                 timeSelect.innerHTML = times.map(t => `<option value="${t}">${t}</option>`).join('');
             }
         }
@@ -3990,8 +4010,6 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             if (chkMeetingPoints) chkMeetingPoints.checked = formOptions.sectionVisibility.meetingPoints !== false;
             const chkPrivateSale = document.getElementById('toggleSection_privateSale');
             if (chkPrivateSale) chkPrivateSale.checked = formOptions.sectionVisibility.privateSale !== false;
-            const meetingTimesInput = document.getElementById('adminMeetingPointTimes');
-            if (meetingTimesInput) meetingTimesInput.value = (formOptions.meetingPointTimes || formOptions.times || []).join(', ');
         }
 
         function toggleSectionVisibility(sectionKey) {
@@ -4064,21 +4082,59 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             if (!container) return;
             const items = formOptions[category] || [];
             container.innerHTML = items.map((item, idx) => {
+                const escapedItem = String(item).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
                 const fixed = category === 'deliveries' && ['punto medio','punto de venta en casa (privado)'].includes(String(item).trim().toLowerCase());
-                const schedule = category === 'deliveries' ? (formOptions.deliverySchedules[item] || formOptions.times || []) : [];
-                let scheduleLabel = 'Horario de entrega';
+                if (category === 'meetingPoints') {
+                    const schedule = formOptions.meetingPointSchedules?.[item] || formOptions.meetingPointTimes || formOptions.times || [];
+                    return `<div class="bg-white p-2.5 rounded-xl border border-stone-200 space-y-2.5">
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-1">Lugar / Punto Medio</label>
+                                <input type="text" value="${escapedItem}" onchange="updateOptionItem('meetingPoints', ${idx}, this.value)" class="input-canva text-xs py-1.5 px-2.5" placeholder="Ej. Plaza / Metro / Soriana">
+                            </div>
+                            <button type="button" onclick="deleteOptionItem('meetingPoints', ${idx})" class="w-8 h-8 mt-4 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0" title="Eliminar"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-1">Horario de este Punto Medio</label>
+                            <input type="text" value="${schedule.join(', ').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onchange='saveMeetingPointSchedule(${JSON.stringify(item)}, this.value)' class="input-canva text-xs" placeholder="Ej. 10:00 AM - 12:00 PM, 03:00 PM - 05:00 PM">
+                        </div>
+                    </div>`;
+                }
+
+                const schedule = category === 'deliveries' ? (formOptions.deliverySchedules?.[item] || formOptions.times || []) : [];
+                let scheduleLabel = 'Horarios de este método';
                 if (/env[ií]o a domicilio/i.test(String(item))) scheduleLabel = 'Horarios de Envío a Domicilio';
                 else if (/recoger en taller/i.test(String(item))) scheduleLabel = 'HORA DE RECOGIDA EN TALLER';
-                else if (/punto medio/i.test(String(item))) scheduleLabel = 'Horarios de Punto Medio';
+                else if (/punto medio/i.test(String(item))) scheduleLabel = 'Horarios por Punto Medio';
                 else if (/punto de venta en casa/i.test(String(item))) scheduleLabel = 'HORARIO PUNTO DE VENTA EN CASA';
+                const scheduleBlock = category === 'deliveries'
+                    ? (String(item).trim().toLowerCase() === 'punto medio'
+                        ? `<div class="flex items-start gap-2 p-2.5 rounded-xl bg-brand-50 border border-brand-100"><i class="fa-solid fa-location-dot text-brand-500 mt-0.5 text-xs"></i><p class="text-[10px] text-stone-600 leading-relaxed"><span class="font-extrabold text-stone-800">Horario por punto.</span> Se configura dentro de cada Punto Medio.</p></div>`
+                        : `<div><label class="block text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-1">${scheduleLabel}</label><input type="text" value="${schedule.join(', ').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onchange='saveDeliveryScheduleFor(${JSON.stringify(item)}, this.value)' class="input-canva text-xs" placeholder="Ej. 10:00 AM - 12:00 PM, 03:00 PM - 05:00 PM"></div>` )
+                    : '';
                 return `<div class="bg-white p-2.5 rounded-xl border border-stone-200 space-y-2">
                     <div class="flex items-center gap-2">
-                        <input type="text" value="${String(item).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onchange="updateOptionItem('${category}', ${idx}, this.value)" class="input-canva text-xs py-1.5 px-2.5 flex-1">
+                        <input type="text" value="${escapedItem}" onchange="updateOptionItem('${category}', ${idx}, this.value)" class="input-canva text-xs py-1.5 px-2.5 flex-1">
                         ${category === 'deliveries' && fixed ? '<span class="w-8 h-8 rounded-lg bg-stone-100 text-stone-400 flex items-center justify-center shrink-0" title="Método fijo"><i class="fa-solid fa-lock text-xs"></i></span>' : `<button type="button" onclick="deleteOptionItem('${category}', ${idx})" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0" title="Eliminar"><i class="fa-solid fa-trash text-xs"></i></button>`}
                     </div>
-                    ${category === 'deliveries' ? `<div><label class="block text-[10px] font-extrabold uppercase tracking-wider text-stone-500 mb-1">${scheduleLabel}</label><input type="text" value="${schedule.join(', ').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onchange='saveDeliveryScheduleFor(${JSON.stringify(item)}, this.value)' class="input-canva text-xs" placeholder="Escribe horarios separados por coma"></div>` : ''}
+                    ${scheduleBlock}
                 </div>`;
             }).join('');
+        }
+
+        function saveMeetingPointSchedule(point, value) {
+            if (!formOptions.meetingPointSchedules || typeof formOptions.meetingPointSchedules !== 'object') formOptions.meetingPointSchedules = {};
+            const times = parseScheduleText(value);
+            if (!times.length) {
+                showToast('Escribe al menos un horario para este Punto Medio.', 'error');
+                renderAdminOptionsEditor();
+                return;
+            }
+            formOptions.meetingPointSchedules[point] = times;
+            localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
+            renderFormOptionsInClient();
+            renderAdminOptionsEditor();
+            showToast('Horario del Punto Medio actualizado.', 'success');
         }
 
         function renderExtrasListEditor() {
@@ -4116,9 +4172,26 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
         }
 
         function updateOptionItem(category, idx, val) {
-            if (!val.trim()) return;
-            formOptions[category][idx] = val.trim();
+            const cleanVal = val.trim();
+            if (!cleanVal) return;
+            const oldVal = formOptions[category][idx];
+            formOptions[category][idx] = cleanVal;
+            if (category === 'deliveries') {
+                if (!formOptions.deliverySchedules) formOptions.deliverySchedules = {};
+                if (Array.isArray(formOptions.deliverySchedules[oldVal]) && !formOptions.deliverySchedules[cleanVal]) {
+                    formOptions.deliverySchedules[cleanVal] = formOptions.deliverySchedules[oldVal];
+                }
+                if (oldVal !== cleanVal) delete formOptions.deliverySchedules[oldVal];
+            }
+            if (category === 'meetingPoints') {
+                if (!formOptions.meetingPointSchedules) formOptions.meetingPointSchedules = {};
+                if (Array.isArray(formOptions.meetingPointSchedules[oldVal]) && !formOptions.meetingPointSchedules[cleanVal]) {
+                    formOptions.meetingPointSchedules[cleanVal] = formOptions.meetingPointSchedules[oldVal];
+                }
+                if (oldVal !== cleanVal) delete formOptions.meetingPointSchedules[oldVal];
+            }
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
+            renderAdminOptionsEditor();
             renderFormOptionsInClient();
             showToast('Opción actualizada.', 'success');
         }
@@ -4132,7 +4205,10 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 showToast('Debe quedar al menos una opción en esta categoría.', 'error');
                 return;
             }
+            const removedItem = formOptions[category][idx];
             formOptions[category].splice(idx, 1);
+            if (category === 'deliveries' && formOptions.deliverySchedules) delete formOptions.deliverySchedules[removedItem];
+            if (category === 'meetingPoints' && formOptions.meetingPointSchedules) delete formOptions.meetingPointSchedules[removedItem];
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
             renderAdminOptionsEditor();
             renderFormOptionsInClient();
@@ -4147,17 +4223,37 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             const label = document.getElementById('addOptionLabel');
             const input = document.getElementById('addOptionValueInput');
             const priceWrap = document.getElementById('addOptionPriceWrap');
+            const scheduleWrap = document.getElementById('addOptionScheduleWrap');
+            const scheduleLabel = document.getElementById('addOptionScheduleLabel');
+            const scheduleInput = document.getElementById('addOptionScheduleInput');
             const price = document.getElementById('addOptionPriceInput');
             if (!modal) return;
-            title.innerText = extra ? 'Agregar extra o accesorio' : 'Agregar opción';
-            hint.innerText = extra ? 'Agrega el nombre y el precio adicional que tendrá este extra.' : 'Escribe el nombre que quieres mostrar en el formulario.';
-            label.innerText = extra ? 'Nombre del extra o accesorio' : 'Nombre de la opción';
-            input.placeholder = extra ? 'Ej. Bolsa de dulces' : 'Escribe una opción...';
+
+            const isMeetingPoint = category === 'meetingPoints';
+            const isDelivery = category === 'deliveries';
+            title.innerText = extra ? 'Agregar extra o accesorio' : isMeetingPoint ? 'Agregar punto medio' : isDelivery ? 'Agregar método de entrega' : 'Agregar opción';
+            hint.innerText = extra
+                ? 'Agrega el nombre y el precio adicional que tendrá este extra.'
+                : isMeetingPoint
+                    ? 'Agrega el lugar y los horarios disponibles para este Punto Medio.'
+                    : isDelivery
+                        ? 'Agrega el nombre y los horarios disponibles para este método de entrega.'
+                        : 'Escribe el nombre que quieres mostrar en el formulario.';
+            label.innerText = extra ? 'Nombre del extra o accesorio' : isMeetingPoint ? 'Lugar / Punto Medio' : isDelivery ? 'Nombre del método de entrega' : 'Nombre de la opción';
+            input.placeholder = extra ? 'Ej. Bolsa de dulces' : isMeetingPoint ? 'Ej. Plaza Sendero / Soriana' : isDelivery ? 'Ej. Entrega en plaza' : 'Escribe una opción...';
             input.value = '';
             price.value = '0';
             const hasPrice = document.getElementById('addOptionHasPriceInput');
             if (hasPrice) hasPrice.checked = true;
             priceWrap.classList.toggle('hidden', !extra);
+
+            if (scheduleWrap) scheduleWrap.classList.toggle('hidden', !(isMeetingPoint || isDelivery));
+            if (scheduleLabel) scheduleLabel.innerText = isMeetingPoint ? 'Horarios de este Punto Medio' : 'Horarios de este método';
+            if (scheduleInput) {
+                scheduleInput.value = '';
+                scheduleInput.placeholder = 'Ej. 10:00 AM - 12:00 PM, 03:00 PM - 05:00 PM';
+            }
+
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             setTimeout(() => input.focus(), 50);
@@ -4176,6 +4272,15 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             const label = input.value.trim();
             if (!label) { showToast('Escribe un nombre antes de agregar.', 'error'); input.focus(); return; }
             const { category, extra } = addOptionMode;
+            const needsSchedule = category === 'deliveries' || category === 'meetingPoints';
+            const scheduleInput = document.getElementById('addOptionScheduleInput');
+            const schedule = needsSchedule ? parseScheduleText(scheduleInput?.value) : [];
+            if (needsSchedule && !schedule.length) {
+                showToast(category === 'meetingPoints' ? 'Escribe al menos un horario para este Punto Medio.' : 'Escribe al menos un horario para este método de entrega.', 'error');
+                scheduleInput?.focus();
+                return;
+            }
+
             if (extra) {
                 const price = parseFloat(document.getElementById('addOptionPriceInput').value) || 0;
                 const hasPriceEl = document.getElementById('addOptionHasPriceInput');
@@ -4183,6 +4288,18 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 if (!formOptions.extras) formOptions.extras = [];
                 formOptions.extras.push({ label, price: hasPrice ? price : 0, hasPrice, id: 'extra_' + Date.now() });
                 showToast('Extra agregado con éxito.', 'success');
+            } else if (category === 'deliveries') {
+                if (!formOptions.deliveries) formOptions.deliveries = [];
+                formOptions.deliveries.push(label);
+                if (!formOptions.deliverySchedules) formOptions.deliverySchedules = {};
+                formOptions.deliverySchedules[label] = schedule;
+                showToast('Método de entrega agregado con éxito.', 'success');
+            } else if (category === 'meetingPoints') {
+                if (!formOptions.meetingPoints) formOptions.meetingPoints = [];
+                formOptions.meetingPoints.push(label);
+                if (!formOptions.meetingPointSchedules) formOptions.meetingPointSchedules = {};
+                formOptions.meetingPointSchedules[label] = schedule;
+                showToast('Punto Medio agregado con éxito.', 'success');
             } else {
                 if (!formOptions[category]) formOptions[category] = [];
                 formOptions[category].push(label);

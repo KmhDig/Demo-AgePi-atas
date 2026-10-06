@@ -886,6 +886,155 @@ body > section:first-of-type a:not(.bg-brand-500){
 }
 </style>
 
+
+    <style id="admin-mobile-fixes">
+        /* =========================================================
+           CORRECCIONES SOLICITADAS — PANEL ADMIN + CELULAR
+           Solo corrige capas, proporciones y calendario móvil.
+           No cambia la lógica de los demás apartados.
+           ========================================================= */
+
+        /* Modales abiertos desde Admin deben quedar encima del panel. */
+        #addOptionModal,
+        #upcomingOrderViewModal,
+        #adminEditOrderModal,
+        #invoicesModal,
+        #paymentInfoModal,
+        #advanceModal,
+        #privateAddressModal,
+        #calendarEventModal {
+            z-index: 10020 !important;
+        }
+
+        /* Extras: evita que los controles se aplasten en pantallas estrechas. */
+        @media (max-width: 640px) {
+            #adminModal > div {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 1rem !important;
+                border-radius: 1.35rem !important;
+            }
+
+            #adminModal .flex.items-center.justify-between {
+                gap: .65rem !important;
+            }
+
+            #adminModal #adminList-extras > div {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) auto !important;
+                align-items: center !important;
+                gap: .55rem !important;
+            }
+
+            #adminModal #adminList-extras > div > div:first-child {
+                min-width: 0 !important;
+                width: 100% !important;
+                grid-column: 1 / -1 !important;
+            }
+
+            #adminModal #adminList-extras input[type="text"] {
+                min-width: 0 !important;
+                width: 100% !important;
+                font-size: .72rem !important;
+            }
+
+            #adminModal #adminList-extras > div > label {
+                min-width: 0 !important;
+                white-space: nowrap !important;
+                grid-column: 1 !important;
+                justify-self: start !important;
+            }
+
+            #adminModal #adminList-extras > div > div:nth-child(3) {
+                width: 6rem !important;
+                grid-column: 2 !important;
+            }
+
+            #adminModal #adminList-extras > div > button {
+                grid-column: 2 !important;
+                justify-self: end !important;
+            }
+
+            /* Método de pago: que el campo no se comprima junto al botón. */
+            #adminModal #adminList-payments > div {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) auto !important;
+            }
+
+            #adminModal #adminList-payments input[type="text"] {
+                min-width: 0 !important;
+                width: 100% !important;
+            }
+
+            /* Modales secundarios: mejor aprovechamiento en celular. */
+            #addOptionModal > div,
+            #upcomingOrderViewModal > div,
+            #invoicesModal > div,
+            #paymentInfoModal > div {
+                width: 100% !important;
+                max-width: calc(100vw - 1rem) !important;
+                max-height: 92vh !important;
+                overflow-y: auto !important;
+            }
+
+            #invoicesModal > div {
+                padding: 1rem !important;
+                border-radius: 1.35rem !important;
+            }
+
+            #invoicesModal .invoice-action-btn {
+                min-height: 3.25rem !important;
+                padding: .75rem 1rem !important;
+                line-height: 1.25 !important;
+                white-space: normal !important;
+                text-align: center !important;
+            }
+
+            #invoicesModal .invoice-action-btn i {
+                flex: 0 0 auto !important;
+            }
+
+            /* Calendario público: fechas bloqueadas por anticipación siguen
+               claramente visibles también en móvil. */
+            #calendarDaysGrid {
+                gap: .35rem !important;
+            }
+
+            #calendarDaysGrid > button {
+                min-width: 0 !important;
+                width: 100% !important;
+                height: 2.8rem !important;
+                border-radius: .75rem !important;
+                font-size: .72rem !important;
+            }
+
+            #calendarDaysGrid > button.pm-lead-blocked {
+                background: #f3f4f6 !important;
+                color: #9ca3af !important;
+                border-color: #d1d5db !important;
+                opacity: 1 !important;
+            }
+
+            #calendarDaysGrid > button.pm-lead-blocked span:last-child {
+                background: #9ca3af !important;
+            }
+        }
+
+        @media (max-width: 380px) {
+            #adminModal #adminList-extras > div > label {
+                font-size: 9px !important;
+            }
+
+            #adminModal #adminList-extras > div > div:nth-child(3) {
+                width: 5.25rem !important;
+            }
+
+            #calendarDaysGrid > button {
+                height: 2.65rem !important;
+                font-size: .68rem !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
@@ -1408,10 +1557,10 @@ body > section:first-of-type a:not(.bg-brand-500){
                         <span class="text-xs font-bold text-stone-700">Estado Actual:</span>
                         <span id="invStatusBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800">Pendiente de liquidar</span>
                     </div>
-                    <button type="button" id="markPaidBtn" onclick="markOrderAsPaid()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center gap-2">
+                    <button type="button" id="markPaidBtn" onclick="markOrderAsPaid()" class="invoice-action-btn w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-check-circle"></i> Marcar como Pagado (Dejar en ceros)
                     </button>
-                    <button type="button" onclick="sendInvoiceWhatsApp()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> Enviar estado de cuenta por WhatsApp</button>
+                    <button type="button" onclick="sendInvoiceWhatsApp()" class="invoice-action-btn w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> Enviar estado de cuenta por WhatsApp</button>
                 </div>
             </div>
         </div>
@@ -1605,7 +1754,7 @@ body > section:first-of-type a:not(.bg-brand-500){
     </div>
 
     <!-- ADD OPTION MODAL -->
-    <div id="addOptionModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[80] hidden items-center justify-center p-4">
+    <div id="addOptionModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[10020] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl border border-stone-200">
             <div class="flex items-start justify-between gap-4 mb-5">
                 <div>
@@ -1636,7 +1785,7 @@ body > section:first-of-type a:not(.bg-brand-500){
     </div>
 
     <!-- UPCOMING ORDER VIEW MODAL -->
-    <div id="upcomingOrderViewModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[90] hidden items-center justify-center p-4">
+    <div id="upcomingOrderViewModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[10020] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-200">
             <div class="p-6 border-b border-stone-100 flex items-center justify-between">
                 <div>
@@ -1961,7 +2110,15 @@ body > section:first-of-type a:not(.bg-brand-500){
 
     <script>
         // URL de tu Web App de Google Apps Script. No pongas aquí el PIN ni la clave de recuperación.
-        const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec";
+        // ============================================================
+        // CONFIGURACIÓN DE GOOGLE SHEETS / APPS SCRIPT
+        // Pega aquí la URL de tu Web App de Google Apps Script.
+        // Ejemplo: https://script.google.com/macros/s/XXXXXXXX/exec
+        // ============================================================
+        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec";
+
+        // Alias usado por las funciones internas del sistema.
+        const GOOGLE_SHEETS_API_URL = googleSheetsUrl;
 
         const DEFAULT_CLIENT_CONFIG = {
             businessName: "¡PiniPo!",
@@ -2541,9 +2698,13 @@ body > section:first-of-type a:not(.bg-brand-500){
                 const leadBlocked = isDateBeforeOrderLeadTime(dateStr);
                 let bgClass = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200';
                 let dotClass = 'bg-emerald-500';
-                if (leadBlocked) { bgClass = 'bg-stone-100 text-stone-400 border-stone-200 opacity-70'; dotClass = 'bg-stone-300'; }
 
-                if (status === 'full') {
+                // La anticipación mínima tiene prioridad visual: si la fecha aún no puede
+                // solicitarse por los días hábiles requeridos, no debe parecer disponible.
+                if (leadBlocked) {
+                    bgClass = 'bg-stone-100 text-stone-400 border-stone-300 opacity-100 pm-lead-blocked';
+                    dotClass = 'bg-stone-400';
+                } else if (status === 'full') {
                     bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
                 } else if (status === 'closed') {
@@ -2556,7 +2717,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                 }
 
                 grid.innerHTML += `
-                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${leadBlocked ? 'cursor-not-allowed' : ''}">
+                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} title="${leadBlocked ? `No disponible: requiere ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} hábiles de anticipación` : ''}" aria-label="${leadBlocked ? `Fecha ${d} no disponible por anticipación mínima` : `Fecha ${d}`}" class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${leadBlocked ? 'cursor-not-allowed' : ''}">
                         <span>${d}</span>
                         <span class="w-1.5 h-1.5 rounded-full ${dotClass} mt-0.5"></span>
                     </button>

@@ -2190,6 +2190,62 @@ body > section:first-of-type a:not(.bg-brand-500){
         </div>
     </div>
 </div>
+    <!-- CLEAR OLD ORDERS CONFIRMATION MODAL -->
+<div id="clearOldOrdersConfirmModal" class="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-[10002] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-stone-200 overflow-hidden">
+        
+        <div class="p-6 sm:p-7">
+            
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-trash-can text-lg"></i>
+                </div>
+
+                <div class="min-w-0">
+                    <p class="text-[10px] font-extrabold uppercase tracking-widest text-red-600">
+                        Limpiar pedidos
+                    </p>
+
+                    <h3 class="text-lg font-extrabold text-stone-900 mt-1">
+                        ¿Eliminar pedidos anteriores?
+                    </h3>
+
+                    <p id="clearOldOrdersConfirmCount" class="text-sm font-bold text-stone-700 mt-2">
+                        Pedidos anteriores
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-5 rounded-2xl bg-stone-50 border border-stone-100 p-4">
+                <p class="text-xs leading-relaxed text-stone-600">
+                    Se eliminarán los pedidos de meses anteriores.
+                    <span class="font-bold text-stone-800">
+                        Los pedidos del mes actual y futuros se conservarán.
+                    </span>
+                </p>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+                <button
+                    type="button"
+                    onclick="closeClearOldOrdersModal()"
+                    class="flex-1 py-3.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs uppercase tracking-wider transition">
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    id="confirmClearOldOrdersButton"
+                    onclick="confirmClearOldOrders()"
+                    class="flex-1 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-trash-can"></i>
+                    Eliminar pedidos
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 z-[99999] transform translate-y-20 opacity-0 transition-all duration-300 bg-stone-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-bold">
@@ -4004,35 +4060,70 @@ function closeDeleteOrderModal() {
 }     
 
         function clearOldOrders() {
-            if (!Array.isArray(savedOrders) || !savedOrders.length) {
-                showToast('No hay pedidos registrados para limpiar.', 'error');
-                return;
-            }
-            const now = new Date();
-            const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            currentMonthStart.setHours(0, 0, 0, 0);
-            const oldOrders = savedOrders.filter(o => {
-                if (!o.date) return false;
-                const d = new Date(`${o.date}T00:00:00`);
-                return !isNaN(d.getTime()) && d < currentMonthStart;
-            });
-            if (!oldOrders.length) {
-                showToast('No hay pedidos de meses anteriores para limpiar.', 'error');
-                return;
-            }
-            if (confirm(`¿Deseas eliminar ${oldOrders.length} pedido(s) de meses anteriores? Los pedidos del mes actual y todos los futuros se mantendrán.`)) {
-                savedOrders = savedOrders.filter(o => {
-                    if (!o.date) return true;
-                    const d = new Date(`${o.date}T00:00:00`);
-                    return isNaN(d.getTime()) || d >= currentMonthStart;
-                });
-                localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
-                renderAdminOrdersList();
-                renderUpcomingOrders();
-                updateOrdersBadge();
-                showToast(`Se eliminaron ${oldOrders.length} pedido(s) de meses anteriores.`, 'success');
-            }
-        }
+    if (!Array.isArray(savedOrders) || !savedOrders.length) {
+        showToast('No hay pedidos registrados para limpiar.', 'error');
+        return;
+    }
+
+    const now = new Date();
+    const currentMonthStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+    );
+
+    currentMonthStart.setHours(0, 0, 0, 0);
+
+    const oldOrders = savedOrders.filter(o => {
+        if (!o.date) return false;
+
+        const d = new Date(`${o.date}T00:00:00`);
+
+        return !isNaN(d.getTime()) && d < currentMonthStart;
+    });
+
+    if (!oldOrders.length) {
+        showToast(
+            'No hay pedidos de meses anteriores para limpiar.',
+            'error'
+        );
+        return;
+    }
+
+    const modal = document.getElementById(
+        'clearOldOrdersConfirmModal'
+    );
+
+    const countEl = document.getElementById(
+        'clearOldOrdersConfirmCount'
+    );
+
+    if (!modal) return;
+
+    if (countEl) {
+        countEl.innerText =
+            `${oldOrders.length} pedido(s) de meses anteriores`;
+    }
+
+    modal.dataset.oldOrdersCount = String(oldOrders.length);
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+
+function closeClearOldOrdersModal() {
+    const modal = document.getElementById(
+        'clearOldOrdersConfirmModal'
+    );
+
+    if (!modal) return;
+
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+
+    modal.dataset.oldOrdersCount = '';
+}
 
         function getOrderLeadTimeStartDate() {
             const d = new Date();

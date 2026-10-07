@@ -3255,13 +3255,33 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 isPaid: existing.isPaid === true
             };
 
-            savedOrders[index] = updated;
-            localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
-            updateOrdersBadge();
-            renderAdminOrdersList();
-            closeAdminEditOrderModal();
-            showToast(`Pedido ${updated.folio} actualizado correctamente.`, 'success');
-        }
+       try {
+    const sheetsResult = await adminApiRequest('createOrder', updated);
+
+    if (!sheetsResult.ok) {
+        throw new Error(
+            sheetsResult.message || 'No se pudo actualizar el pedido en Google Sheets.'
+        );
+    }
+
+    savedOrders[index] = updated;
+    localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
+
+} catch (error) {
+    console.error('Error al actualizar pedido en Google Sheets:', error);
+
+    showToast(
+        `No se pudo actualizar el pedido ${updated.folio} en Google Sheets.`,
+        'error'
+    );
+
+    return;
+}
+
+updateOrdersBadge();
+renderAdminOrdersList();
+closeAdminEditOrderModal();
+showToast(`Pedido ${updated.folio} actualizado correctamente.`, 'success');
 
         function openPrivateAddressModal(index){const ord=savedOrders[index];if(!ord)return;document.getElementById('privateAddressOrderIndex').value=index;document.getElementById('privateAddressFolio').innerText=`Folio: ${ord.folio} · ${ord.name}`;const raw=ord.rawDeliveryDetails||{};document.getElementById('privateAddressInput').value=raw.location||'';const m=document.getElementById('privateAddressModal');m.classList.remove('hidden');m.classList.add('flex');}
         function closePrivateAddressModal(){const m=document.getElementById('privateAddressModal');m.classList.remove('flex');m.classList.add('hidden');}

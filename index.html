@@ -2178,13 +2178,13 @@ body > section:first-of-type a:not(.bg-brand-500){
                 </button>
 
                 <button
-                    type="button"
-                    id="confirmDeleteOrderButton"
-                    onclick="closeDeleteOrderModal()"
-                    class="flex-1 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider shadow transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-trash-can"></i>
-                    Eliminar pedido
-                </button>
+                type="button"
+               id="confirmDeleteOrderButton"
+               onclick="confirmDeleteOrder()"
+               class="flex-1 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider shadow transition flex items-center justify-center gap-2">
+               <i class="fa-solid fa-trash-can"></i>
+               Eliminar pedido
+             </button>
             </div>
 
         </div>
@@ -3935,6 +3935,73 @@ function closeDeleteOrderModal() {
     modal.classList.add('hidden');
     modal.dataset.orderIndex = '';
 }
+   async function confirmDeleteOrder() {
+    const modal = document.getElementById('deleteOrderConfirmModal');
+
+    if (!modal) return;
+
+    const idx = parseInt(modal.dataset.orderIndex, 10);
+
+    if (isNaN(idx) || !savedOrders[idx]) {
+        closeDeleteOrderModal();
+        showToast('No se encontró el pedido seleccionado.', 'error');
+        return;
+    }
+
+    const order = savedOrders[idx];
+
+    const button = document.getElementById('confirmDeleteOrderButton');
+
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+    }
+
+    try {
+        const sheetsResult = await adminApiRequest('deleteOrder', {
+            id: order.id,
+            folio: order.folio
+        });
+
+        if (!sheetsResult.ok) {
+            throw new Error(
+                sheetsResult.message || 'No se pudo eliminar el pedido de Google Sheets.'
+            );
+        }
+
+        savedOrders.splice(idx, 1);
+
+        localStorage.setItem(
+            'pinata_saved_orders',
+            JSON.stringify(savedOrders)
+        );
+
+        closeDeleteOrderModal();
+
+        renderAdminOrdersList();
+        renderUpcomingOrders();
+        updateOrdersBadge();
+
+        showToast(
+            `Pedido ${order.folio} eliminado correctamente.`,
+            'success'
+        );
+
+    } catch (error) {
+        console.error('Error al eliminar pedido:', error);
+
+        showToast(
+            `No se pudo eliminar el pedido ${order.folio}.`,
+            'error'
+        );
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fa-solid fa-trash-can"></i> Eliminar pedido';
+        }
+    }
+}     
 
         function clearOldOrders() {
             if (!Array.isArray(savedOrders) || !savedOrders.length) {

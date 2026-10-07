@@ -2467,6 +2467,25 @@ body > section:first-of-type a:not(.bg-brand-500){
             if (!GOOGLE_SHEETS_API_URL || GOOGLE_SHEETS_API_URL.includes('PEGAR_AQUI')) {
                 throw new Error('Falta configurar la URL de Google Apps Script en GOOGLE_SHEETS_API_URL.');
             }
+            async function loadConfigFromSheets() {
+    try {
+        const result = await adminApiRequest('getConfig');
+
+        if (!result.ok || !result.config) {
+            throw new Error('No se pudo cargar la configuración.');
+        }
+
+        const config = result.config;
+
+        console.log('CONFIGURACIÓN DESDE GOOGLE SHEETS:', config);
+
+        return config;
+
+    } catch (error) {
+        console.error('Error al cargar configuración desde Google Sheets:', error);
+        return null;
+    }
+}
 
             const response = await fetch(GOOGLE_SHEETS_API_URL, {
                 method: 'POST',

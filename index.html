@@ -4143,6 +4143,119 @@ function closeClearOldOrdersModal() {
 
     modal.dataset.oldOrdersCount = '';
 }
+        async function confirmClearOldOrders() {
+    const modal = document.getElementById('clearOldOrdersConfirmModal');
+
+    if (!modal) return;
+
+    if (!Array.isArray(savedOrders) || !savedOrders.length) {
+        closeClearOldOrdersModal();
+        showToast('No hay pedidos registrados para limpiar.', 'error');
+        return;
+    }
+
+    const now = new Date();
+    const currentMonthStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+    );
+
+    currentMonthStart.setHours(0, 0, 0, 0);
+
+    const oldOrders = savedOrders.filter(order => {
+        if (!order.date) return false;
+
+        const d = new Date(`${order.date}T00:00:00`);
+
+        return !isNaN(d.getTime()) && d < currentMonthStart;
+    });
+
+    if (!oldOrders.length) {
+        closeClearOldOrdersModal();
+        showToast(
+            'No hay pedidos de meses anteriores para limpiar.',
+            'error'
+        );
+        return;
+    }
+
+    const button = document.getElementById(
+        'confirmClearOldOrdersButton'
+    );
+
+    if (button) {
+        button.disabled = true;
+        button.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+    }
+
+    try {
+        for (const order of oldOrders) {
+            const result = await adminApiRequest('deleteOrder', {
+                id: order.id,
+                folio: order.folio
+            });
+
+            if (!result.ok) {
+                throw new Error(
+                    result.message ||
+                    `No se pudo eliminar el pedido ${order.folio}.`
+                );
+            }
+        }
+
+        const oldOrderIds = new Set(
+            oldOrders.map(order => String(order.id || '').trim())
+        );
+
+        const oldOrderFolios = new Set(
+            oldOrders.map(order => String(order.folio || '').trim())
+        );
+
+        savedOrders = savedOrders.filter(order => {
+            const id = String(order.id || '').trim();
+            const folio = String(order.folio || '').trim();
+
+            return !oldOrderIds.has(id) && !oldOrderFolios.has(folio);
+        });
+
+        localStorage.setItem(
+            'pinata_saved_orders',
+            JSON.stringify(savedOrders)
+        );
+
+        closeClearOldOrdersModal();
+
+        renderAdminOrdersList();
+        renderUpcomingOrders();
+        updateOrdersBadge();
+
+        showToast(
+            `Se eliminaron ${oldOrders.length} pedido(s) de meses anteriores.`,
+            'success'
+        );
+
+    } catch (error) {
+        console.error(
+            'Error al limpiar pedidos anteriores:',
+            error
+        );
+
+        showToast(
+            error?.message ||
+            'No se pudieron eliminar todos los pedidos anteriores.',
+            'error'
+        );
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML =
+                '<i class="fa-solid fa-trash-can"></i> Eliminar pedidos';
+        }
+    }
+}
 
         function getOrderLeadTimeStartDate() {
             const d = new Date();

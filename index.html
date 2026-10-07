@@ -3181,7 +3181,7 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             modal.classList.add('hidden');
         }
 
-        function saveAdminEditedOrder() {
+        async function saveAdminEditedOrder() {
             const index = parseInt(document.getElementById('adminEditOrderIndex').value, 10);
             const existing = savedOrders[index];
             if (!existing) return;

@@ -2938,7 +2938,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             document.getElementById('reviewModal').classList.add('hidden');
         }
 
-        function confirmAndSendWhatsApp() {
+        async function confirmAndSendWhatsApp() {
             if (!pendingOrderData) return;
             const o = pendingOrderData;
 
@@ -2954,13 +2954,26 @@ body > section:first-of-type a:not(.bg-brand-500){
                 o.paymentInfo = existing.paymentInfo || {};
                 savedOrders[o.editingIndex] = o;
                 showToast(`Pedido ${o.folio} actualizado con éxito.`, 'success');
-            } else {
-                savedOrders.unshift(o);
-                showToast(`Pedido ${o.folio} registrado con éxito.`, 'success');
-            }
+           } else {
+    try {
+        const sheetsResult = await adminApiRequest('createOrder', o);
 
-            localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
-            updateOrdersBadge();
+        if (!sheetsResult.ok) {
+            throw new Error(sheetsResult.message || 'No se pudo guardar el pedido en Google Sheets.');
+        }
+
+        savedOrders.unshift(o);
+        showToast(`Pedido ${o.folio} registrado con éxito.`, 'success');
+
+    } catch (error) {
+        console.error('Error al guardar pedido en Google Sheets:', error);
+        showToast(
+            `No se pudo guardar el pedido ${o.folio} en Google Sheets. El pedido no fue enviado.`,
+            'error'
+        );
+        return;
+    }
+}
 
             // Reset editing state
             document.getElementById('editingOrderIndex').value = '-1';

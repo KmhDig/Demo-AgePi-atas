@@ -3903,7 +3903,7 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             }).join('');
         }
 
-      function deleteSingleOrder(idx) {
+   function deleteSingleOrder(idx) {
     const order = savedOrders[idx];
 
     if (!order) {
@@ -3934,32 +3934,6 @@ function closeDeleteOrderModal() {
     modal.classList.remove('flex');
     modal.classList.add('hidden');
     modal.dataset.orderIndex = '';
-}
-
-        savedOrders.splice(idx, 1);
-
-        localStorage.setItem(
-            'pinata_saved_orders',
-            JSON.stringify(savedOrders)
-        );
-
-        renderAdminOrdersList();
-        renderUpcomingOrders();
-        updateOrdersBadge();
-
-        showToast(
-            `Pedido ${order.folio} eliminado correctamente.`,
-            'success'
-        );
-
-    } catch (error) {
-        console.error('Error al eliminar pedido:', error);
-
-        showToast(
-            `No se pudo eliminar el pedido ${order.folio}.`,
-            'error'
-        );
-    }
 }
 
         function clearOldOrders() {

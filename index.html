@@ -3611,9 +3611,28 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
 
-            // Siempre regresamos a la última vista útil del panel sin pedir el PIN.
-            renderAdminOptionsEditor();
+             // Siempre regresamos a la última vista útil del panel sin pedir el PIN.
+    renderAdminOptionsEditor();
+
+    adminApiRequest('getOrders')
+        .then(result => {
+            if (result.ok && Array.isArray(result.orders)) {
+                savedOrders = result.orders;
+
+                localStorage.setItem(
+                    'pinata_saved_orders',
+                    JSON.stringify(savedOrders)
+                );
+            }
+
             renderAdminOrdersList();
+            renderUpcomingOrders();
+            updateOrdersBadge();
+        })
+        .catch(error => {
+            console.error('Error al cargar pedidos desde Google Sheets:', error);
+            renderAdminOrdersList();
+        });
 
             if (document.getElementById('configWhatsappInput')) {
                 document.getElementById('configWhatsappInput').value = CLIENT_CONFIG.whatsappNumber || '';

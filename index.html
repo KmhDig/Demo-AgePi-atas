@@ -2136,6 +2136,60 @@ body > section:first-of-type a:not(.bg-brand-500){
             </div>
         </div>
     </footer>
+    <!-- DELETE ORDER CONFIRMATION MODAL -->
+<div id="deleteOrderConfirmModal" class="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-[10002] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-stone-200 overflow-hidden">
+        
+        <div class="p-6 sm:p-7">
+            
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-trash-can text-lg"></i>
+                </div>
+
+                <div class="min-w-0">
+                    <p class="text-[10px] font-extrabold uppercase tracking-widest text-red-600">
+                        Eliminar pedido
+                    </p>
+
+                    <h3 class="text-lg font-extrabold text-stone-900 mt-1">
+                        ¿Eliminar este pedido?
+                    </h3>
+
+                    <p id="deleteOrderConfirmFolio" class="text-sm font-bold text-stone-700 mt-2">
+                        Pedido
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-5 rounded-2xl bg-stone-50 border border-stone-100 p-4">
+                <p class="text-xs leading-relaxed text-stone-600">
+                    Esta acción eliminará el pedido del sistema y de la base de datos.
+                    <span class="font-bold text-stone-800">No se puede deshacer.</span>
+                </p>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+                <button
+                    type="button"
+                    onclick="closeDeleteOrderModal()"
+                    class="flex-1 py-3.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs uppercase tracking-wider transition">
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    id="confirmDeleteOrderButton"
+                    onclick="closeDeleteOrderModal()"
+                    class="flex-1 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-trash-can"></i>
+                    Eliminar pedido
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
     <!-- TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed bottom-6 right-6 z-[99999] transform translate-y-20 opacity-0 transition-all duration-300 bg-stone-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-bold">
@@ -3849,7 +3903,7 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             }).join('');
         }
 
-        async function deleteSingleOrder(idx) {
+      function deleteSingleOrder(idx) {
     const order = savedOrders[idx];
 
     if (!order) {
@@ -3857,21 +3911,30 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
         return;
     }
 
-    if (!confirm(`¿Estás seguro de eliminar el pedido ${order.folio}?`)) {
-        return;
+    const modal = document.getElementById('deleteOrderConfirmModal');
+    const folioEl = document.getElementById('deleteOrderConfirmFolio');
+
+    if (!modal) return;
+
+    if (folioEl) {
+        folioEl.innerText = `Pedido ${order.folio || 'sin folio'}`;
     }
 
-    try {
-        const sheetsResult = await adminApiRequest('deleteOrder', {
-            id: order.id,
-            folio: order.folio
-        });
+    modal.dataset.orderIndex = String(idx);
 
-        if (!sheetsResult.ok) {
-            throw new Error(
-                sheetsResult.message || 'No se pudo eliminar el pedido de Google Sheets.'
-            );
-        }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeDeleteOrderModal() {
+    const modal = document.getElementById('deleteOrderConfirmModal');
+
+    if (!modal) return;
+
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+    modal.dataset.orderIndex = '';
+}
 
         savedOrders.splice(idx, 1);
 

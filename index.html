@@ -3204,6 +3204,38 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 if (el) el.value = value ?? '';
             };
 
+            // Los pedidos antiguos o los que vienen de Google Sheets pueden no traer
+            // rawDeliveryDetails. En ese caso recuperamos método y hora desde deliveryText.
+            const savedDeliveryText = String(ord.deliveryText || '');
+            let savedDeliveryMethod = String(raw.method || '').trim();
+            let savedDeliveryTime = String(raw.time || '').trim();
+
+            if (!savedDeliveryMethod) {
+                const deliveryOptions = Array.isArray(formOptions.deliveries)
+                    ? formOptions.deliveries
+                    : DEFAULT_FORM_OPTIONS.deliveries;
+                savedDeliveryMethod =
+                    deliveryOptions.find(method =>
+                        savedDeliveryText.toLowerCase().includes(String(method).toLowerCase())
+                    ) || '';
+            }
+
+            if (!savedDeliveryTime) {
+                const knownTimes = new Set();
+                const addTimes = list => {
+                    if (Array.isArray(list)) list.forEach(t => knownTimes.add(String(t)));
+                };
+                addTimes(formOptions.times);
+                Object.values(formOptions.deliverySchedules || {}).forEach(addTimes);
+                addTimes(formOptions.meetingPointTimes);
+                Object.values(formOptions.meetingPointSchedules || {}).forEach(addTimes);
+
+                savedDeliveryTime =
+                    Array.from(knownTimes).find(time =>
+                        savedDeliveryText.toLowerCase().includes(time.toLowerCase())
+                    ) || '';
+            }
+
             setValue('adminEditOrderIndex', index);
             setValue('adminEditName', ord.name);
             setValue('adminEditPhone', ord.phone);
@@ -3217,8 +3249,8 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
 
             setValue('adminEditStyle', ord.style);
             setValue('adminEditSize', ord.size);
-            setValue('adminEditDelivery', raw.method || '');
-            setValue('adminEditTime', raw.time || '');
+            setValue('adminEditDelivery', savedDeliveryMethod);
+            setValue('adminEditTime', savedDeliveryTime);
             setValue('adminEditPayment', ord.payment || '');
 
             let hasNameNumber = 'no';
@@ -3275,6 +3307,8 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 });
             }
 
+            const deliveryEl = document.getElementById('adminEditDelivery');
+            if (deliveryEl) deliveryEl.dispatchEvent(new Event('change', { bubbles: true }));
             updateAdminEditDeliveryFields();
 
             const title = document.getElementById('adminEditOrderTitle');

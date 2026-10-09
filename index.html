@@ -1076,7 +1076,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             </div>
             <div class="flex items-center gap-3">
                 <div id="headerSocialIconsContainer" class="hidden sm:flex items-center gap-2 mr-2"></div>
-                <button type="button" onclick="(function(){var m=document.getElementById('pinModal');if(m){m.classList.remove('hidden');m.classList.add('flex');}})(); return false;" class="px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm transition flex items-center gap-2">
+                <button type="button" onclick="(function(){var i=document.getElementById('adminPinInput');if(i)i.value='';var m=document.getElementById('pinModal');if(m){m.classList.remove('hidden');m.classList.add('flex');}})(); return false;" class="px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm transition flex items-center gap-2">
                     <i class="fa-solid fa-lock text-[11px]"></i> Admin
                 </button>
             </div>
@@ -2608,13 +2608,20 @@ async function loadConfigFromSheets() {
         }
 
         function closePinModal() {
+            const pinInput = document.getElementById('adminPinInput');
+            if (pinInput) pinInput.value = '';
+
             document.getElementById('pinModal').classList.remove('flex');
             document.getElementById('pinModal').classList.add('hidden');
         }
 
         async function verifyAdminPin(e) {
             e.preventDefault();
-            const enteredPin = document.getElementById('adminPinInput').value.trim();
+            const pinInput = document.getElementById('adminPinInput');
+            const enteredPin = pinInput ? pinInput.value.trim() : '';
+
+            // Borrar el PIN inmediatamente después de leerlo.
+            if (pinInput) pinInput.value = '';
 
             if (!validatePinInput(enteredPin)) {
                 showToast('Escribe un PIN válido.', 'error');

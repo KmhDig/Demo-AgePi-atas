@@ -3190,31 +3190,42 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
 
         function editOrderFromList(index) {
             const ord = getFreshSavedOrder(index);
-            if (!ord) return;
+            if (!ord) {
+                showToast('No se encontró el pedido para editar.', 'error');
+                return;
+            }
 
             const modal = document.getElementById('adminEditOrderModal');
             if (!modal) return;
 
-            document.getElementById('adminEditOrderIndex').value = index;
-            document.getElementById('adminEditOrderTitle').innerText = `Editar Pedido — ${ord.folio}`;
-            document.getElementById('adminEditOrderSubtitle').innerText = `${ord.name || 'Sin nombre'} · Los cambios se guardarán directamente en este pedido.`;
+            const raw = ord.rawDeliveryDetails || {};
+            const setValue = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.value = value ?? '';
+            };
 
-            const setValue = (id, value) => { const el = document.getElementById(id); if (el) el.value = value ?? ''; };
+            setValue('adminEditOrderIndex', index);
             setValue('adminEditName', ord.name);
             setValue('adminEditPhone', ord.phone);
             setValue('adminEditDate', ord.date);
             setValue('adminEditTheme', ord.theme);
-            setValue('adminEditStyle', ord.style);
-            setValue('adminEditSize', ord.size);
             setValue('adminEditDetails', ord.details);
 
-            const raw = ord.rawDeliveryDetails || {};
+            if (typeof _populateAdminEditOrderOptions === 'function') {
+                _populateAdminEditOrderOptions();
+            }
+
+            setValue('adminEditStyle', ord.style);
+            setValue('adminEditSize', ord.size);
             setValue('adminEditDelivery', raw.method || '');
             setValue('adminEditTime', raw.time || '');
+            setValue('adminEditPayment', ord.payment || '');
 
             let hasNameNumber = 'no';
-            let celebName = '', celebAge = '';
-            const nn = ord.nameNumberInfo || '';
+            let celebName = '';
+            let celebAge = '';
+            const nn = String(ord.nameNumberInfo || '');
+
             if (/^Sí/i.test(nn)) {
                 hasNameNumber = 'si';
                 const nameMatch = nn.match(/Nombre:\s*([^,\)]+)/i);
@@ -3222,41 +3233,57 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 celebName = nameMatch ? nameMatch[1].trim() : '';
                 celebAge = ageMatch ? ageMatch[1].trim() : '';
             }
-            const nnRadio = document.querySelector(`input[name="adminEditHasNameNumber"][value="${hasNameNumber}"]`);
+
+            const nnRadio = document.querySelector(
+                `input[name="adminEditHasNameNumber"][value="${hasNameNumber}"]`
+            );
             if (nnRadio) nnRadio.checked = true;
+
             setValue('adminEditCelebrityName', celebName);
             setValue('adminEditCelebrityAge', celebAge);
-            document.getElementById('adminEditNameNumberFields').classList.toggle('hidden', hasNameNumber !== 'si');
 
-            let location = raw.location || '';
+            const nnFields = document.getElementById('adminEditNameNumberFields');
+            if (nnFields) nnFields.classList.toggle('hidden', hasNameNumber !== 'si');
+
+            const location = raw.location || '';
             let street = '', number = '', colony = '', city = '';
+
             if (location) {
                 const m = location.match(/^(.+?)\s+#([^,]+),\s*Col\.\s*([^,]+),\s*(.+)$/i);
-                if (m) { street = m[1].trim(); number = m[2].trim(); colony = m[3].trim(); city = m[4].trim(); }
+                if (m) {
+                    street = m[1].trim();
+                    number = m[2].trim();
+                    colony = m[3].trim();
+                    city = m[4].trim();
+                }
             }
+
             setValue('adminEditMeeting', location);
             setValue('adminEditStreet', street);
             setValue('adminEditNumber', number);
             setValue('adminEditColony', colony);
             setValue('adminEditCity', city);
 
-            setValue('adminEditPayment', ord.payment);
-            this._populateAdminEditOrderOptions();
-            // Repoblar después de crear las opciones y volver a seleccionar los valores del pedido.
-            setValue('adminEditStyle', ord.style);
-            setValue('adminEditSize', ord.size);
-            setValue('adminEditDelivery', raw.method || '');
-            setValue('adminEditTime', raw.time || '');
-            setValue('adminEditMeeting', location);
-            setValue('adminEditPayment', ord.payment);
-
             if (formOptions.sectionVisibility.extras !== false) {
-                const selectedExtras = (ord.extrasText || '').split(',').map(x => x.trim()).filter(Boolean);
+                const selectedExtras = String(ord.extrasText || '')
+                    .split(',')
+                    .map(x => x.trim())
+                    .filter(Boolean);
+
                 document.querySelectorAll('#adminEditExtras input[type="checkbox"]').forEach(cb => {
                     cb.checked = selectedExtras.includes(cb.value);
                 });
             }
+
             updateAdminEditDeliveryFields();
+
+            const title = document.getElementById('adminEditOrderTitle');
+            const subtitle = document.getElementById('adminEditOrderSubtitle');
+            if (title) title.innerText = `Editar Pedido — ${ord.folio}`;
+            if (subtitle) {
+                subtitle.innerText =
+                    `${ord.name || 'Sin nombre'} · Los cambios se guardarán directamente en este pedido.`;
+            }
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');

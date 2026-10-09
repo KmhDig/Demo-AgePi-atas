@@ -1053,6 +1053,11 @@ body > section:first-of-type a:not(.bg-brand-500){
             }
         }
     </style>
+
+<style id="admin-modal-fallback-fix">
+#pinModal.admin-modal-force-visible { display:flex !important; }
+</style>
+
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
@@ -1071,7 +1076,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             </div>
             <div class="flex items-center gap-3">
                 <div id="headerSocialIconsContainer" class="hidden sm:flex items-center gap-2 mr-2"></div>
-                <button type="button" onclick="openPinModal(); return false;" class="px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm transition flex items-center gap-2">
+                <button type="button" onclick="(function(){var m=document.getElementById('pinModal');if(m){m.classList.remove('hidden');m.classList.add('flex');}})(); return false;" class="px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm transition flex items-center gap-2">
                     <i class="fa-solid fa-lock text-[11px]"></i> Admin
                 </button>
             </div>

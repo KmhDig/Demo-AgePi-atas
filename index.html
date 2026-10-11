@@ -2638,6 +2638,27 @@ function buildSheetsOptionsPayload() {
     };
 }
         
+async function saveOptionsToSheets() {
+    if (!adminSessionToken) {
+        throw new Error(
+            'Inicia sesión como administrador antes de guardar opciones.'
+        );
+    }
+
+    const payload = buildSheetsOptionsPayload();
+
+    const result = await adminApiRequest('saveOptions', payload);
+
+    if (!result.ok) {
+        throw new Error(
+            result.message || 'No se pudieron guardar las opciones.'
+        );
+    }
+
+    return result;
+}
+
+        
         function clearAdminSession() {
             adminSessionActive = false;
             adminSessionToken = '';

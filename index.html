@@ -4962,7 +4962,7 @@ function closeClearOldOrdersModal() {
             const schedule = needsSchedule ? parseScheduleText(scheduleInput?.value) : [];
             if (needsSchedule && !schedule.length) {
                 showToast(category === 'meetingPoints' ? 'Escribe al menos un horario para este Punto Medio.' : 'Escribe al menos un horario para este método de entrega.', 'error');
-                scheduleInput?.focus();
+                scheduleInput?.focus(); 
                 return;
             }
 

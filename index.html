@@ -2489,11 +2489,19 @@ window.onload = async function() {
         throw new Error('Falta configurar la URL de Google Apps Script en GOOGLE_SHEETS_API_URL.');
     }
 
-    const response = await fetch(GOOGLE_SHEETS_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, ...payload })
-    });
+   
+const requestPayload = { action, ...payload };
+
+if (adminSessionToken) {
+    requestPayload.token = adminSessionToken;
+}
+
+const response = await fetch(GOOGLE_SHEETS_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(requestPayload)
+});
+
 
     const text = await response.text();
     let data;
@@ -2591,7 +2599,42 @@ function applySheetsConfigToFormOptions(config) {
 
     return true;
 }
+function buildSheetsOptionsPayload() {
+    return {
+        options: {
+            'Estilos de Piñata': formOptions.styles.map(value => ({
+                value: String(value).trim()
+            })),
 
+            'Tamaños': formOptions.sizes.map(value => ({
+                value: String(value).trim()
+            })),
+
+            'Método de Entrega': formOptions.deliveries.map(value => ({
+                value: String(value).trim()
+            })),
+
+            'Puntos de Encuentro': formOptions.meetingPoints.map(value => ({
+                value: String(value).trim()
+            })),
+
+            'Extras y Accesorios Disponibles': formOptions.extras.map(item => ({
+                value: String(item.label).trim(),
+                price: Number(item.price) || 0,
+                hasPrice: item.hasPrice === true,
+                id: item.id || ''
+            })),
+
+            'Método de Pago': formOptions.payments.map(value => ({
+                value: String(value).trim()
+            })),
+
+            'Horario de Entrega': formOptions.times.map(value => ({
+                value: String(value).trim()
+            }))
+        }
+    };
+}
         
         function clearAdminSession() {
             adminSessionActive = false;

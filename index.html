@@ -2380,17 +2380,33 @@ body > section:first-of-type a:not(.bg-brand-500){
         let adminSelectedDateStr = null;
         let pendingOrderData = null;
 
-        window.onload = function() {
-            localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
-            document.getElementById('navBusinessName').innerText = CLIENT_CONFIG.businessName;
-            renderFormOptionsInClient();
-            renderCalendar();
-            renderAdminCalendar();
-            updateOrdersBadge();
-            renderHeaderSocials();
-            renderFooterSocials();
-            syncOrderLeadTimeControls();
-        };
+window.onload = async function() {
+    try {
+        const config = await loadConfigFromSheets();
+
+        if (config) {
+            applySheetsConfigToFormOptions(config);
+        }
+    } catch (error) {
+        console.error('Error al cargar la configuración inicial:', error);
+    }
+
+    localStorage.setItem(
+        'pinata_form_options',
+        JSON.stringify(formOptions)
+    );
+
+    document.getElementById('navBusinessName').innerText =
+        CLIENT_CONFIG.businessName;
+
+    renderFormOptionsInClient();
+    renderCalendar();
+    renderAdminCalendar();
+    updateOrdersBadge();
+    renderHeaderSocials();
+    renderFooterSocials();
+    syncOrderLeadTimeControls();
+};
 
         function renderHeaderSocials() {
             const container = document.getElementById('headerSocialIconsContainer');

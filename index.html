@@ -2468,60 +2468,40 @@ window.onload = async function() {
     );
 }
 
-      
-async function saveSocialsConfig() {
-    if (!adminSessionToken) {
-        showToast(
-            'Inicia sesión como administrador antes de guardar.',
-            'error'
-        );
-        return;
-    }
+        async function saveSocialsConfig() {
+            const wa = document.getElementById('configWhatsappInput').value.trim();
+            const ig = document.getElementById('configInstagramInput').value.trim();
+            const fb = document.getElementById('configFacebookInput').value.trim();
+            const tk = document.getElementById('configTiktokInput').value.trim();
 
-    const wa = document.getElementById('configWhatsappInput').value.trim();
-    const ig = document.getElementById('configInstagramInput').value.trim();
-    const fb = document.getElementById('configFacebookInput').value.trim();
-    const tk = document.getElementById('configTiktokInput').value.trim();
-
-    try {
-        const result = await adminApiRequest('saveConfig', {
-            socials: {
-                whatsapp: { value: wa, active: Boolean(wa) },
-                instagram: { value: ig, active: Boolean(ig) },
-                facebook: { value: fb, active: Boolean(fb) },
-                tiktok: { value: tk, active: Boolean(tk) }
+            if (!adminSessionToken) {
+                showToast('Tu sesión terminó. Vuelve a entrar al panel.', 'error');
+                return;
             }
-        });
 
-        if (!result.ok) {
-            throw new Error(
-                result.message || 'No se pudo guardar la configuración.'
-            );
+            try {
+                await adminApiRequest('saveConfig', {
+                    socials: {
+                        whatsapp: { value: wa, active: wa !== '' },
+                        instagram: { value: ig, active: ig !== '' },
+                        facebook: { value: fb, active: fb !== '' },
+                        tiktok: { value: tk, active: tk !== '' }
+                    }
+                });
+
+                CLIENT_CONFIG.whatsappNumber = wa;
+                CLIENT_CONFIG.instagram = ig;
+                CLIENT_CONFIG.facebook = fb;
+                CLIENT_CONFIG.tiktok = tk;
+
+                renderHeaderSocials();
+                renderFooterSocials();
+                showToast('Redes guardadas en Google Sheets.', 'success');
+            } catch (error) {
+                console.error('Error al guardar las redes:', error);
+                showToast(error.message || 'No se pudieron guardar las redes.', 'error');
+            }
         }
-
-        CLIENT_CONFIG.whatsappNumber = wa;
-        CLIENT_CONFIG.instagram = ig;
-        CLIENT_CONFIG.facebook = fb;
-        CLIENT_CONFIG.tiktok = tk;
-
-        renderHeaderSocials();
-        renderFooterSocials();
-
-        showToast(
-            'Configuración guardada correctamente.',
-            'success'
-        );
-
-    } catch (error) {
-        console.error('Error al guardar las redes sociales:', error);
-
-        showToast(
-            error.message || 'No se pudo guardar la configuración.',
-            'error'
-        );
-    }
-}
-
 
       async function adminApiRequest(action, payload = {}) {
     if (!GOOGLE_SHEETS_API_URL || GOOGLE_SHEETS_API_URL.includes('PEGAR_AQUI')) {

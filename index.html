@@ -2134,9 +2134,9 @@ body > section:first-of-type a:not(.bg-brand-500){
                         <input type="text" id="newAdminPinInput" placeholder="Ej. 5678" class="input-canva font-bold tracking-widest">
                     </div>
                     <div class="space-y-2">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Palabra o correo para recordar el PIN</label>
-                        <input type="text" id="adminPinRecoveryInput" placeholder="Ej. micorreo@ejemplo.com o palabra clave" class="input-canva font-medium">
-                        <p class="text-[10px] text-stone-500">Se guarda de forma segura en la base y sirve para restablecer el PIN si se olvida.</p>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Clave de recuperación actual</label>
+                        <input type="text" id="adminPinRecoveryInput" placeholder="Escribe la clave que guardaste anteriormente" autocomplete="off" class="input-canva font-medium">
+                        <p class="text-[10px] text-stone-500">Para cambiar el PIN, escribe la clave de recuperación que ya está guardada. No escribas una nueva en este campo.</p>
                     </div>
                     <button type="button" onclick="saveAdminSecurity()" class="px-5 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition">Guardar</button>
                 </div>
@@ -5064,21 +5064,40 @@ function closeClearOldOrdersModal() {
             openAddOptionModal('extras', true);
         }
 
-        function updateExtraItem(idx, field, val) {
+        async function updateExtraItem(idx, field, val) {
             if (!formOptions.extras || !formOptions.extras[idx]) return;
             formOptions.extras[idx][field] = val;
             if (field === 'hasPrice' && !val) formOptions.extras[idx].price = 0;
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
             renderFormOptionsInClient();
-            showToast('Extra actualizado.', 'success');
+            renderAdminOptionsEditor();
+            try {
+                await saveOptionCategoryToSheets('extras');
+                showToast('Extra actualizado y guardado en Google Sheets.', 'success');
+            } catch (error) {
+                console.error('Error al actualizar el extra:', error);
+                showToast(error.message || 'No se pudo guardar el extra en Google Sheets.', 'error');
+            }
         }
 
-        function deleteExtraItem(idx) {
+        async function deleteExtraItem(idx) {
+            if (!formOptions.extras || idx < 0 || idx >= formOptions.extras.length) return;
+            if (formOptions.extras.length <= 1) {
+                showToast('Debe quedar al menos un extra en esta categoría.', 'error');
+                return;
+            }
+            const removedItem = formOptions.extras[idx];
             formOptions.extras.splice(idx, 1);
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
             renderAdminOptionsEditor();
             renderFormOptionsInClient();
-            showToast('Extra eliminado.', 'success');
+            try {
+                await saveOptionCategoryToSheets('extras');
+                showToast('Extra eliminado y cambios guardados en Google Sheets.', 'success');
+            } catch (error) {
+                console.error('Error al eliminar el extra:', error);
+                showToast(error.message || 'No se pudieron guardar los cambios en Google Sheets.', 'error');
+            }
         }
         window.addEventListener('storage', (event) => {
             if (event.key === 'pinata_order_schedule' || event.key === 'pinata_operational_days') {

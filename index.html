@@ -1080,6 +1080,126 @@ body > section:first-of-type a:not(.bg-brand-500){
 }
 </style>
 
+
+<style id="pinipo-calendar-fixed-cell-size-v12">
+/* Corrección definitiva: seleccionar una fecha no debe alterar el tamaño de la celda. */
+#calendarDaysGrid > button {
+  box-sizing: border-box !important;
+  height: 2.8rem !important;
+  min-height: 2.8rem !important;
+  max-height: 2.8rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  scale: none !important;
+  line-height: 1.1 !important;
+  transition-property: color, background-color, border-color, box-shadow !important;
+}
+#calendarDaysGrid > button:hover,
+#calendarDaysGrid > button:focus,
+#calendarDaysGrid > button:focus-visible,
+#calendarDaysGrid > button:active {
+  transform: none !important;
+  scale: none !important;
+}
+#calendarDaysGrid > button > span {
+  flex-shrink: 0 !important;
+}
+</style>
+
+
+<style id="pinipo-calendar-selection-stable-v13">
+/* Selección uniforme: el resaltado no modifica dimensiones ni escala de ninguna fecha. */
+#calendarDaysGrid {
+  align-items: stretch !important;
+  grid-auto-rows: 2.8rem !important;
+}
+#calendarDaysGrid > button.pm-calendar-day {
+  box-sizing: border-box !important;
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 2.8rem !important;
+  min-height: 2.8rem !important;
+  max-height: 2.8rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  scale: 1 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: background-color .12s ease, color .12s ease, border-color .12s ease !important;
+}
+#calendarDaysGrid > button.pm-calendar-day.pm-calendar-selected {
+  outline: 2px solid #dc2626 !important;
+  outline-offset: -3px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  scale: 1 !important;
+  font-weight: 700 !important;
+  padding: 0 !important;
+}
+/* Pocos lugares conserva exactamente el mismo fondo y tamaño al seleccionar o pasar el cursor. */
+#calendarDaysGrid > button.pm-calendar-day.bg-amber-50,
+#calendarDaysGrid > button.pm-calendar-day.bg-amber-50:hover,
+#calendarDaysGrid > button.pm-calendar-day.bg-amber-50:focus,
+#calendarDaysGrid > button.pm-calendar-day.bg-amber-50:focus-visible,
+#calendarDaysGrid > button.pm-calendar-day.bg-amber-50:active,
+#calendarDaysGrid > button.pm-calendar-day.bg-amber-50.pm-calendar-selected {
+  background-color: #fffbeb !important;
+  transform: none !important;
+  scale: 1 !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+#calendarDaysGrid > button.pm-calendar-day:hover,
+#calendarDaysGrid > button.pm-calendar-day:focus,
+#calendarDaysGrid > button.pm-calendar-day:focus-visible,
+#calendarDaysGrid > button.pm-calendar-day:active {
+  transform: none !important;
+  scale: 1 !important;
+}
+#calendarDaysGrid > button.pm-calendar-day > span {
+  flex: 0 0 auto !important;
+}
+</style>
+
+
+<style id="pinipo-calendar-width-stability-fix">
+/* FIX PUNTUAL: el calendario conserva el mismo ancho al seleccionar cualquier estado. */
+#formularioPedido {
+  width: 100% !important;
+  max-width: 72rem !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+#formularioPedido > .bg-white.rounded-3xl {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+#formularioPedido #calendarDaysGrid {
+  display: grid !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+}
+#formularioPedido #calendarDaysGrid > button.pm-calendar-day {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+#formularioPedido #calendarAvailabilityMessage {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+}
+</style>
+
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
@@ -3319,7 +3439,7 @@ async function saveOptionCategoryToSheets(category) {
                     bgClass = 'bg-stone-100 text-stone-400 border-stone-300 opacity-100 pm-lead-blocked';
                     dotClass = 'bg-stone-400';
                 } else if (status === 'full') {
-                    bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
+                    bgClass = 'bg-amber-50 hover:bg-amber-50 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
                 } else if (status === 'blocked') {
                     bgClass = 'bg-orange-50 hover:bg-orange-100 text-orange-800 border-orange-300';
@@ -3329,9 +3449,7 @@ async function saveOptionCategoryToSheets(category) {
                     dotClass = 'bg-rose-500';
                 }
 
-                if (selectedDateStr === dateStr) {
-                    bgClass += ' ring-2 ring-inset ring-brand-500 font-black';
-                }
+                const selectedClass = selectedDateStr === dateStr ? ' pm-calendar-selected' : '';
 
                 const unavailableTitle = leadBlocked
                     ? `No disponible: requiere ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} hábiles de anticipación`
@@ -3343,7 +3461,7 @@ async function saveOptionCategoryToSheets(category) {
                                 ? 'Pocos lugares: esta fecha sí está disponible'
                                 : `Fecha ${d}`;
                 grid.innerHTML += `
-                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} title="${unavailableTitle}" aria-disabled="${leadBlocked || agendaUnavailable ? 'true' : 'false'}" aria-label="${unavailableTitle}" class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${leadBlocked || agendaUnavailable ? 'cursor-not-allowed' : ''}">
+                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} title="${unavailableTitle}" aria-disabled="${leadBlocked || agendaUnavailable ? 'true' : 'false'}" aria-label="${unavailableTitle}" class="pm-calendar-day h-10 rounded-xl border ${bgClass}${selectedClass} flex flex-col items-center justify-center relative text-xs font-bold ${leadBlocked || agendaUnavailable ? 'cursor-not-allowed' : ''}">
                         <span>${d}</span>
                         <span class="w-1.5 h-1.5 rounded-full ${dotClass} mt-0.5"></span>
                     </button>
@@ -5030,7 +5148,7 @@ function closeClearOldOrdersModal() {
                 }
 
                 if (adminSelectedDateStr === dateStr) {
-                    bgClass += ' ring-2 ring-inset ring-stone-900 font-black';
+                    bgClass += ' ring-2 ring-inset ring-stone-900';
                 }
 
                 grid.innerHTML += `

@@ -1275,6 +1275,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                 <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
             </div>
             <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2"></div>
+            <div id="calendarAvailabilityMessage" class="hidden mt-3 rounded-xl border px-4 py-3 text-xs sm:text-sm font-bold leading-relaxed" role="status" aria-live="polite"></div>
             <div class="pt-4 border-t border-stone-100 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-bold text-stone-600 text-center">
                 <div class="flex items-center justify-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Disponible</div>
                 <div class="flex items-center justify-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Pocos lugares</div>
@@ -3308,6 +3309,7 @@ async function saveOptionCategoryToSheets(category) {
 
                 let status = dayStatuses[dateStr] || (operationalDays[dow] === false ? 'closed' : 'available');
                 const leadBlocked = isDateBeforeOrderLeadTime(dateStr);
+                const agendaUnavailable = status === 'blocked' || status === 'closed';
                 let bgClass = 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200';
                 let dotClass = 'bg-emerald-500';
 
@@ -3331,13 +3333,40 @@ async function saveOptionCategoryToSheets(category) {
                     bgClass += ' ring-2 ring-brand-500 ring-offset-2 font-black';
                 }
 
+                const unavailableTitle = leadBlocked
+                    ? `No disponible: requiere ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} hábiles de anticipación`
+                    : status === 'blocked'
+                        ? 'Agenda llena: elige otra fecha'
+                        : status === 'closed'
+                            ? 'Cerrado para pedidos: elige otra fecha'
+                            : status === 'full'
+                                ? 'Pocos lugares: esta fecha sí está disponible'
+                                : `Fecha ${d}`;
                 grid.innerHTML += `
-                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} title="${leadBlocked ? `No disponible: requiere ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} hábiles de anticipación` : ''}" aria-label="${leadBlocked ? `Fecha ${d} no disponible por anticipación mínima` : `Fecha ${d}`}" class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${leadBlocked ? 'cursor-not-allowed' : ''}">
+                    <button type="button" ${leadBlocked ? 'disabled' : `onclick="selectDate('${dateStr}')"`} title="${unavailableTitle}" aria-disabled="${leadBlocked || agendaUnavailable ? 'true' : 'false'}" aria-label="${unavailableTitle}" class="h-10 rounded-xl border ${bgClass} flex flex-col items-center justify-center transition relative text-xs font-bold ${leadBlocked || agendaUnavailable ? 'cursor-not-allowed' : ''}">
                         <span>${d}</span>
                         <span class="w-1.5 h-1.5 rounded-full ${dotClass} mt-0.5"></span>
                     </button>
                 `;
             }
+        }
+
+        function showCalendarAvailabilityMessage(message, status = 'info') {
+            const notice = document.getElementById('calendarAvailabilityMessage');
+            if (!notice) return;
+            if (!message) {
+                notice.textContent = '';
+                notice.className = 'hidden mt-3 rounded-xl border px-4 py-3 text-xs sm:text-sm font-bold leading-relaxed';
+                return;
+            }
+            const styles = {
+                error: 'mt-3 rounded-xl border border-orange-300 bg-orange-50 text-orange-900 px-4 py-3 text-xs sm:text-sm font-bold leading-relaxed',
+                warning: 'mt-3 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 px-4 py-3 text-xs sm:text-sm font-bold leading-relaxed',
+                success: 'mt-3 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-900 px-4 py-3 text-xs sm:text-sm font-bold leading-relaxed',
+                info: 'mt-3 rounded-xl border border-stone-300 bg-stone-50 text-stone-800 px-4 py-3 text-xs sm:text-sm font-bold leading-relaxed'
+            };
+            notice.className = styles[status] || styles.info;
+            notice.textContent = message;
         }
 
         function changeMonth(dir) {
@@ -3346,22 +3375,57 @@ async function saveOptionCategoryToSheets(category) {
         }
 
         function selectDate(dateStr) {
-            if (isDateBeforeOrderLeadTime(dateStr)) { showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error'); return; }
+            if (isDateBeforeOrderLeadTime(dateStr)) {
+                showCalendarAvailabilityMessage(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} hábiles de anticipación. Por favor, elige otra fecha.`, 'error');
+                showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error');
+                return;
+            }
+            const parts = dateStr.split('-');
+            const dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+            const status = dayStatuses[dateStr] || (operationalDays[dateObj.getDay()] === false ? 'closed' : 'available');
+            if (status === 'blocked' || status === 'closed') {
+                const message = status === 'blocked'
+                    ? 'Esta fecha tiene la agenda llena. Por favor, elige otra fecha.'
+                    : 'Esta fecha está cerrada para pedidos. Por favor, elige otra fecha.';
+                showCalendarAvailabilityMessage(message, 'error');
+                showToast(message, 'error');
+                return;
+            }
             selectedDateStr = dateStr;
             const dateInput = document.getElementById('eventDate');
             if (dateInput) dateInput.value = dateStr;
-            
+
             document.getElementById('selectedDateSubtitle').innerText = `Fecha seleccionada: ${dateStr}`;
-            document.getElementById('statusBadgeContainer').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Fecha Seleccionada: ${dateStr}</span>`;
+            if (status === 'full') {
+                showCalendarAvailabilityMessage(`¡Aviso! La fecha ${dateStr} tiene pocos lugares disponibles. Puedes continuar con tu pedido, pero te recomendamos completarlo pronto.`, 'warning');
+                document.getElementById('statusBadgeContainer').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900">Pocos lugares: ${dateStr}</span>`;
+            } else {
+                showCalendarAvailabilityMessage('', 'info');
+                document.getElementById('statusBadgeContainer').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Fecha Seleccionada: ${dateStr}</span>`;
+            }
             renderCalendar();
-            showToast(`Fecha ${dateStr} seleccionada correctamente.`, 'success');
+            if (status !== 'full') showToast(`Fecha ${dateStr} seleccionada correctamente.`, 'success');
             updateLiveSummary();
         }
 
         function onFormDateChange(dateStr) {
             if (!dateStr) return;
-            if (isDateBeforeOrderLeadTime(dateStr)) { document.getElementById('eventDate').value = ''; selectedDateStr = null; showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error'); return; }
+            if (isDateBeforeOrderLeadTime(dateStr)) { document.getElementById('eventDate').value = ''; selectedDateStr = null; showCalendarAvailabilityMessage(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} hábiles de anticipación. Por favor, elige otra fecha.`, 'error'); showToast(`Esta fecha requiere al menos ${orderLeadTimeDays} día${orderLeadTimeDays === 1 ? '' : 's'} de anticipación.`, 'error'); return; }
+            const dateParts = dateStr.split('-');
+            const candidateDate = new Date(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2]));
+            const candidateStatus = dayStatuses[dateStr] || (operationalDays[candidateDate.getDay()] === false ? 'closed' : 'available');
+            if (candidateStatus === 'blocked' || candidateStatus === 'closed') {
+                document.getElementById('eventDate').value = '';
+                selectedDateStr = null;
+                const message = candidateStatus === 'blocked' ? 'Esta fecha tiene la agenda llena. Por favor, elige otra fecha.' : 'Esta fecha está cerrada para pedidos. Por favor, elige otra fecha.';
+                showCalendarAvailabilityMessage(message, 'error');
+                showToast(message, 'error');
+                renderCalendar();
+                return;
+            }
             selectedDateStr = dateStr;
+            if (candidateStatus === 'full') showCalendarAvailabilityMessage(`¡Aviso! La fecha ${dateStr} tiene pocos lugares disponibles. Puedes continuar con tu pedido, pero te recomendamos completarlo pronto.`, 'warning');
+            else showCalendarAvailabilityMessage('', 'info');
             
             const parts = dateStr.split('-');
             if (parts.length === 3) {
@@ -3404,8 +3468,15 @@ async function saveOptionCategoryToSheets(category) {
             const currentStatus = dayStatuses[date] || (operationalDays[dow] === false ? 'closed' : 'available');
 
             if (currentStatus === 'closed' || currentStatus === 'blocked') {
-                showToast(currentStatus === 'blocked' ? 'Lo sentimos, esta fecha tiene la agenda bloqueada.' : 'Lo sentimos, esta fecha está cerrada para pedidos.', 'error');
+                const message = currentStatus === 'blocked'
+                    ? 'Esta fecha tiene la agenda llena. Por favor, elige otra fecha.'
+                    : 'Esta fecha está cerrada para pedidos. Por favor, elige otra fecha.';
+                showCalendarAvailabilityMessage(message, 'error');
+                showToast(message, 'error');
                 return;
+            }
+            if (currentStatus === 'full') {
+                showCalendarAvailabilityMessage(`¡Aviso! La fecha ${date} tiene pocos lugares disponibles. Puedes continuar con tu pedido, pero te recomendamos completarlo pronto.`, 'warning');
             }
 
             const editingIndex = parseInt(document.getElementById('editingOrderIndex').value);

@@ -1879,6 +1879,7 @@ body > section:first-of-type a:not(.bg-brand-500){
             <div class="flex gap-2 border-b border-stone-200 pb-2 overflow-x-auto">
                 <button type="button" onclick="switchAdminTab('agenda')" id="adminTabBtn-agenda" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-900 text-white transition shrink-0">Gestionar Fechas</button>
                 <button type="button" onclick="switchAdminTab('options')" id="adminTabBtn-options" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-100 text-stone-700 hover:bg-stone-200 transition shrink-0">Opciones</button>
+                <button type="button" onclick="switchAdminTab('business')" id="adminTabBtn-business" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-100 text-stone-700 hover:bg-stone-200 transition shrink-0">Configuración</button>
                 <button type="button" onclick="switchAdminTab('socials')" id="adminTabBtn-socials" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-100 text-stone-700 hover:bg-stone-200 transition shrink-0">Redes y WhatsApp</button>
                 <button type="button" onclick="switchAdminTab('orders')" id="adminTabBtn-orders" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-100 text-stone-700 hover:bg-stone-200 transition shrink-0">Pedidos <span id="adminOrdersBadge" class="ml-1 bg-brand-500 text-white px-1.5 py-0.2 rounded-full text-[10px]">0</span></button>
                 <button type="button" onclick="switchAdminTab('upcoming')" id="adminTabBtn-upcoming" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-100 text-stone-700 hover:bg-stone-200 transition shrink-0">Próximos <span id="adminUpcomingBadge" class="ml-1 bg-brand-500 text-white px-1.5 py-0.2 rounded-full text-[10px]">0</span></button>
@@ -2079,6 +2080,30 @@ body > section:first-of-type a:not(.bg-brand-500){
                         </div>
                         <div id="adminList-payments" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Tab: Business Configuration -->
+            <div id="adminTab-business" class="hidden space-y-6">
+                <div class="space-y-4 p-5 bg-brand-50/50 rounded-2xl border border-brand-200">
+                    <div>
+                        <h4 class="font-extrabold text-stone-900 text-sm">Configuración del negocio</h4>
+                        <p class="text-xs text-stone-600 mt-1">Estos valores se guardan en la hoja Configuración de Google Sheets.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Nombre del negocio</label>
+                        <input type="text" id="configBusinessNameInput" value="¡PiniPo!" class="input-canva" maxlength="100">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-700">Máximo de pedidos por día</label>
+                        <input type="number" id="configOrderDailyCapacityInput" min="1" max="1000" step="1" value="3" class="input-canva">
+                        <p class="text-[10px] text-stone-500">Al alcanzar el límite, el sistema rechazará pedidos nuevos para esa fecha. Los pedidos existentes no se eliminan.</p>
+                    </div>
+                    <label class="flex items-start gap-3 p-3 rounded-xl border border-stone-200 bg-white cursor-pointer">
+                        <input type="checkbox" id="configOrderDailyCapacityEnabledInput" class="mt-0.5 accent-pink-600" checked>
+                        <span><strong class="block text-xs text-stone-800">Activar límite de pedidos por día</strong><span class="block text-[10px] text-stone-500">Activado: aplica el máximo indicado. Desactivado: no limita la cantidad de pedidos por fecha.</span></span>
+                    </label>
+                    <button type="button" onclick="saveBusinessSettings()" class="px-5 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition">Guardar datos del negocio</button>
                 </div>
             </div>
 
@@ -2382,6 +2407,8 @@ body > section:first-of-type a:not(.bg-brand-500){
         if (!Number.isFinite(orderLeadTimeDays) || orderLeadTimeDays < 0) orderLeadTimeDays = 5;
         let orderLeadTimeEnabled = localStorage.getItem('pinata_order_lead_time_enabled') !== 'false';
         let orderSchedule = JSON.parse(localStorage.getItem('pinata_order_schedule')) || { openTime: '09:00', closeTime: '18:00', mode: 'both' };
+        let orderDailyCapacity = Math.max(1, parseInt(localStorage.getItem('pinata_order_daily_capacity') || '3', 10) || 3);
+        let orderDailyCapacityEnabled = localStorage.getItem('pinata_order_daily_capacity_enabled') !== 'false';
         if (!['time','days','both'].includes(orderSchedule.mode)) orderSchedule.mode = 'both';
         let upcomingRefreshTimer = null;
         let addOptionMode = { category: null, extra: false };
@@ -2490,6 +2517,33 @@ window.onload = async function() {
         'success'
     );
 }
+
+        async function saveBusinessSettings() {
+            const nameInput = document.getElementById('configBusinessNameInput');
+            const capacityInput = document.getElementById('configOrderDailyCapacityInput');
+            const businessName = String(nameInput?.value || '').trim();
+            const capacity = Number(capacityInput?.value);
+            const capacityEnabled = Boolean(document.getElementById('configOrderDailyCapacityEnabledInput')?.checked);
+            if (!businessName) { showToast('Escribe el nombre del negocio.', 'error'); return; }
+            if (!Number.isInteger(capacity) || capacity < 1 || capacity > 1000) {
+                showToast('El máximo de pedidos por día debe ser un entero entre 1 y 1000.', 'error');
+                return;
+            }
+            try {
+                await adminApiRequest('saveConfig', { settings: { businessName, orderDailyCapacity: capacity, orderDailyCapacityEnabled: capacityEnabled } });
+                CLIENT_CONFIG.businessName = businessName;
+                orderDailyCapacity = capacity;
+                orderDailyCapacityEnabled = capacityEnabled;
+                localStorage.setItem('pinata_order_daily_capacity', String(capacity));
+                localStorage.setItem('pinata_order_daily_capacity_enabled', String(capacityEnabled));
+                const navName = document.getElementById('navBusinessName');
+                if (navName) navName.innerText = businessName;
+                showToast('Configuración del negocio y límite diario guardados en Google Sheets.', 'success');
+            } catch (error) {
+                console.error('Error al guardar datos del negocio:', error);
+                showToast(error.message || 'No se pudieron guardar los datos del negocio.', 'error');
+            }
+        }
 
         async function saveSocialsConfig() {
             const wa = document.getElementById('configWhatsappInput').value.trim();
@@ -2652,6 +2706,23 @@ function parseSheetsSetting(value, fallback) {
 function applySheetsRuntimeConfig(config) {
     const settings = config && config.settings ? config.settings : {};
     const read = key => parseSheetsSetting(settings[key], undefined);
+
+    const savedBusinessName = read('businessName');
+    if (savedBusinessName !== undefined && String(savedBusinessName).trim()) {
+        CLIENT_CONFIG.businessName = String(savedBusinessName).trim();
+        const navName = document.getElementById('navBusinessName');
+        if (navName) navName.innerText = CLIENT_CONFIG.businessName;
+    }
+    const savedDailyCapacityEnabled = read('orderDailyCapacityEnabled');
+    orderDailyCapacityEnabled = savedDailyCapacityEnabled === undefined
+        ? true
+        : !(savedDailyCapacityEnabled === false || String(savedDailyCapacityEnabled).toLowerCase() === 'false' || String(savedDailyCapacityEnabled) === '0');
+    localStorage.setItem('pinata_order_daily_capacity_enabled', String(orderDailyCapacityEnabled));
+    const savedDailyCapacity = read('orderDailyCapacity');
+    if (savedDailyCapacity !== undefined && Number.isInteger(Number(savedDailyCapacity)) && Number(savedDailyCapacity) >= 1) {
+        orderDailyCapacity = Number(savedDailyCapacity);
+        localStorage.setItem('pinata_order_daily_capacity', String(orderDailyCapacity));
+    }
 
     const savedSchedule = read('orderSchedule');
     if (savedSchedule && typeof savedSchedule === 'object') {
@@ -3854,24 +3925,34 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             document.getElementById('resRemainingDisplay').innerText = `$${remaining.toFixed(2)}`;
         }
 
-        function saveAdvanceData() {
-            const index = parseInt(document.getElementById('advanceOrderIndex').value);
+        async function saveAdvanceData() {
+            const index = parseInt(document.getElementById('advanceOrderIndex').value, 10);
             if (index < 0 || !savedOrders[index]) return;
 
             const total = parseFloat(document.getElementById('advTotalInput').value) || 0;
             const percent = parseFloat(document.getElementById('advPercentSelect').value) || 50;
             const advance = (total * percent) / 100;
             const remaining = total - advance;
+            const order = savedOrders[index];
+            if (!order.id && !order.folio) { showToast('El pedido no tiene ID ni folio para sincronizar.', 'error'); return; }
+            if (total < 0 || advance < 0 || advance > total) { showToast('Revisa el total y el anticipo.', 'error'); return; }
 
-            savedOrders[index].totalAmount = total;
-            savedOrders[index].advancePercent = percent;
-            savedOrders[index].advanceAmount = advance;
-            savedOrders[index].remainingAmount = remaining;
-
-            localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
-            closeAdvanceModal();
-            renderAdminOrdersList();
-            showToast('Cálculo de anticipo guardado con éxito.', 'success');
+            try {
+                await adminApiRequest('updateOrderFinance', {
+                    id: order.id || '', folio: order.folio || '', totalAmount: total, advanceAmount: advance
+                });
+                order.totalAmount = total;
+                order.advancePercent = percent;
+                order.advanceAmount = advance;
+                order.remainingAmount = remaining;
+                localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
+                closeAdvanceModal();
+                renderAdminOrdersList();
+                showToast('Anticipo y total guardados en Google Sheets.', 'success');
+            } catch (error) {
+                console.error('Error al guardar anticipo y total:', error);
+                showToast(error.message || 'No se pudieron guardar el anticipo y el total en Google Sheets.', 'error');
+            }
         }
 
         function sendAdvanceWhatsApp(index) {
@@ -4023,6 +4104,11 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             renderAdminOrdersList();
         });
 
+            if (document.getElementById('configBusinessNameInput')) {
+                document.getElementById('configBusinessNameInput').value = CLIENT_CONFIG.businessName || '¡PiniPo!';
+                document.getElementById('configOrderDailyCapacityInput').value = String(orderDailyCapacity || 3);
+                document.getElementById('configOrderDailyCapacityEnabledInput').checked = orderDailyCapacityEnabled;
+            }
             if (document.getElementById('configWhatsappInput')) {
                 document.getElementById('configWhatsappInput').value = CLIENT_CONFIG.whatsappNumber || '';
                 document.getElementById('configInstagramInput').value = CLIENT_CONFIG.instagram || '';
@@ -4059,6 +4145,7 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
 
             const btnAgenda = document.getElementById('adminTabBtn-agenda');
             const btnOptions = document.getElementById('adminTabBtn-options');
+            const btnBusiness = document.getElementById('adminTabBtn-business');
             const btnSocials = document.getElementById('adminTabBtn-socials');
             const btnOrders = document.getElementById('adminTabBtn-orders');
             const btnSecurity = document.getElementById('adminTabBtn-security');
@@ -4066,16 +4153,17 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
 
             const tabAgenda = document.getElementById('adminTab-agenda');
             const tabOptions = document.getElementById('adminTab-options');
+            const tabBusiness = document.getElementById('adminTab-business');
             const tabSocials = document.getElementById('adminTab-socials');
             const tabOrders = document.getElementById('adminTab-orders');
             const tabSecurity = document.getElementById('adminTab-security');
             const tabUpcoming = document.getElementById('adminTab-upcoming');
 
-            [btnAgenda, btnOptions, btnSocials, btnOrders, btnUpcoming, btnSecurity].forEach(btn => {
+            [btnAgenda, btnOptions, btnBusiness, btnSocials, btnOrders, btnUpcoming, btnSecurity].forEach(btn => {
                 if(btn) btn.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-100 text-stone-700 hover:bg-stone-200 transition shrink-0";
             });
 
-            [tabAgenda, tabOptions, tabSocials, tabOrders, tabUpcoming, tabSecurity].forEach(t => {
+            [tabAgenda, tabOptions, tabBusiness, tabSocials, tabOrders, tabUpcoming, tabSecurity].forEach(t => {
                 if(t) t.classList.add('hidden');
             });
 
@@ -4086,6 +4174,9 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 if(btnOptions) btnOptions.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-900 text-white transition shrink-0";
                 if(tabOptions) tabOptions.classList.remove('hidden');
                 renderAdminOptionsEditor();
+            } else if (tab === 'business') {
+                if(btnBusiness) btnBusiness.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-900 text-white transition shrink-0";
+                if(tabBusiness) tabBusiness.classList.remove('hidden');
             } else if (tab === 'socials') {
                 if(btnSocials) btnSocials.className = "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-stone-900 text-white transition shrink-0";
                 if(tabSocials) tabSocials.classList.remove('hidden');

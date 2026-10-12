@@ -1200,6 +1200,48 @@ body > section:first-of-type a:not(.bg-brand-500){
 }
 </style>
 
+
+<style id="pinipo-compact-layout-final-v16">
+/* Compactación visual general solicitada: solo dimensiones y espacios, sin cambiar funciones. */
+@media (min-width: 1024px) {
+  body > header:first-of-type > div { height: 3.75rem !important; }
+  body > header:first-of-type { min-height: 3.75rem !important; }
+  .pm-editorial-grid { min-height: 390px !important; gap: 1.5rem !important; }
+  .pm-editorial-copy { padding: 2rem 0 !important; }
+  .pm-editorial-visual { height: 390px !important; }
+  .pm-photo-frame { height: 340px !important; }
+  .pm-visual-backdrop { height: 325px !important; }
+  #galeriaTrabajos { padding-top: 2rem !important; padding-bottom: 1.5rem !important; }
+  #galeriaTrabajos > div:first-child { margin-bottom: 1rem !important; }
+  #galeriaTrabajos > .grid { gap: .7rem !important; }
+  #galeriaTrabajos + section { padding-top: 1.25rem !important; padding-bottom: 1.5rem !important; }
+  #formularioPedido { max-width: 64rem !important; padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; gap: .9rem !important; }
+}
+#formularioPedido > .space-y-3 h2 { font-size: 1.45rem !important; }
+#formularioPedido > .space-y-3 p { font-size: .75rem !important; }
+#formularioPedido > .bg-white.rounded-3xl { padding: 1rem !important; }
+#formularioPedido .bg-white.rounded-3xl { border-radius: 1rem !important; }
+#formularioPedido .bg-white.rounded-3xl.space-y-6 { gap: .9rem !important; }
+#formularioPedido #calendarDaysGrid { gap: .3rem !important; grid-auto-rows: 2.45rem !important; }
+#formularioPedido #calendarDaysGrid > button,
+#formularioPedido #calendarDaysGrid > button.pm-calendar-day {
+  height: 2.45rem !important; min-height: 2.45rem !important; max-height: 2.45rem !important;
+}
+#formularioPedido #calendarDaysGrid + div { padding-top: .55rem !important; }
+#formularioPedido #calendarAvailabilityMessage { margin-top: .5rem !important; }
+#formularioPedido .pt-4.border-t { padding-top: .6rem !important; }
+#formularioPedido .mt-4.flex.items-start { margin-top: .7rem !important; }
+@media (max-width: 1023px) {
+  #formularioPedido { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+  #formularioPedido > .bg-white.rounded-3xl { padding: .9rem !important; }
+  #formularioPedido #calendarDaysGrid { gap: .25rem !important; grid-auto-rows: 2.3rem !important; }
+  #formularioPedido #calendarDaysGrid > button,
+  #formularioPedido #calendarDaysGrid > button.pm-calendar-day {
+    height: 2.3rem !important; min-height: 2.3rem !important; max-height: 2.3rem !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 

@@ -1939,6 +1939,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                             </div>
                         </div>
                         <div class="text-[10px] text-stone-500 bg-white/70 rounded-lg px-3 py-2">Actualmente: <strong id="orderLeadTimeLabel">5 días hábiles de anticipación</strong></div>
+                        <button type="button" onclick="saveAdminOperationalSettings('leadTime')" class="w-full px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-extrabold transition"><i class="fa-solid fa-floppy-disk mr-1.5"></i> Guardar cambios de anticipación</button>
                     </div>
                     <div class="p-4 bg-white border border-stone-200 rounded-2xl space-y-4">
                         <div>
@@ -1954,6 +1955,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                             <label class="flex items-center gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl cursor-pointer"><input type="radio" name="orderScheduleMode" value="days" onchange="saveOrderScheduleMode('days')" class="w-4 h-4 accent-pink-600"><span class="text-[11px] font-bold text-stone-700">Solo días</span></label>
                             <label class="flex items-center gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl cursor-pointer"><input type="radio" name="orderScheduleMode" value="both" onchange="saveOrderScheduleMode('both')" class="w-4 h-4 accent-pink-600"><span class="text-[11px] font-bold text-stone-700">Horario y días</span></label>
                         </div>
+                        <button type="button" onclick="saveAdminOperationalSettings('schedule')" class="w-full px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-extrabold transition"><i class="fa-solid fa-floppy-disk mr-1.5"></i> Guardar cambios de horario</button>
                     </div>
                     <div class="p-4 bg-white border border-stone-200 rounded-2xl space-y-4">
                         <div>
@@ -1961,6 +1963,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                             <p class="text-[11px] text-stone-500 mt-1">Selecciona los días en los que aceptarás solicitudes.</p>
                         </div>
                         <div id="orderDaysConfig" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+                        <button type="button" onclick="saveAdminOperationalSettings('days')" class="w-full px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-extrabold transition"><i class="fa-solid fa-floppy-disk mr-1.5"></i> Guardar cambios de días</button>
                     </div>
                 </div>
             </div>
@@ -2005,6 +2008,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                     <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
                         <div class="flex items-center justify-between">
                             <h5 class="text-xs font-extrabold uppercase tracking-wider text-stone-700">1. Tipos de Piñata / Estilos</h5>
+                            <button type="button" onclick="saveAdminOptionCategory('styles')" class="shrink-0 px-3.5 py-2 bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-extrabold rounded-xl transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-floppy-disk text-[10px]"></i> Guardar cambios</button>
                             <button type="button" onclick="addNewOption('styles')" class="shrink-0 px-3.5 py-2 bg-white border border-brand-200 text-brand-700 text-[11px] font-extrabold rounded-xl hover:bg-brand-50 hover:border-brand-300 transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-plus text-[10px]"></i> Agregar</button>
                         </div>
                         <div id="adminList-styles" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
@@ -2013,6 +2017,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                     <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
                         <div class="flex items-center justify-between">
                             <h5 class="text-xs font-extrabold uppercase tracking-wider text-stone-700">2. Tamaños de Piñata</h5>
+                            <button type="button" onclick="saveAdminOptionCategory('sizes')" class="shrink-0 px-3.5 py-2 bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-extrabold rounded-xl transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-floppy-disk text-[10px]"></i> Guardar cambios</button>
                             <button type="button" onclick="addNewOption('sizes')" class="shrink-0 px-3.5 py-2 bg-white border border-brand-200 text-brand-700 text-[11px] font-extrabold rounded-xl hover:bg-brand-50 hover:border-brand-300 transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-plus text-[10px]"></i> Agregar</button>
                         </div>
                         <div id="adminList-sizes" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
@@ -2021,6 +2026,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                     <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
                         <div class="flex items-center justify-between">
                             <h5 class="text-xs font-extrabold uppercase tracking-wider text-stone-700">3. Métodos de Entrega</h5>
+                            <button type="button" onclick="saveAdminOptionCategory('deliveries')" class="shrink-0 px-3.5 py-2 bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-extrabold rounded-xl transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-floppy-disk text-[10px]"></i> Guardar cambios</button>
                             <button type="button" onclick="addNewOption('deliveries')" class="shrink-0 px-3.5 py-2 bg-white border border-brand-200 text-brand-700 text-[11px] font-extrabold rounded-xl hover:bg-brand-50 hover:border-brand-300 transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-plus text-[10px]"></i> Agregar</button>
                         </div>
                         <div id="adminList-deliveries" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
@@ -2037,6 +2043,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                                 <label class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-stone-200 text-[11px] font-bold cursor-pointer text-stone-700">
                                     <input type="checkbox" id="toggleSection_privateSale" onchange="toggleSectionVisibility('privateSale')" class="accent-pink-600"> Venta en Casa
                                 </label>
+                            <button type="button" onclick="saveAdminOptionCategory('meetingPoints')" class="shrink-0 px-3.5 py-2 bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-extrabold rounded-xl transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-floppy-disk text-[10px]"></i> Guardar cambios</button>
                             <button type="button" onclick="addNewOption('meetingPoints')" class="shrink-0 px-3.5 py-2 bg-white border border-brand-200 text-brand-700 text-[11px] font-extrabold rounded-xl hover:bg-brand-50 hover:border-brand-300 transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-plus text-[10px]"></i> Agregar</button>
                             </div>
                         </div>
@@ -2059,6 +2066,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                                 <label class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-stone-200 text-[11px] font-bold cursor-pointer text-stone-700">
                                     <input type="checkbox" id="toggleSection_extras" onchange="toggleSectionVisibility('extras')" class="accent-pink-600"> Mostrar en Formulario
                                 </label>
+                                <button type="button" onclick="saveAdminOptionCategory('extras')" class="shrink-0 px-3.5 py-2 bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-extrabold rounded-xl transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-floppy-disk text-[10px]"></i> Guardar cambios</button>
                                 <button type="button" onclick="addNewExtraOption()" class="shrink-0 px-3.5 py-2 bg-white border border-brand-200 text-brand-700 text-[11px] font-extrabold rounded-xl hover:bg-brand-50 hover:border-brand-300 transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-plus text-[10px]"></i> Agregar</button>
                             </div>
                         </div>
@@ -2075,6 +2083,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                                 <label class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-stone-200 text-[11px] font-bold cursor-pointer text-stone-700">
                                     <input type="checkbox" id="toggleSection_payments" onchange="toggleSectionVisibility('payments')" class="accent-pink-600"> Mostrar en Formulario
                                 </label>
+                                <button type="button" onclick="saveAdminOptionCategory('payments')" class="shrink-0 px-3.5 py-2 bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-extrabold rounded-xl transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-floppy-disk text-[10px]"></i> Guardar cambios</button>
                                 <button type="button" onclick="addNewOption('payments')" class="shrink-0 px-3.5 py-2 bg-white border border-brand-200 text-brand-700 text-[11px] font-extrabold rounded-xl hover:bg-brand-50 hover:border-brand-300 transition flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-plus text-[10px]"></i> Agregar</button>
                             </div>
                         </div>
@@ -2768,6 +2777,52 @@ function applySheetsRuntimeConfig(config) {
 
     syncOrderScheduleControls();
     syncOrderLeadTimeControls();
+}
+
+async function saveAdminOperationalSettings(section) {
+    try {
+        // Lee el estado actual de los controles para guardar exactamente lo que ve el administrador.
+        const open = document.getElementById('orderOpenTime')?.value;
+        const close = document.getElementById('orderCloseTime')?.value;
+        if (open) orderSchedule.openTime = open;
+        if (close) orderSchedule.closeTime = close;
+        const selectedMode = document.querySelector('input[name="orderScheduleMode"]:checked')?.value;
+        if (selectedMode && ['time', 'days', 'both'].includes(selectedMode)) orderSchedule.mode = selectedMode;
+        const leadInput = document.getElementById('orderLeadTimeInput');
+        if (leadInput) {
+            const days = Number.parseInt(leadInput.value, 10);
+            if (Number.isInteger(days) && days >= 0 && days <= 60) orderLeadTimeDays = days;
+        }
+        const leadEnabled = document.getElementById('orderLeadTimeEnabled');
+        if (leadEnabled) orderLeadTimeEnabled = leadEnabled.checked;
+        document.querySelectorAll('#orderDaysConfig input[type="checkbox"]').forEach((el, index) => {
+            const dayKeys = [1, 2, 3, 4, 5, 6, 0];
+            if (dayKeys[index] !== undefined) operationalDays[dayKeys[index]] = el.checked;
+        });
+        localStorage.setItem('pinata_order_schedule', JSON.stringify(orderSchedule));
+        localStorage.setItem('pinata_order_lead_time_days', String(orderLeadTimeDays));
+        localStorage.setItem('pinata_order_lead_time_enabled', String(orderLeadTimeEnabled));
+        localStorage.setItem('pinata_operational_days', JSON.stringify(operationalDays));
+        syncOrderScheduleControls();
+        syncOrderLeadTimeControls();
+        renderCalendar(); renderAdminCalendar(); updateOrderAvailability();
+        await saveOperationalConfigToSheets();
+        const messages = { leadTime: 'Anticipación mínima guardada en Google Sheets.', schedule: 'Horario para hacer pedidos guardado en Google Sheets.', days: 'Días para hacer pedidos guardados en Google Sheets.' };
+        showToast(messages[section] || 'Configuración guardada en Google Sheets.', 'success');
+    } catch (error) {
+        console.error('Error al guardar la configuración operativa:', error);
+        showToast(error.message || 'No se pudieron guardar los cambios en Google Sheets.', 'error');
+    }
+}
+
+async function saveAdminOptionCategory(category) {
+    try {
+        await saveOptionCategoryToSheets(category);
+        showToast('Cambios guardados en Google Sheets.', 'success');
+    } catch (error) {
+        console.error('Error al guardar los cambios de opciones:', error);
+        showToast(error.message || 'No se pudieron guardar los cambios en Google Sheets.', 'error');
+    }
 }
 
 async function saveOperationalConfigToSheets() {
@@ -3939,7 +3994,7 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
 
             try {
                 await adminApiRequest('updateOrderFinance', {
-                    id: order.id || '', folio: order.folio || '', totalAmount: total, advanceAmount: advance
+                    id: order.id || '', folio: order.folio || '', totalAmount: total, advanceAmount: advance, additionalPaid: Number(order.additionalPaid) || 0, isPaid: order.isPaid === true
                 });
                 order.totalAmount = total;
                 order.advancePercent = percent;
@@ -4035,13 +4090,18 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                 renderAdminOrdersList();
             }
         }
-        function saveInvoiceAbono(){
+        async function saveInvoiceAbono(){
             const i=parseInt(document.getElementById('invoiceOrderIndex').value,10),ord=savedOrders[i]; if(!ord) return;
             if (document.getElementById('invAdditionalPaidEnabled')?.checked !== true) { showToast('Activa el abono adicional para registrar una cantidad.', 'error'); return; }
             const amount=Math.max(0,parseFloat(document.getElementById('invAbonoInput').value)||0); if(!amount){showToast('Escribe una cantidad para el abono.','error');return;}
             const total=Number(ord.totalAmount)||0, current=(Number(ord.advanceAmount)||0)+(Number(ord.additionalPaid)||0), remaining=Math.max(0,total-current);
-            const applied=Math.min(amount,remaining); ord.additionalPaid=(Number(ord.additionalPaid)||0)+applied; ord.remainingAmount=Math.max(0,total-(Number(ord.advanceAmount)||0)-ord.additionalPaid);
-            localStorage.setItem('pinata_saved_orders',JSON.stringify(savedOrders)); renderAdminOrdersList(); openInvoicesModal(i); showToast(`Abono de $${applied.toFixed(2)} guardado.`,'success');
+            const applied=Math.min(amount,remaining); if (!applied) { showToast('El pedido no tiene saldo pendiente para otro abono.', 'error'); return; }
+            const newAdditionalPaid=(Number(ord.additionalPaid)||0)+applied;
+            try {
+                await adminApiRequest('updateOrderFinance', { id: ord.id || '', folio: ord.folio || '', totalAmount: total, advanceAmount: Number(ord.advanceAmount)||0, additionalPaid: newAdditionalPaid, isPaid: ord.isPaid === true });
+                ord.additionalPaid=newAdditionalPaid; ord.additionalPaidEnabled=true; ord.remainingAmount=Math.max(0,total-(Number(ord.advanceAmount)||0)-newAdditionalPaid);
+                localStorage.setItem('pinata_saved_orders',JSON.stringify(savedOrders)); renderAdminOrdersList(); openInvoicesModal(i); showToast(`Abono de $${applied.toFixed(2)} guardado en Google Sheets.`,'success');
+            } catch(error) { console.error('Error al guardar el abono:', error); showToast(error.message || 'No se pudo guardar el abono en Google Sheets.', 'error'); }
         }
         function sendInvoiceWhatsApp(){
             const i = parseInt(document.getElementById('invoiceOrderIndex').value, 10), ord = getFreshSavedOrder(i); if (!ord) return;
@@ -4052,24 +4112,25 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             window.open(`https://wa.me/${ord.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        function markOrderAsPaid() {
+        async function markOrderAsPaid() {
             const index = parseInt(document.getElementById('invoiceOrderIndex').value);
             if (index < 0 || !savedOrders[index]) return;
-
-            let ord = savedOrders[index];
-            ord.isPaid = !ord.isPaid;
-            if (ord.isPaid) {
-                ord.remainingAmount = 0;
-            } else {
-                const total = Number(ord.totalAmount) || 0;
-                const paid = (Number(ord.advanceAmount) || 0) + (Number(ord.additionalPaid) || 0);
-                ord.remainingAmount = Math.max(0, total - paid);
+            const ord = savedOrders[index];
+            const nextPaid = !ord.isPaid;
+            const total = Number(ord.totalAmount) || 0;
+            const advance = Number(ord.advanceAmount) || 0;
+            const additionalPaid = Number(ord.additionalPaid) || 0;
+            try {
+                await adminApiRequest('updateOrderFinance', { id: ord.id || '', folio: ord.folio || '', totalAmount: total, advanceAmount: advance, additionalPaid, isPaid: nextPaid });
+                ord.isPaid = nextPaid;
+                ord.remainingAmount = nextPaid ? 0 : Math.max(0, total - advance - additionalPaid);
+                localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
+                closeInvoicesModal(); renderAdminOrdersList();
+                showToast(ord.isPaid ? 'Pago actualizado en Google Sheets: PAGADO.' : 'Pago actualizado en Google Sheets: FALTANTE.', 'success');
+            } catch (error) {
+                console.error('Error al actualizar el estado de pago:', error);
+                showToast(error.message || 'No se pudo actualizar el estado de pago en Google Sheets.', 'error');
             }
-
-            localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
-            closeInvoicesModal();
-            renderAdminOrdersList();
-            showToast(ord.isPaid ? 'Pedido marcado como PAGADO (en ceros).' : 'Pedido marcado como pendiente.', 'success');
         }
 
         // --- END NEW ORDER ACTION FUNCTIONS ---
@@ -4458,6 +4519,9 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                             <button type="button" onclick="openAdvanceModal(${idx})" class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-[11px] shadow-xs transition flex items-center gap-1.5" title="Anticipo: cantidad total, porcentaje y anticipo">
                                 <i class="fa-solid fa-calculator"></i> Anticipo ($${(ord.advanceAmount || 0).toFixed(2)})
                             </button>
+                            <button type="button" onclick="openInvoicesModal(${idx})" class="px-3 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-bold text-[11px] shadow-xs transition flex items-center gap-1.5" title="Facturas y seguimiento de anticipo, faltante y pagado">
+                                <i class="fa-solid fa-chart-line"></i> Facturas y Seguimiento
+                            </button>
                             <button type="button" onclick="requestOrderReceipt(${idx})" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-[11px] shadow-xs transition flex items-center gap-1.5" title="Solicitar comprobante de pedido">
                                 <i class="fa-solid fa-file-invoice"></i> Solicitar Comprobante
                             </button>
@@ -4467,9 +4531,6 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                             <button type="button" onclick="openPrivateAddressModal(${idx})" class="px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold text-[11px] shadow-xs transition flex items-center gap-1.5" title="Enviar dirección privada"><i class="fa-solid fa-location-dot"></i> Dir. Privada</button>
                             <button type="button" onclick="openCalendarForOrder(${idx}, 'android')" class="px-3 py-2 bg-green-700 hover:bg-green-800 text-white rounded-xl font-bold text-[11px] shadow-xs transition flex items-center gap-1.5" title="Abrir calendario Android"><i class="fa-brands fa-android"></i> Calendario Android</button>
                             <button type="button" onclick="openCalendarForOrder(${idx}, 'iphone')" class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-bold text-[11px] shadow-xs transition flex items-center gap-1.5" title="Abrir calendario iPhone"><i class="fa-brands fa-apple"></i> Calendario iPhone</button>
-                            <button type="button" onclick="openInvoicesModal(${idx})" class="px-3 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-bold text-[11px] shadow-xs transition flex items-center gap-1.5" title="Facturas y seguimiento de anticipo, faltante y pagado">
-                                <i class="fa-solid fa-chart-line"></i> Facturas y Seguimiento
-                            </button>
                         </div>
                     </div>
                 `;

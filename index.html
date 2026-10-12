@@ -1913,7 +1913,7 @@ body > section:first-of-type a:not(.bg-brand-500){
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <button type="button" onclick="setAdminDateStatus('available')" class="w-full min-h-11 px-3 py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-circle-check"></i> Disponible</button>
                             <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Pocos lugares</button>
-                            <button type="button" onclick="setAdminDateStatus('full')" class="w-full min-h-11 px-3 py-2.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-lock"></i> Bloquear agenda llena</button>
+                            <button type="button" onclick="setAdminDateStatus('blocked')" class="w-full min-h-11 px-3 py-2.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2"><i class="fa-solid fa-lock"></i> Bloquear agenda llena</button>
                             <button type="button" onclick="setAdminDateStatus('closed')" class="w-full min-h-11 px-3 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 rounded-xl text-[11px] font-extrabold transition flex items-center justify-center gap-2 sm:col-span-3"><i class="fa-solid fa-calendar-xmark"></i> Cerrado para pedidos</button>
                         </div>
                     </div>
@@ -2287,7 +2287,7 @@ body > section:first-of-type a:not(.bg-brand-500){
         // Pega aquí la URL de tu Web App de Google Apps Script.
         // Ejemplo: https://script.google.com/macros/s/XXXXXXXX/exec
         // ============================================================
-        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec"; 
+        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec";
 
         // Alias usado por las funciones internas del sistema.
         const GOOGLE_SHEETS_API_URL = googleSheetsUrl;
@@ -2408,6 +2408,7 @@ window.onload = async function() {
 
         if (config) {
             applySheetsConfigToFormOptions(config);
+            applySheetsRuntimeConfig(config);
         }
     } catch (error) {
         console.error('Error al cargar la configuración inicial:', error);
@@ -2642,6 +2643,81 @@ function applySheetsConfigToFormOptions(config) {
 
     return true;
 }
+function parseSheetsSetting(value, fallback) {
+    if (value === undefined || value === null || value === '') return fallback;
+    if (typeof value !== 'string') return value;
+    try { return JSON.parse(value); } catch (_) { return value; }
+}
+
+function applySheetsRuntimeConfig(config) {
+    const settings = config && config.settings ? config.settings : {};
+    const read = key => parseSheetsSetting(settings[key], undefined);
+
+    const savedSchedule = read('orderSchedule');
+    if (savedSchedule && typeof savedSchedule === 'object') {
+        orderSchedule = { ...orderSchedule, ...savedSchedule };
+        localStorage.setItem('pinata_order_schedule', JSON.stringify(orderSchedule));
+    }
+
+    const savedDays = read('operationalDays');
+    if (savedDays && typeof savedDays === 'object') {
+        operationalDays = { ...operationalDays, ...savedDays };
+        localStorage.setItem('pinata_operational_days', JSON.stringify(operationalDays));
+    }
+
+    const savedStatuses = read('dayStatuses');
+    if (savedStatuses && typeof savedStatuses === 'object') {
+        dayStatuses = savedStatuses;
+        localStorage.setItem('pinata_day_statuses', JSON.stringify(dayStatuses));
+    }
+
+    const savedLeadDays = read('orderLeadTimeDays');
+    if (savedLeadDays !== undefined && Number.isFinite(Number(savedLeadDays)) && Number(savedLeadDays) >= 0) {
+        orderLeadTimeDays = Number(savedLeadDays);
+        localStorage.setItem('pinata_order_lead_time_days', String(orderLeadTimeDays));
+    }
+
+    const savedLeadEnabled = read('orderLeadTimeEnabled');
+    if (savedLeadEnabled !== undefined) {
+        orderLeadTimeEnabled = savedLeadEnabled === true || String(savedLeadEnabled).toLowerCase() === 'true';
+        localStorage.setItem('pinata_order_lead_time_enabled', String(orderLeadTimeEnabled));
+    }
+
+    const savedSchedules = read('formOptionSchedules');
+    if (savedSchedules && typeof savedSchedules === 'object') {
+        if (savedSchedules.deliverySchedules && typeof savedSchedules.deliverySchedules === 'object') {
+            formOptions.deliverySchedules = { ...formOptions.deliverySchedules, ...savedSchedules.deliverySchedules };
+        }
+        if (savedSchedules.meetingPointSchedules && typeof savedSchedules.meetingPointSchedules === 'object') {
+            formOptions.meetingPointSchedules = { ...formOptions.meetingPointSchedules, ...savedSchedules.meetingPointSchedules };
+        }
+        if (Array.isArray(savedSchedules.meetingPointTimes)) formOptions.meetingPointTimes = savedSchedules.meetingPointTimes;
+        localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
+    }
+
+    syncOrderScheduleControls();
+    syncOrderLeadTimeControls();
+}
+
+async function saveOperationalConfigToSheets() {
+    if (!adminSessionToken) throw new Error('Inicia sesión como administrador para guardar la configuración.');
+    const settings = {
+        orderSchedule: { ...orderSchedule },
+        operationalDays: { ...operationalDays },
+        dayStatuses: { ...dayStatuses },
+        orderLeadTimeDays,
+        orderLeadTimeEnabled,
+        formOptionSchedules: {
+            deliverySchedules: { ...(formOptions.deliverySchedules || {}) },
+            meetingPointSchedules: { ...(formOptions.meetingPointSchedules || {}) },
+            meetingPointTimes: [...(formOptions.meetingPointTimes || [])]
+        }
+    };
+    const result = await adminApiRequest('saveConfig', { settings });
+    if (!result.ok) throw new Error(result.message || 'No se pudo guardar la configuración en Google Sheets.');
+    return result;
+}
+
 function buildSheetsOptionsPayload() {
     return {
         options: {
@@ -2720,6 +2796,9 @@ async function saveOptionCategoryToSheets(category) {
     if (!items.length) throw new Error('Debe quedar al menos una opción en esta categoría.');
     const result = await adminApiRequest('saveOptions', { options: { [entry[0]]: items } });
     if (!result.ok) throw new Error(result.message || 'No se pudieron guardar las opciones.');
+    if (category === 'deliveries' || category === 'meetingPoints' || category === 'times') {
+        await saveOperationalConfigToSheets();
+    }
     return result;
 }
 
@@ -3112,6 +3191,9 @@ async function saveOptionCategoryToSheets(category) {
                 } else if (status === 'full') {
                     bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
+                } else if (status === 'blocked') {
+                    bgClass = 'bg-orange-50 hover:bg-orange-100 text-orange-800 border-orange-300';
+                    dotClass = 'bg-orange-600';
                 } else if (status === 'closed') {
                     bgClass = 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-200 opacity-60';
                     dotClass = 'bg-rose-500';
@@ -3193,8 +3275,8 @@ async function saveOptionCategoryToSheets(category) {
             const dow = dObj.getDay();
             const currentStatus = dayStatuses[date] || (operationalDays[dow] === false ? 'closed' : 'available');
 
-            if (currentStatus === 'closed') {
-                showToast('Lo sentimos, esta fecha está cerrada para pedidos.', 'error');
+            if (currentStatus === 'closed' || currentStatus === 'blocked') {
+                showToast(currentStatus === 'blocked' ? 'Lo sentimos, esta fecha tiene la agenda bloqueada.' : 'Lo sentimos, esta fecha está cerrada para pedidos.', 'error');
                 return;
             }
 
@@ -4087,23 +4169,35 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         }
 
-        function saveOrderSchedule() {
+        async function saveOrderSchedule() {
             const open = document.getElementById('orderOpenTime')?.value || '09:00';
             const close = document.getElementById('orderCloseTime')?.value || '18:00';
             orderSchedule.openTime = open; orderSchedule.closeTime = close;
             localStorage.setItem('pinata_order_schedule', JSON.stringify(orderSchedule));
             syncOrderScheduleControls();
             updateOrderAvailability();
-            showToast('Horario para recibir pedidos actualizado.', 'success');
+            try {
+                await saveOperationalConfigToSheets();
+                showToast('Horario para recibir pedidos guardado en Google Sheets.', 'success');
+            } catch (error) {
+                console.error('Error al guardar el horario de pedidos:', error);
+                showToast(error.message || 'El horario cambió en esta página, pero no se guardó en Google Sheets.', 'error');
+            }
         }
 
-        function saveOrderScheduleMode(mode) {
+        async function saveOrderScheduleMode(mode) {
             if (!['time','days','both'].includes(mode)) return;
             orderSchedule.mode = mode;
             localStorage.setItem('pinata_order_schedule', JSON.stringify(orderSchedule));
             syncOrderScheduleControls();
             updateOrderAvailability();
-            showToast(mode === 'time' ? 'Se aplicará únicamente el horario.' : mode === 'days' ? 'Se aplicarán únicamente los días.' : 'Se aplicarán los días y el horario.', 'success');
+            try {
+                await saveOperationalConfigToSheets();
+                showToast(mode === 'time' ? 'Se guardó el modo de solo horario.' : mode === 'days' ? 'Se guardó el modo de solo días.' : 'Se guardó el modo de horario y días.', 'success');
+            } catch (error) {
+                console.error('Error al guardar el modo de horario:', error);
+                showToast(error.message || 'El modo cambió en esta página, pero no se guardó en Google Sheets.', 'error');
+            }
         }
 
         function syncOrderScheduleControls() {
@@ -4121,11 +4215,17 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             wrap.innerHTML = names.map(([name,i])=>`<label class="flex items-center gap-2 p-2.5 bg-stone-50 border border-stone-200 rounded-xl cursor-pointer"><input type="checkbox" ${operationalDays[i] !== false ? 'checked':''} onchange="saveOrderDay(${i}, this.checked)" class="w-4 h-4 accent-pink-600"><span class="text-[11px] font-bold text-stone-700">${name}</span></label>`).join('');
         }
 
-        function saveOrderDay(day, enabled) {
+        async function saveOrderDay(day, enabled) {
             operationalDays[day] = !!enabled;
             localStorage.setItem('pinata_operational_days', JSON.stringify(operationalDays));
             renderCalendar(); renderAdminCalendar(); updateOrderAvailability();
-            showToast('Días para recibir pedidos actualizados.', 'success');
+            try {
+                await saveOperationalConfigToSheets();
+                showToast('Días para recibir pedidos guardados en Google Sheets.', 'success');
+            } catch (error) {
+                console.error('Error al guardar los días de pedidos:', error);
+                showToast(error.message || 'Los días cambiaron en esta página, pero no se guardaron en Google Sheets.', 'error');
+            }
         }
 
         function isWithinOrderSchedule(now = new Date()) {
@@ -4586,17 +4686,23 @@ function closeClearOldOrdersModal() {
             return d < getOrderLeadTimeStartDate();
         }
 
-        function saveOrderLeadTimeEnabled(enabled) {
+        async function saveOrderLeadTimeEnabled(enabled) {
             orderLeadTimeEnabled = !!enabled;
             localStorage.setItem('pinata_order_lead_time_enabled', String(orderLeadTimeEnabled));
             syncOrderLeadTimeControls();
             renderCalendar();
             renderAdminCalendar();
             updateFormLeadTimeNotice();
-            showToast(orderLeadTimeEnabled ? 'Se activó la anticipación mínima.' : 'Se desactivó la anticipación mínima.', 'success');
+            try {
+                await saveOperationalConfigToSheets();
+                showToast(orderLeadTimeEnabled ? 'Se activó y guardó la anticipación mínima.' : 'Se desactivó y guardó la anticipación mínima.', 'success');
+            } catch (error) {
+                console.error('Error al guardar la anticipación mínima:', error);
+                showToast(error.message || 'El cambio no se guardó en Google Sheets.', 'error');
+            }
         }
 
-        function saveOrderLeadTime(days) {
+        async function saveOrderLeadTime(days) {
             days = parseInt(days, 10);
             if (!Number.isFinite(days) || days < 0 || days > 60) return;
             orderLeadTimeDays = days;
@@ -4604,7 +4710,13 @@ function closeClearOldOrdersModal() {
             syncOrderLeadTimeControls();
             renderCalendar();
             renderAdminCalendar();
-            showToast(`Ahora se requieren ${days} ${days === 1 ? 'día hábil' : 'días hábiles'} de anticipación.`, 'success');
+            try {
+                await saveOperationalConfigToSheets();
+                showToast(`Se guardaron ${days} ${days === 1 ? 'día hábil' : 'días hábiles'} de anticipación en Google Sheets.`, 'success');
+            } catch (error) {
+                console.error('Error al guardar los días de anticipación:', error);
+                showToast(error.message || 'El cambio no se guardó en Google Sheets.', 'error');
+            }
         }
 
         function syncOrderLeadTimeControls() {
@@ -4681,6 +4793,9 @@ function closeClearOldOrdersModal() {
                 if (status === 'full') {
                     bgClass = 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200';
                     dotClass = 'bg-amber-500';
+                } else if (status === 'blocked') {
+                    bgClass = 'bg-orange-50 hover:bg-orange-100 text-orange-800 border-orange-300';
+                    dotClass = 'bg-orange-600';
                 } else if (status === 'closed') {
                     bgClass = 'bg-rose-50 hover:bg-rose-100 text-rose-800 border-rose-200 opacity-60';
                     dotClass = 'bg-rose-500';
@@ -4710,15 +4825,24 @@ function closeClearOldOrdersModal() {
             renderAdminCalendar();
         }
 
-        function setAdminDateStatus(status) {
+        async function setAdminDateStatus(status) {
             if (!adminSelectedDateStr) {
                 showToast('Selecciona primero una fecha en el calendario del administrador.', 'error');
                 return;
             }
+            if (!['available', 'full', 'blocked', 'closed'].includes(status)) return;
             dayStatuses[adminSelectedDateStr] = status;
             localStorage.setItem('pinata_day_statuses', JSON.stringify(dayStatuses));
+            renderCalendar();
             renderAdminCalendar();
-            showToast(`Fecha ${adminSelectedDateStr} actualizada a: ${status}.`, 'success');
+            try {
+                await saveOperationalConfigToSheets();
+                const labels = { available: 'Disponible', full: 'Pocos lugares', blocked: 'Agenda bloqueada', closed: 'Cerrado para pedidos' };
+                showToast(`Fecha ${adminSelectedDateStr} guardada en Google Sheets: ${labels[status]}.`, 'success');
+            } catch (error) {
+                console.error('Error al guardar el estado de la fecha:', error);
+                showToast(error.message || 'El estado cambió en esta página, pero no se guardó en Google Sheets.', 'error');
+            }
         }
 
         function renderAdminOptionsEditor() {
@@ -4782,7 +4906,10 @@ function closeClearOldOrdersModal() {
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
             renderFormOptionsInClient();
             renderDeliverySchedulesEditor();
-            showToast('Horario del método actualizado.', 'success');
+            saveOperationalConfigToSheets().then(() => showToast('Horario del método guardado en Google Sheets.', 'success')).catch(error => {
+                console.error('Error al guardar el horario del método:', error);
+                showToast(error.message || 'El horario cambió en esta página, pero no se guardó en Google Sheets.', 'error');
+            });
         }
 
         function saveDeliverySchedules() {
@@ -4795,7 +4922,10 @@ function closeClearOldOrdersModal() {
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
             renderFormOptionsInClient();
             renderDeliverySchedulesEditor();
-            showToast('Horarios de envío y taller guardados.', 'success');
+            saveOperationalConfigToSheets().then(() => showToast('Horarios de envío y taller guardados en Google Sheets.', 'success')).catch(error => {
+                console.error('Error al guardar horarios de envío y taller:', error);
+                showToast(error.message || 'Los horarios cambiaron en esta página, pero no se guardaron en Google Sheets.', 'error');
+            });
         }
 
         function saveMeetingPointTimes() {
@@ -4805,7 +4935,10 @@ function closeClearOldOrdersModal() {
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
             renderFormOptionsInClient();
             renderAdminOptionsEditor();
-            showToast('Horarios de Punto Medio guardados.', 'success');
+            saveOperationalConfigToSheets().then(() => showToast('Horarios de Punto Medio guardados en Google Sheets.', 'success')).catch(error => {
+                console.error('Error al guardar horarios de Punto Medio:', error);
+                showToast(error.message || 'Los horarios cambiaron en esta página, pero no se guardaron en Google Sheets.', 'error');
+            });
         }
 
         function renderListEditor(category, labelName) {
@@ -4865,7 +4998,10 @@ function closeClearOldOrdersModal() {
             localStorage.setItem('pinata_form_options', JSON.stringify(formOptions));
             renderFormOptionsInClient();
             renderAdminOptionsEditor();
-            showToast('Horario del Punto Medio actualizado.', 'success');
+            saveOperationalConfigToSheets().then(() => showToast('Horario del Punto Medio guardado en Google Sheets.', 'success')).catch(error => {
+                console.error('Error al guardar el horario del Punto Medio:', error);
+                showToast(error.message || 'El horario cambió en esta página, pero no se guardó en Google Sheets.', 'error');
+            });
         }
 
         function renderExtrasListEditor() {

@@ -2486,7 +2486,7 @@ body > section:first-of-type a:not(.bg-brand-500){
         // Pega aquí la URL de tu Web App de Google Apps Script.
         // Ejemplo: https://script.google.com/macros/s/XXXXXXXX/exec
         // ============================================================
-        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec";
+        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec"; 
 
         // Alias usado por las funciones internas del sistema.
         const GOOGLE_SHEETS_API_URL = googleSheetsUrl;
@@ -3843,11 +3843,33 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             showToast(`Mensaje de confirmación enviado para el folio ${ord.folio}.`, 'success');
         }
 
-        function editOrderFromList(index) {
-            const ord = getFreshSavedOrder(index);
+        async function editOrderFromList(index) {
+            // Tomar primero el pedido que se muestra en la lista; no sustituirlo por
+            // una copia antigua de localStorage antes de abrir el editor.
+            let ord = savedOrders[index];
             if (!ord) {
                 showToast('No se encontró el pedido para editar.', 'error');
                 return;
+            }
+
+            // Volver a consultar Google Sheets para abrir el editor con los datos
+            // actualmente guardados en la base y no con una copia desactualizada.
+            try {
+                const result = await adminApiRequest('getOrders');
+                if (result && result.ok && Array.isArray(result.orders)) {
+                    const fresh = result.orders.find(item =>
+                        (ord.id && String(item.id) === String(ord.id)) ||
+                        (!ord.id && ord.folio && String(item.folio) === String(ord.folio))
+                    );
+                    if (fresh) {
+                        ord = { ...ord, ...fresh };
+                        savedOrders[index] = ord;
+                        localStorage.setItem('pinata_saved_orders', JSON.stringify(savedOrders));
+                    }
+                }
+            } catch (error) {
+                // Si no hay conexión, permitir editar los datos que ya están en la lista.
+                console.warn('No se pudo refrescar el pedido desde Google Sheets; se usarán los datos cargados.', error);
             }
 
             const modal = document.getElementById('adminEditOrderModal');
@@ -4003,8 +4025,19 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             const source = document.getElementById(sourceId);
             const target = document.getElementById(targetId);
             if (!source || !target) return;
+            const wanted = String(selected ?? '');
             target.innerHTML = source.innerHTML;
-            target.value = selected || '';
+
+            // Si el pedido conserva un valor antiguo que ya no está entre las
+            // opciones actuales, agregarlo para que siga visible y editable.
+            if (wanted && !Array.from(target.options).some(option => option.value === wanted)) {
+                const option = document.createElement('option');
+                option.value = wanted;
+                option.textContent = wanted;
+                option.dataset.legacyValue = 'true';
+                target.appendChild(option);
+            }
+            target.value = wanted;
         }
 
         function _populateAdminEditOrderOptions() {

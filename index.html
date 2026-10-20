@@ -2486,7 +2486,7 @@ body > section:first-of-type a:not(.bg-brand-500){
         // Pega aquí la URL de tu Web App de Google Apps Script.
         // Ejemplo: https://script.google.com/macros/s/XXXXXXXX/exec
         // ============================================================
-        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec"; 
+        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbyyCo6xTzuhw19ynT26R3Sy5o4eR_RvWL7guPn7FsxDupkBncEAW3OXSVwi7uFDSttJ/exec";
 
         // Alias usado por las funciones internas del sistema.
         const GOOGLE_SHEETS_API_URL = googleSheetsUrl;
@@ -3920,8 +3920,18 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             setValue('adminEditTheme', ord.theme);
             setValue('adminEditDetails', ord.details);
 
+            // Poblar los selectores usando los valores guardados del pedido.
+            // Si se copian las opciones primero sin el valor histórico, los campos
+            // pueden quedarse en blanco aunque Google Sheets sí tenga información.
             if (typeof _populateAdminEditOrderOptions === 'function') {
-                _populateAdminEditOrderOptions();
+                _populateAdminEditOrderOptions({
+                    style: ord.style,
+                    size: ord.size,
+                    delivery: savedDeliveryMethod,
+                    time: savedDeliveryTime,
+                    meeting: raw.location || '',
+                    payment: ord.payment || ''
+                });
             }
 
             setValue('adminEditStyle', ord.style);
@@ -3978,6 +3988,27 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
                     .split(',')
                     .map(x => x.trim())
                     .filter(Boolean);
+
+                // Si un extra histórico ya no existe en la configuración actual,
+                // conservarlo como opción visible para no perderlo al guardar.
+                const extrasContainer = document.getElementById('adminEditExtras');
+                selectedExtras.forEach(extra => {
+                    const exists = Array.from(extrasContainer?.querySelectorAll('input[type="checkbox"]') || [])
+                        .some(cb => cb.value === extra);
+                    if (extrasContainer && !exists) {
+                        const label = document.createElement('label');
+                        label.className = 'flex items-center gap-2 p-2.5 rounded-xl border border-stone-200 bg-stone-50 text-xs font-bold text-stone-700';
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.value = extra;
+                        checkbox.className = 'accent-pink-600';
+                        checkbox.checked = true;
+                        const text = document.createElement('span');
+                        text.textContent = extra;
+                        label.append(checkbox, text);
+                        extrasContainer.appendChild(label);
+                    }
+                });
 
                 document.querySelectorAll('#adminEditExtras input[type="checkbox"]').forEach(cb => {
                     cb.checked = selectedExtras.includes(cb.value);
@@ -4040,13 +4071,13 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             target.value = wanted;
         }
 
-        function _populateAdminEditOrderOptions() {
-            _adminEditSelectFromSource('adminEditStyle', 'pinataStyle', document.getElementById('adminEditStyle')?.value);
-            _adminEditSelectFromSource('adminEditSize', 'pinataSize', document.getElementById('adminEditSize')?.value);
-            _adminEditSelectFromSource('adminEditDelivery', 'deliveryMethod', document.getElementById('adminEditDelivery')?.value);
-            _adminEditSelectFromSource('adminEditTime', 'deliveryTime', document.getElementById('adminEditTime')?.value);
-            _adminEditSelectFromSource('adminEditMeeting', 'meetingPointSelect', document.getElementById('adminEditMeeting')?.value);
-            _adminEditSelectFromSource('adminEditPayment', 'paymentMethod', document.getElementById('adminEditPayment')?.value);
+        function _populateAdminEditOrderOptions(selectedOrder = {}) {
+            _adminEditSelectFromSource('adminEditStyle', 'pinataStyle', selectedOrder.style ?? document.getElementById('adminEditStyle')?.value);
+            _adminEditSelectFromSource('adminEditSize', 'pinataSize', selectedOrder.size ?? document.getElementById('adminEditSize')?.value);
+            _adminEditSelectFromSource('adminEditDelivery', 'deliveryMethod', selectedOrder.delivery ?? document.getElementById('adminEditDelivery')?.value);
+            _adminEditSelectFromSource('adminEditTime', 'deliveryTime', selectedOrder.time ?? document.getElementById('adminEditTime')?.value);
+            _adminEditSelectFromSource('adminEditMeeting', 'meetingPointSelect', selectedOrder.meeting ?? document.getElementById('adminEditMeeting')?.value);
+            _adminEditSelectFromSource('adminEditPayment', 'paymentMethod', selectedOrder.payment ?? document.getElementById('adminEditPayment')?.value);
 
             const extras = document.getElementById('adminEditExtras');
             if (extras) {

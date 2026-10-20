@@ -3878,7 +3878,34 @@ Quedo a la espera para coordinar el anticipo y apartar mi fecha oficial. ✨`;
             const raw = ord.rawDeliveryDetails || {};
             const setValue = (id, value) => {
                 const el = document.getElementById(id);
-                if (el) el.value = value ?? '';
+                if (!el) return;
+                let safeValue = value ?? '';
+                // Los campos type=date solo aceptan YYYY-MM-DD. Algunos registros
+                // llegan como ISO (2026-10-20T05:50:02.780Z); conservar la fecha
+                // escrita al inicio evita mostrar el timestamp o cambiar de día.
+                if (id === 'adminEditDate' && safeValue !== '') {
+                    if (safeValue instanceof Date) {
+                        const y = safeValue.getFullYear();
+                        const m = String(safeValue.getMonth() + 1).padStart(2, '0');
+                        const d = String(safeValue.getDate()).padStart(2, '0');
+                        safeValue = `${y}-${m}-${d}`;
+                    } else {
+                        const dateText = String(safeValue).trim();
+                        const isoDate = dateText.match(/^(\d{4}-\d{2}-\d{2})/);
+                        if (isoDate) {
+                            safeValue = isoDate[1];
+                        } else {
+                            const parsed = new Date(dateText);
+                            if (!Number.isNaN(parsed.getTime())) {
+                                const y = parsed.getFullYear();
+                                const m = String(parsed.getMonth() + 1).padStart(2, '0');
+                                const d = String(parsed.getDate()).padStart(2, '0');
+                                safeValue = `${y}-${m}-${d}`;
+                            }
+                        }
+                    }
+                }
+                el.value = safeValue;
             };
 
             // Los pedidos antiguos o los que vienen de Google Sheets pueden no traer
